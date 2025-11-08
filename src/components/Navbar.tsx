@@ -1,6 +1,18 @@
 import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 
 export const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -9,10 +21,16 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md border-b border-border z-50">
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      isScrolled 
+        ? "bg-white/95 backdrop-blur-md border-b border-border" 
+        : "hero-gradient"
+    }`}>
       <div className="max-w-7xl mx-auto px-8 py-4">
         <div className="flex justify-between items-center">
-          <a href="/" className="flex items-center gap-3 font-bold text-2xl text-foreground">
+          <a href="/" className={`flex items-center gap-3 font-bold text-2xl transition-colors ${
+            isScrolled ? "text-foreground" : "text-white"
+          }`}>
             <div className="w-10 h-10 gradient-indigo rounded-xl flex items-center justify-center text-xl">
               🌙
             </div>
@@ -22,7 +40,11 @@ export const Navbar = () => {
             <li>
               <button
                 onClick={() => scrollToSection("features")}
-                className="text-muted-foreground hover:text-primary font-medium transition-colors"
+                className={`font-medium transition-colors ${
+                  isScrolled 
+                    ? "text-muted-foreground hover:text-primary" 
+                    : "text-white/90 hover:text-white"
+                }`}
               >
                 Features
               </button>
@@ -30,7 +52,11 @@ export const Navbar = () => {
             <li>
               <button
                 onClick={() => scrollToSection("how-it-works")}
-                className="text-muted-foreground hover:text-primary font-medium transition-colors"
+                className={`font-medium transition-colors ${
+                  isScrolled 
+                    ? "text-muted-foreground hover:text-primary" 
+                    : "text-white/90 hover:text-white"
+                }`}
               >
                 How It Works
               </button>
@@ -38,7 +64,11 @@ export const Navbar = () => {
             <li>
               <button
                 onClick={() => scrollToSection("testimonials")}
-                className="text-muted-foreground hover:text-primary font-medium transition-colors"
+                className={`font-medium transition-colors ${
+                  isScrolled 
+                    ? "text-muted-foreground hover:text-primary" 
+                    : "text-white/90 hover:text-white"
+                }`}
               >
                 Testimonials
               </button>
@@ -46,7 +76,11 @@ export const Navbar = () => {
             <li>
               <button
                 onClick={() => scrollToSection("pricing")}
-                className="text-muted-foreground hover:text-primary font-medium transition-colors"
+                className={`font-medium transition-colors ${
+                  isScrolled 
+                    ? "text-muted-foreground hover:text-primary" 
+                    : "text-white/90 hover:text-white"
+                }`}
               >
                 Pricing
               </button>
