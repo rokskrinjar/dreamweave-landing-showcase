@@ -62,7 +62,7 @@ export const Features = () => {
               key={index}
               className="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
             >
-              <div className={`w-15 h-15 ${feature.gradient} rounded-2xl flex items-center justify-center text-3xl mb-6`}>
+              <div className={`w-16 h-16 ${feature.gradient} rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md`}>
                 {feature.icon}
               </div>
               <h3 className="text-2xl font-semibold mb-4 text-foreground">{feature.title}</h3>
