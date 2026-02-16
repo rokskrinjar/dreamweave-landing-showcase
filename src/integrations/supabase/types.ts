@@ -14,13 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analyses: {
+        Row: {
+          created_at: string
+          dream_id: string
+          emotions: Json | null
+          id: string
+          psychological_insight: string | null
+          summary: string | null
+          symbols: Json | null
+          themes: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dream_id: string
+          emotions?: Json | null
+          id?: string
+          psychological_insight?: string | null
+          summary?: string | null
+          symbols?: Json | null
+          themes?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dream_id?: string
+          emotions?: Json | null
+          id?: string
+          psychological_insight?: string | null
+          summary?: string | null
+          symbols?: Json | null
+          themes?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analyses_dream_id_fkey"
+            columns: ["dream_id"]
+            isOneToOne: false
+            referencedRelation: "dreams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dreams: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          mood: string | null
+          recorded_at: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          mood?: string | null
+          recorded_at?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          mood?: string | null
+          recorded_at?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          current_period_start: string
+          display_name: string | null
+          dreams_this_month: number
+          id: string
+          stripe_customer_id: string | null
+          subscription_tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_start?: string
+          display_name?: string | null
+          dreams_this_month?: number
+          id?: string
+          stripe_customer_id?: string | null
+          subscription_tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_start?: string
+          display_name?: string | null
+          dreams_this_month?: number
+          id?: string
+          stripe_customer_id?: string | null
+          subscription_tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_analyze_dream: { Args: { p_user_id: string }; Returns: boolean }
+      increment_dream_count: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

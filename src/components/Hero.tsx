@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Moon, ArrowRight, Play } from "lucide-react";
 
 export const Hero = () => {
@@ -33,10 +34,12 @@ export const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-              <Button className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-6 text-lg hover:shadow-xl hover:-translate-y-1 transition-all group">
-                Start Free — No Card Needed
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link to="/auth">
+                <Button className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-6 text-lg hover:shadow-xl hover:-translate-y-1 transition-all group">
+                  Start Free — No Card Needed
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
               <Button className="bg-white/10 text-white hover:bg-white/20 font-semibold px-8 py-6 text-lg border border-white/20 backdrop-blur-md hover:-translate-y-1 transition-all">
                 <Play className="w-5 h-5 mr-2" />
                 See It In Action
