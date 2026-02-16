@@ -1,12 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Check, Crown, Zap, Star, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useState } from "react";
 
 const tiers = [
   {
     name: "Free",
     price: "$0",
     period: "forever",
+    plan: "free" as const,
     description: "Dip your toes in. See what your dreams are telling you.",
     icon: Star,
     features: [
@@ -24,6 +29,7 @@ const tiers = [
     name: "Pro",
     price: "$9.99",
     period: "/month",
+    plan: "pro" as const,
     description: "For serious dreamers who want the full picture.",
     icon: Zap,
     features: [
@@ -43,6 +49,7 @@ const tiers = [
     name: "Lifetime Dreamer",
     price: "$99",
     period: "one-time",
+    plan: "lifetime" as const,
     description: "Pay once. Dream forever. No subscriptions, no renewals.",
     icon: Crown,
     features: [
@@ -60,6 +67,42 @@ const tiers = [
 ];
 
 export const CTASection = () => {
+  const { user, subscription } = useAuth();
+  const navigate = useNavigate();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: string) => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    if (plan === "free") {
+      navigate("/dashboard");
+      return;
+    }
+
+    setLoadingPlan(plan);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { plan },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const isCurrentPlan = (plan: string) => {
+    if (plan === "free" && subscription.tier === "free") return true;
+    return subscription.tier === plan;
+  };
+
   return (
     <section id="pricing" className="py-24 cta-dark-gradient">
       <div className="max-w-7xl mx-auto px-8">
@@ -109,17 +152,30 @@ export const CTASection = () => {
                 ))}
               </ul>
 
-              <Link to="/auth" className="w-full">
+              {isCurrentPlan(tier.plan) ? (
                 <Button
+                  disabled
+                  className="w-full py-6 font-semibold text-base bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 cursor-default"
+                >
+                  ✓ Current Plan
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => handleCheckout(tier.plan)}
+                  disabled={loadingPlan === tier.plan}
                   className={`w-full py-6 font-semibold text-base transition-all hover:-translate-y-0.5 ${
                     tier.featured
                       ? "bg-white text-primary hover:bg-white/90 shadow-lg"
                       : "bg-white/10 text-white hover:bg-white/20 border border-white/20"
                   }`}
                 >
-                  {tier.cta}
+                  {loadingPlan === tier.plan ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    tier.cta
+                  )}
                 </Button>
-              </Link>
+              )}
             </div>
           ))}
         </div>
