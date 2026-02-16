@@ -14,6 +14,8 @@ import NewDream from "./pages/NewDream";
 import DreamDetail from "./pages/DreamDetail";
 import Patterns from "./pages/Patterns";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
             <Route path="/dreams/new" element={<AuthGuard><NewDream /></AuthGuard>} />
             <Route path="/dreams/:id" element={<AuthGuard><DreamDetail /></AuthGuard>} />

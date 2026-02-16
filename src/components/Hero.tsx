@@ -40,10 +40,12 @@ export const Hero = () => {
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button className="bg-white/10 text-white hover:bg-white/20 font-semibold px-8 py-6 text-lg border border-white/20 backdrop-blur-md hover:-translate-y-1 transition-all">
-                <Play className="w-5 h-5 mr-2" />
-                See It In Action
-              </Button>
+              <a href="#how-it-works">
+                <Button className="bg-white/10 text-white hover:bg-white/20 font-semibold px-8 py-6 text-lg border border-white/20 backdrop-blur-md hover:-translate-y-1 transition-all">
+                  <Play className="w-5 h-5 mr-2" />
+                  See It In Action
+                </Button>
+              </a>
             </div>
 
             <p className="text-white/50 text-sm mt-6">

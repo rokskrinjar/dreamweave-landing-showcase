@@ -28,18 +28,18 @@ export const Footer = () => {
           <div>
             <h4 className="text-white font-semibold mb-4">Resources</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-sm hover:text-white transition-colors">Dream Guide</a></li>
-              <li><a href="#" className="text-sm hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="text-sm hover:text-white transition-colors">Help Center</a></li>
+              <li><a href="#how-it-works" className="text-sm hover:text-white transition-colors">How It Works</a></li>
+              <li><a href="#features" className="text-sm hover:text-white transition-colors">Features</a></li>
+              <li><a href="#testimonials" className="text-sm hover:text-white transition-colors">Reviews</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-sm hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-sm hover:text-white transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="text-sm hover:text-white transition-colors">Contact</a></li>
+              <li><a href="/privacy" className="text-sm hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="/terms" className="text-sm hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="mailto:hello@dreamweave.me" className="text-sm hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>

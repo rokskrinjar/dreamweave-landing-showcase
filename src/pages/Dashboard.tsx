@@ -74,7 +74,7 @@ const Dashboard = () => {
           {subscription.tier === "free" ? (
             <p className="text-sm text-muted-foreground mt-1">
               {profile ? 3 - profile.dreams_this_month : "..."} free analyses remaining this month ·{" "}
-              <Link to="/#pricing" className="text-primary hover:underline">Upgrade</Link>
+              <a href="/#pricing" onClick={(e) => { e.preventDefault(); window.location.href = "/#pricing"; }} className="text-primary hover:underline">Upgrade</a>
             </p>
           ) : (
             <div className="flex items-center gap-2 mt-1">
