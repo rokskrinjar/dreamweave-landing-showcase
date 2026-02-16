@@ -1,44 +1,55 @@
+import { Clock, Sparkles, BarChart3 } from "lucide-react";
+
 export const HowItWorks = () => {
   const steps = [
     {
       number: "1",
-      title: "Record Your Dream",
+      icon: Clock,
+      title: "Wake Up. Type It Out.",
+      time: "30 seconds",
       description:
-        "Wake up and immediately capture your dream using voice recording or text input. Our prompts help you remember important details.",
+        "Grab your phone, open DreamWeave, and dump everything you remember. Don't overthink it — raw is better. Add a mood tag and you're done.",
     },
     {
       number: "2",
-      title: "Get Deep Analysis",
+      icon: Sparkles,
+      title: "AI Decodes Your Dream",
+      time: "Instant",
       description:
-        "Receive comprehensive psychological insights from multiple perspectives, including symbol meanings and emotional patterns.",
+        "Our AI reads your entry and breaks it down: key symbols, emotional undercurrents, psychological themes. You'll see your dream in a completely new light.",
     },
     {
       number: "3",
-      title: "Discover Patterns",
+      icon: BarChart3,
+      title: "Patterns Emerge Over Time",
+      time: "After 7+ dreams",
       description:
-        "Track trends over time, understand your subconscious mind, and use personalized recommendations for self-discovery.",
+        "This is where it gets powerful. The AI spots recurring themes across your dreams — anxiety cycles, unresolved emotions, subconscious desires — and gives you clear, actionable suggestions.",
     },
   ];
 
   return (
-    <section id="how-it-works" className="py-24 bg-white">
+    <section id="how-it-works" className="py-24 bg-card">
       <div className="max-w-7xl mx-auto px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-            How DreamWeave.me Works
+            Three steps. Zero effort.
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Transform your dreams into meaningful insights in just three simple steps
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            The whole point is that it's dead simple. If it takes more than a minute, you won't do it. We know that.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-12 mt-12">
+        <div className="grid md:grid-cols-3 gap-8 mt-12">
           {steps.map((step, index) => (
-            <div key={index} className="text-center">
-              <div className="w-20 h-20 gradient-indigo text-white rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-6">
-                {step.number}
+            <div key={index} className="relative text-center group">
+              <div className="w-20 h-20 gradient-indigo text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
+                <step.icon className="w-9 h-9" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4 text-foreground">{step.title}</h3>
+              <div className="inline-block bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full mb-4">
+                ⏱ {step.time}
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-foreground">{step.title}</h3>
               <p className="text-muted-foreground leading-relaxed">{step.description}</p>
             </div>
           ))}
