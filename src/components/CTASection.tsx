@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Check, Crown, Zap, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const tiers = [
   {
@@ -108,15 +109,17 @@ export const CTASection = () => {
                 ))}
               </ul>
 
-              <Button
-                className={`w-full py-6 font-semibold text-base transition-all hover:-translate-y-0.5 ${
-                  tier.featured
-                    ? "bg-white text-primary hover:bg-white/90 shadow-lg"
-                    : "bg-white/10 text-white hover:bg-white/20 border border-white/20"
-                }`}
-              >
-                {tier.cta}
-              </Button>
+              <Link to="/auth" className="w-full">
+                <Button
+                  className={`w-full py-6 font-semibold text-base transition-all hover:-translate-y-0.5 ${
+                    tier.featured
+                      ? "bg-white text-primary hover:bg-white/90 shadow-lg"
+                      : "bg-white/10 text-white hover:bg-white/20 border border-white/20"
+                  }`}
+                >
+                  {tier.cta}
+                </Button>
+              </Link>
             </div>
           ))}
         </div>

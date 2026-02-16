@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { Menu, X } from "lucide-react";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -42,7 +45,6 @@ export const Navbar = () => {
             DreamWeave.me
           </a>
 
-          {/* Desktop nav */}
           <ul className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <li key={link.id}>
@@ -59,13 +61,14 @@ export const Navbar = () => {
               </li>
             ))}
             <li>
-              <Button className="gradient-indigo text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all">
-                Start Dreaming
-              </Button>
+              <Link to={user ? "/dashboard" : "/auth"}>
+                <Button className="gradient-indigo text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                  {user ? "Dashboard" : "Start Dreaming"}
+                </Button>
+              </Link>
             </li>
           </ul>
 
-          {/* Mobile toggle */}
           <button
             className="md:hidden"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -78,7 +81,6 @@ export const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {isMobileOpen && (
           <div className="md:hidden mt-4 pb-4 space-y-4 animate-fade-in-up">
             {navLinks.map((link) => (
@@ -92,9 +94,11 @@ export const Navbar = () => {
                 {link.label}
               </button>
             ))}
-            <Button className="w-full gradient-indigo text-white font-semibold">
-              Start Dreaming
-            </Button>
+            <Link to={user ? "/dashboard" : "/auth"} className="block">
+              <Button className="w-full gradient-indigo text-white font-semibold">
+                {user ? "Dashboard" : "Start Dreaming"}
+              </Button>
+            </Link>
           </div>
         )}
       </div>
