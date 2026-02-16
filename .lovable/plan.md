@@ -1,58 +1,55 @@
 
-# Stripe Payments Integration Plan
 
-## What We're Building
-Adding payment processing so users can upgrade from the Free tier to **Pro** ($9.99/month) or **Lifetime Dreamer** ($99 one-time) directly from your pricing section and dashboard.
+# Go-Live Audit: Dead Ends and Fixes
 
-## Stripe Products (Already Created)
-| Plan | Product ID | Price ID | Amount |
-|------|-----------|----------|--------|
-| Pro (monthly) | prod_TzWdz2is2Z41IA | price_1T1Xa7FI9Hj3v9v4Cz3XZhdT | $9.99/mo |
-| Lifetime Dreamer | prod_TzWd26RWhHPEE7 | price_1T1XaNFI9Hj3v9v4OxpLvWkN | $99 one-time |
+## Issues Found
 
-## Implementation Steps
+### 1. "See It In Action" button is a dead end (LANDING PAGE)
+The Hero section has a **"See It In Action"** button that does absolutely nothing -- no `onClick`, no link, no modal. It's a dead-end button sitting right next to your main CTA.
 
-### 1. Create `create-checkout` Edge Function
-A backend function that:
-- Authenticates the user
-- Accepts a `priceId` parameter to handle both Pro and Lifetime plans
-- Checks if a Stripe customer already exists for the user's email
-- Creates a Stripe Checkout session (mode `subscription` for Pro, mode `payment` for Lifetime)
-- Returns the checkout URL to redirect the user
+**Fix:** Either link it to a demo video / scroll to the "How It Works" section, or remove it entirely to keep the hero clean and focused on one CTA.
 
-### 2. Create `check-subscription` Edge Function
-A backend function that:
-- Looks up the user's Stripe customer by email
-- Checks for active subscriptions (Pro plan)
-- Also checks for completed one-time payments (Lifetime plan) via payment intents
-- Returns subscription status, product ID, and end date
-- Used on login, page load, and periodically to keep status in sync
+### 2. Footer links are all dead ends
+The Footer has 6 placeholder links pointing to `href="#"` that go nowhere:
+- Dream Guide, Blog, Help Center (Resources)
+- Privacy Policy, Terms of Service, Contact (Legal)
 
-### 3. Create `customer-portal` Edge Function
-A backend function that:
-- Creates a Stripe Customer Portal session so users can manage/cancel their subscription
-- Returns the portal URL
+**Fix:** For launch, either remove these placeholder links or create simple static pages for Privacy Policy and Terms of Service (which are legally required for processing payments via Stripe).
 
-### 4. Update `useAuth` Hook
-- After authentication, automatically call `check-subscription`
-- Store subscription status (subscribed, tier, end date) in the auth context
-- Make this data available app-wide
+### 3. No sign-out button anywhere
+Users can log in but there's no visible way to sign out. The `signOut` function exists in `useAuth` but is never wired to any UI element.
 
-### 5. Update Pricing Section (CTASection)
-- Wire up the "Go Pro" and "Get Lifetime Access" buttons to call `create-checkout` with the appropriate price ID
-- If user is not logged in, redirect to `/auth` first
-- If user is already on that plan, show "Current Plan" instead of a buy button
+**Fix:** Add a sign-out button to the `AppLayout` sidebar/header.
 
-### 6. Update Dashboard
-- Show current plan status and a "Manage Subscription" button for Pro users
-- Use the subscription data from the auth context to gate features
+### 4. Dashboard "Upgrade" link goes to `/#pricing` -- may not scroll correctly
+The Dashboard links free users to `/#pricing` to upgrade. Since this navigates to a different route (`/` from `/dashboard`), the hash-based scroll may not work reliably.
 
-### 7. Add Success Page
-- Create a `/payment-success` route that confirms the purchase and links back to the dashboard
+**Fix:** Use programmatic scroll-after-navigate or redirect to `/` and then scroll to the pricing section.
+
+### 5. No back-to-landing navigation from the app
+Once users are inside the app (Dashboard, etc.), there's no way to get back to the marketing landing page without manually editing the URL.
+
+**Fix:** Make the logo in `AppLayout` link to `/` or add a "Home" link.
 
 ## Technical Details
 
-- **Stripe API version**: `2025-08-27.basil`
-- **No webhooks needed** -- subscription status is checked directly via the Stripe API
-- The `profiles` table already has `subscription_tier` and `stripe_customer_id` columns, which will be updated by the check-subscription function
-- The existing `can_analyze_dream` database function already respects `subscription_tier`, so upgrading will automatically unlock unlimited analyses
+### Files to modify:
+| File | Change |
+|------|--------|
+| `src/components/Hero.tsx` (line 43-46) | Wire "See It In Action" button to scroll to `#how-it-works` or remove it |
+| `src/components/Footer.tsx` (lines 30-34, 39-43) | Remove dead `href="#"` links or create Privacy/Terms pages |
+| `src/components/AppLayout.tsx` | Add sign-out button using `useAuth().signOut()` |
+| `src/components/AppLayout.tsx` | Ensure logo links back to `/` |
+| `src/pages/Dashboard.tsx` (line 77) | Fix `/#pricing` link to navigate properly |
+
+### New pages to create (recommended for Stripe compliance):
+- `src/pages/Privacy.tsx` -- basic privacy policy
+- `src/pages/Terms.tsx` -- basic terms of service
+- Register both in `src/App.tsx` routes
+
+### Priority order:
+1. Fix the Hero dead-end button (most visible)
+2. Add sign-out functionality (users are trapped)
+3. Fix footer dead links / add Privacy + Terms pages (Stripe requirement)
+4. Fix Dashboard upgrade link navigation
+5. Add back-to-home navigation from app pages
