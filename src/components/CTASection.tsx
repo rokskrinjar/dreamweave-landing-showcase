@@ -41,7 +41,7 @@ const tiers = [
   },
   {
     name: "Lifetime Dreamer",
-    price: "$199",
+    price: "$99",
     period: "one-time",
     description: "Pay once. Dream forever. No subscriptions, no renewals.",
     icon: Crown,
