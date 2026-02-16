@@ -20,7 +20,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Top nav */}
       <header className="bg-card border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
-          <Link to="/dashboard" className="flex items-center gap-2 font-bold text-lg text-foreground">
+          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-foreground">
             <div className="w-8 h-8 gradient-indigo rounded-lg flex items-center justify-center text-sm">🌙</div>
             DreamWeave
           </Link>
