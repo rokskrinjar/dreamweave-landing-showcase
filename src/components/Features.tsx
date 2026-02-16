@@ -1,71 +1,59 @@
+import { PenLine, Brain, TrendingUp, Lightbulb } from "lucide-react";
+
 export const Features = () => {
   const features = [
     {
-      icon: "🌙",
-      title: "Intuitive Dream Journaling",
+      icon: PenLine,
+      title: "Capture Before It Fades",
       description:
-        "Capture your dreams quickly with voice or text recording. Our clean, distraction-free interface helps you preserve every detail while memories are fresh.",
+        "You just woke up. That dream is slipping away. Open the app, type it out in 60 seconds, and it's saved forever. Tag your mood, add details later — the important thing is you don't lose it.",
       gradient: "gradient-purple",
     },
     {
-      icon: "🧠",
-      title: "Deep Psychological Analysis",
+      icon: Brain,
+      title: "AI That Actually Gets It",
       description:
-        "Get comprehensive insights from multiple perspectives including Jungian, Freudian, Gestalt, and cognitive approaches to dream interpretation.",
+        "Not generic horoscope nonsense. Our AI draws from Jungian, Freudian, and cognitive psychology to give you real insights about what your subconscious is processing. It's like a therapist who never sleeps.",
       gradient: "gradient-blue",
     },
     {
-      icon: "📊",
-      title: "Pattern Recognition",
+      icon: TrendingUp,
+      title: "See the Patterns You Miss",
       description:
-        "Discover recurring themes, emotions, and symbols in your dreams. Track your lucid dreaming progress and understand your subconscious patterns.",
+        "After a week of logging, the magic starts. Recurring symbols. Emotional cycles. Stress triggers showing up as nightmares. The AI connects dots you'd never notice on your own.",
       gradient: "gradient-green",
     },
     {
-      icon: "🎯",
-      title: "Personalized Recommendations",
+      icon: Lightbulb,
+      title: "Suggestions That Hit Home",
       description:
-        "Receive actionable insights and reflection questions tailored to your unique dream patterns and psychological themes.",
+        "Every analysis ends with actionable takeaways. 'You've dreamed about water 4 times this week — here's what that likely means for your waking life.' Specific. Personal. Useful.",
       gradient: "gradient-orange",
-    },
-    {
-      icon: "🔍",
-      title: "Powerful Search & Organization",
-      description:
-        "Find dreams by content, mood, symbols, or date. Tag and categorize your dreams for easy reference and pattern analysis.",
-      gradient: "gradient-pink",
-    },
-    {
-      icon: "✨",
-      title: "Symbol Library & Guidance",
-      description:
-        "Access detailed explanations of dream symbols and their meanings across different psychological traditions and cultural contexts.",
-      gradient: "gradient-indigo",
     },
   ];
 
   return (
-    <section id="features" className="py-24 bg-slate-50">
+    <section id="features" className="py-24 bg-secondary">
       <div className="max-w-7xl mx-auto px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-            Everything you need to explore your dreams
+            Your dreams are trying to tell you something
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive tools and insights to help you understand the deeper meaning behind your nightly journeys
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Most people forget 95% of their dreams within 5 minutes of waking up. The ones you remember? Those matter.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+              className="bg-card p-8 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-border"
             >
-              <div className={`w-16 h-16 ${feature.gradient} rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md`}>
-                {feature.icon}
+              <div className={`w-14 h-14 ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 shadow-md`}>
+                <feature.icon className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4 text-foreground">{feature.title}</h3>
+              <h3 className="text-xl font-bold mb-3 text-foreground">{feature.title}</h3>
               <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
             </div>
           ))}
