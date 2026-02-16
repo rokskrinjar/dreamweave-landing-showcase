@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import NewDream from "./pages/NewDream";
 import DreamDetail from "./pages/DreamDetail";
 import Patterns from "./pages/Patterns";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/dreams/new" element={<AuthGuard><NewDream /></AuthGuard>} />
             <Route path="/dreams/:id" element={<AuthGuard><DreamDetail /></AuthGuard>} />
             <Route path="/patterns" element={<AuthGuard><Patterns /></AuthGuard>} />
+            <Route path="/payment-success" element={<AuthGuard><PaymentSuccess /></AuthGuard>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

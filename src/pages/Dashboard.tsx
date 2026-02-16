@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search } from "lucide-react";
+import { PenLine, Sparkles, Search, Crown, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
@@ -19,7 +19,7 @@ interface Dream {
 }
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -71,11 +71,30 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Your Dreams</h1>
-          {profile && profile.subscription_tier === "free" && (
+          {subscription.tier === "free" ? (
             <p className="text-sm text-muted-foreground mt-1">
-              {3 - profile.dreams_this_month} free analyses remaining this month ·{" "}
+              {profile ? 3 - profile.dreams_this_month : "..."} free analyses remaining this month ·{" "}
               <Link to="/#pricing" className="text-primary hover:underline">Upgrade</Link>
             </p>
+          ) : (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Crown className="w-3 h-3" />
+                {subscription.tier === "lifetime" ? "Lifetime Dreamer" : "Pro"}
+              </span>
+              {subscription.tier === "pro" && (
+                <button
+                  onClick={async () => {
+                    const { data, error } = await supabase.functions.invoke("customer-portal");
+                    if (data?.url) window.open(data.url, "_blank");
+                    else toast.error(error?.message || "Could not open billing portal");
+                  }}
+                  className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                >
+                  <Settings className="w-3 h-3" /> Manage
+                </button>
+              )}
+            </div>
           )}
         </div>
         <Link to="/dreams/new">
