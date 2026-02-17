@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search, Crown, Settings, Lock } from "lucide-react";
+import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
@@ -25,6 +25,22 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [profile, setProfile] = useState<{ subscription_tier: string; dreams_this_month: number } | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: string) => {
+    setLoadingPlan(plan);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { plan },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -151,12 +167,41 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-          <a href="/#pricing" onClick={(e) => { e.preventDefault(); window.location.href = "/#pricing"; }}>
-            <Button className="gradient-indigo text-white font-semibold whitespace-nowrap gap-2">
-              <Crown className="w-4 h-4" />
-              Unlock All Dreams — $9.99/mo
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              onClick={() => handleCheckout("pro")}
+              disabled={loadingPlan === "pro"}
+              className="gradient-indigo text-white font-semibold whitespace-nowrap gap-2"
+            >
+              {loadingPlan === "pro" ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <Crown className="w-4 h-4" />
+                  Unlock All Dreams — $9.99/mo
+                </>
+              )}
             </Button>
-          </a>
+            <div className="relative">
+              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap z-10">
+                Best Value
+              </span>
+              <Button
+                onClick={() => handleCheckout("lifetime")}
+                disabled={loadingPlan === "lifetime"}
+                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold whitespace-nowrap gap-2 shadow-lg shadow-orange-500/25"
+              >
+                {loadingPlan === "lifetime" ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <Crown className="w-4 h-4" />
+                    Lifetime Access — $99
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
