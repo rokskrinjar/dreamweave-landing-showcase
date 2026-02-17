@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search, Crown, Settings } from "lucide-react";
+import { PenLine, Sparkles, Search, Crown, Settings, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ interface Dream {
   tags: string[];
   recorded_at: string;
   created_at: string;
+  hasAnalysis?: boolean;
 }
 
 const Dashboard = () => {
@@ -29,7 +30,7 @@ const Dashboard = () => {
     if (!user) return;
 
     const fetchData = async () => {
-      const [dreamsRes, profileRes] = await Promise.all([
+      const [dreamsRes, profileRes, analysesRes] = await Promise.all([
         supabase
           .from("dreams")
           .select("*")
@@ -39,11 +40,24 @@ const Dashboard = () => {
           .select("subscription_tier, dreams_this_month")
           .eq("user_id", user.id)
           .maybeSingle(),
+        supabase
+          .from("analyses")
+          .select("dream_id"),
       ]);
 
       if (dreamsRes.error) toast.error(dreamsRes.error.message);
-      else setDreams(dreamsRes.data || []);
 
+      const analyzedDreamIds = new Set(
+        (analysesRes.data || []).map((a) => a.dream_id)
+      );
+
+      const dreamsWithStatus = (dreamsRes.data || []).map((d) => ({
+        ...d,
+        tags: d.tags || [],
+        hasAnalysis: analyzedDreamIds.has(d.id),
+      }));
+
+      setDreams(dreamsWithStatus);
       if (profileRes.data) setProfile(profileRes.data);
       setLoading(false);
     };
@@ -56,6 +70,11 @@ const Dashboard = () => {
       d.title.toLowerCase().includes(search.toLowerCase()) ||
       d.content.toLowerCase().includes(search.toLowerCase())
   );
+
+  const isFree = subscription.tier === "free";
+  const remaining = profile ? Math.max(0, 3 - profile.dreams_this_month) : 0;
+  const atLimit = isFree && remaining === 0;
+  const unanalyzedCount = dreams.filter((d) => !d.hasAnalysis).length;
 
   const moodColors: Record<string, string> = {
     peaceful: "bg-emerald-100 text-emerald-700",
@@ -71,9 +90,9 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Your Dreams</h1>
-          {subscription.tier === "free" ? (
+          {isFree ? (
             <p className="text-sm text-muted-foreground mt-1">
-              {profile ? Math.max(0, 3 - profile.dreams_this_month) : "..."} free analyses remaining this month ·{" "}
+              {profile ? remaining : "..."} free analyses remaining this month ·{" "}
               <a href="/#pricing" onClick={(e) => { e.preventDefault(); window.location.href = "/#pricing"; }} className="text-primary hover:underline">Upgrade</a>
             </p>
           ) : (
@@ -116,6 +135,31 @@ const Dashboard = () => {
         />
       </div>
 
+      {/* Upgrade Banner — free users at limit with unanalyzed dreams */}
+      {atLimit && unanalyzedCount > 0 && (
+        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold text-foreground">
+                {unanalyzedCount} dream{unanalyzedCount !== 1 ? "s" : ""} waiting for insights
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Unlock unlimited AI analysis to discover hidden patterns in your subconscious.
+              </p>
+            </div>
+          </div>
+          <a href="/#pricing" onClick={(e) => { e.preventDefault(); window.location.href = "/#pricing"; }}>
+            <Button className="gradient-indigo text-white font-semibold whitespace-nowrap gap-2">
+              <Crown className="w-4 h-4" />
+              Unlock All Dreams — $9.99/mo
+            </Button>
+          </a>
+        </div>
+      )}
+
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
@@ -153,11 +197,24 @@ const Dashboard = () => {
             <Link
               key={dream.id}
               to={`/dreams/${dream.id}`}
-              className="block bg-card rounded-2xl p-6 border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              className="group block bg-card rounded-2xl p-6 border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all relative"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-foreground mb-1 truncate">{dream.title}</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-lg font-semibold text-foreground truncate">{dream.title}</h3>
+                    {/* Analysis status badge */}
+                    {dream.hasAnalysis ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 shrink-0">
+                        <Sparkles className="w-3 h-3" />
+                        Analyzed
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 shrink-0">
+                        Not analyzed
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground line-clamp-2">{dream.content}</p>
                 </div>
                 <div className="flex flex-col items-end gap-2 shrink-0">
@@ -178,6 +235,15 @@ const Dashboard = () => {
                       #{tag}
                     </span>
                   ))}
+                </div>
+              )}
+              {/* Lock overlay for unanalyzed cards when free user at limit */}
+              {atLimit && !dream.hasAnalysis && (
+                <div className="absolute inset-0 rounded-2xl bg-background/60 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                  <div className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                    <Lock className="w-4 h-4" />
+                    Upgrade to analyze
+                  </div>
                 </div>
               )}
             </Link>
