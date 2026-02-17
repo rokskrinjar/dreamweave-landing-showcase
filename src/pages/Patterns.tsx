@@ -99,11 +99,12 @@ const Patterns = () => {
           <p className="text-muted-foreground max-w-md mx-auto mb-6">
             Upgrade to Pro or Lifetime to see recurring themes, mood trends, and AI-generated insights across all your dreams.
           </p>
-          <Link to="/#pricing">
-            <Button className="gradient-indigo text-white font-semibold px-8 py-6">
-              <Sparkles className="w-5 h-5 mr-2" /> Upgrade Now
-            </Button>
-          </Link>
+          <Button
+            onClick={() => { window.location.href = "/#pricing"; }}
+            className="gradient-indigo text-white font-semibold px-8 py-6"
+          >
+            <Sparkles className="w-5 h-5 mr-2" /> Upgrade Now
+          </Button>
         </div>
       </AppLayout>
     );

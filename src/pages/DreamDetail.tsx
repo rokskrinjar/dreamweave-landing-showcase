@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Sparkles, Brain, Heart, Eye, Lightbulb, Trash2 } from "lucide-react";
+import { ArrowLeft, Sparkles, Brain, Heart, Eye, Lightbulb, Trash2, Crown } from "lucide-react";
 
 interface Dream {
   id: string;
@@ -34,6 +34,7 @@ const DreamDetail = () => {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
 
   useEffect(() => {
     if (!id || !user) return;
@@ -80,7 +81,12 @@ const DreamDetail = () => {
       if (analysisData) setAnalysis(analysisData);
       toast.success("Dream analyzed!");
     } catch (error: any) {
-      toast.error(error.message || "Analysis failed");
+      const msg = error.message || "Analysis failed";
+      if (msg.toLowerCase().includes("limit") || msg.toLowerCase().includes("upgrade")) {
+        setLimitReached(true);
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setAnalyzing(false);
     }
@@ -240,21 +246,42 @@ const DreamDetail = () => {
           </div>
         ) : (
           <div className="text-center bg-card rounded-2xl p-12 border border-border">
-            <div className="w-16 h-16 gradient-indigo rounded-full flex items-center justify-center mx-auto mb-4">
-              <Brain className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-lg font-bold text-foreground mb-2">Ready to analyze this dream?</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Our AI will identify symbols, themes, and emotional patterns to help you understand what your subconscious is telling you.
-            </p>
-            <Button
-              onClick={handleAnalyze}
-              disabled={analyzing}
-              className="gradient-indigo text-white font-semibold gap-2 px-8 py-6"
-            >
-              <Sparkles className="w-5 h-5" />
-              {analyzing ? "Analyzing..." : "Analyze This Dream"}
-            </Button>
+            {limitReached ? (
+              <>
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Crown className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">Free analysis limit reached</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  You've used all 3 free analyses this month. Upgrade to Pro or Lifetime for unlimited dream analyses.
+                </p>
+                <Button
+                  onClick={() => { window.location.href = "/#pricing"; }}
+                  className="gradient-indigo text-white font-semibold gap-2 px-8 py-6"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  View Upgrade Options
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 gradient-indigo rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Brain className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">Ready to analyze this dream?</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Our AI will identify symbols, themes, and emotional patterns to help you understand what your subconscious is telling you.
+                </p>
+                <Button
+                  onClick={handleAnalyze}
+                  disabled={analyzing}
+                  className="gradient-indigo text-white font-semibold gap-2 px-8 py-6"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  {analyzing ? "Analyzing..." : "Analyze This Dream"}
+                </Button>
+              </>
+            )}
           </div>
         )}
       </div>
