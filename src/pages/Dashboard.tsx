@@ -73,7 +73,7 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold text-foreground">Your Dreams</h1>
           {subscription.tier === "free" ? (
             <p className="text-sm text-muted-foreground mt-1">
-              {profile ? 3 - profile.dreams_this_month : "..."} free analyses remaining this month ·{" "}
+              {profile ? Math.max(0, 3 - profile.dreams_this_month) : "..."} free analyses remaining this month ·{" "}
               <a href="/#pricing" onClick={(e) => { e.preventDefault(); window.location.href = "/#pricing"; }} className="text-primary hover:underline">Upgrade</a>
             </p>
           ) : (
