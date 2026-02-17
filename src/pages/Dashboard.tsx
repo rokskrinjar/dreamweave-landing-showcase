@@ -183,13 +183,13 @@ const Dashboard = () => {
               )}
             </Button>
             <div className="relative">
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap z-10">
+              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-lime-400 to-emerald-500 text-emerald-950 text-[11px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap z-10">
                 Best Value
               </span>
               <Button
                 onClick={() => handleCheckout("lifetime")}
                 disabled={loadingPlan === "lifetime"}
-                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold whitespace-nowrap gap-2 shadow-lg shadow-orange-500/25"
+                className="bg-gradient-to-r from-lime-400 via-lime-400 to-emerald-500 hover:from-lime-500 hover:to-emerald-600 text-emerald-950 font-semibold whitespace-nowrap gap-2 shadow-lg shadow-emerald-500/20"
               >
                 {loadingPlan === "lifetime" ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
