@@ -1,45 +1,31 @@
 
 
-## High-Converting Dream Dashboard Upgrade
+## Add Lifetime CTA to Dashboard Upgrade Banner
 
-### The Problem
-1. **No visual distinction** between analyzed and unanalyzed dreams on the dashboard -- users can't tell which dreams have AI insights
-2. **No proactive upgrade CTA** on the dashboard for free users -- the upgrade prompt only appears AFTER they click into a dream and try to analyze it (too late, too buried)
-3. Free users can record unlimited dreams but only analyze 3/month -- this gap is an untapped conversion lever
+### What Changes
+The upgrade banner currently only shows the monthly Pro option ("Unlock All Dreams -- $9.99/mo"). We'll add a second, visually distinct Lifetime button alongside it.
 
-### The Solution: 3-Part Conversion System
+### Design
+The banner's CTA area will have **two buttons side by side**:
+1. **Monthly** (existing): Keep the current purple/indigo gradient style -- "Unlock All Dreams -- $9.99/mo"
+2. **Lifetime** (new): Use an orange/amber gradient to stand out -- "Lifetime Access -- $99" with a Crown icon and a small "Best Value" tag above or beside it
 
-#### 1. Analysis Status Badges on Dream Cards
-Each dream card on the dashboard gets a small badge:
-- **Analyzed dreams**: Green "Analyzed" badge with a sparkle icon -- signals value already received
-- **Unanalyzed dreams**: Amber "Not analyzed" badge -- creates curiosity and FOMO
+The lifetime button will use a warm gradient (orange-to-amber) to contrast with the cool purple of the monthly button, making it visually pop and feel premium.
 
-This is fetched by joining the `analyses` table when loading dreams (checking if an analysis exists for each dream_id).
+### Technical Details
 
-#### 2. Inline Upgrade Banner on Dashboard (Free Users Only)
-When a free user has 0 analyses remaining AND has unanalyzed dreams, show a prominent but non-intrusive banner between the search bar and the dream list:
+**File: `src/pages/Dashboard.tsx`** (lines 154-160)
 
-> "You have X unanalyzed dreams waiting for insights. Upgrade to unlock unlimited AI analysis."
-> [Unlock All Dreams - $9.99/mo] button
+Replace the single CTA button with two buttons:
+- Keep the existing monthly button with its `gradient-indigo` style
+- Add a new lifetime button with an `bg-gradient-to-r from-orange-500 to-amber-500` style, including the Crown icon and "Best Value" label
+- Both buttons link to `/#pricing` but pass the plan context
+- On smaller screens, buttons stack vertically; on larger screens they sit side by side
 
-This banner uses urgency (specific count of unanalyzed dreams) + value framing (insights waiting).
+The lifetime button will also call `handleCheckout("lifetime")` directly (similar to the CTASection pattern) for a more frictionless conversion, opening Stripe checkout in a new tab instead of redirecting to the pricing section.
 
-#### 3. Smart CTA on Unanalyzed Dream Cards (Free Users at Limit)
-When a free user has hit their limit, unanalyzed dream cards show a small lock icon + "Upgrade to analyze" text overlay on hover, linking directly to pricing. This turns every unanalyzed dream into a conversion touchpoint.
-
-### Technical Changes
-
-**`src/pages/Dashboard.tsx`**:
-- Fetch analyses alongside dreams to determine analysis status per dream (query `analyses` table for `dream_id` matches)
-- Add analysis status badge (sparkle icon + "Analyzed" or "Awaiting analysis") to each dream card
-- Add upgrade banner component for free users at their limit with unanalyzed dream count
-- Show subtle lock/upgrade hint on unanalyzed cards when limit is reached
-
-**No new files needed** -- all changes are contained within Dashboard.tsx.
-
-### Why This Converts
-- **Visibility**: Users SEE the value gap on every visit (analyzed vs not)
-- **Specificity**: "You have 4 unanalyzed dreams" is more compelling than "Upgrade for more"
-- **Friction-free**: The upgrade CTA is always visible, not hidden behind a failed action
-- **Social proof of value**: Analyzed dreams with their green badge show the product works
+This requires:
+- Importing `supabase` (already imported)
+- Adding a `handleCheckout` helper function (same logic as CTASection)
+- Adding a loading state for the checkout button
 
