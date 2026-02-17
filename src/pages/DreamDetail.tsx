@@ -68,7 +68,27 @@ const DreamDetail = () => {
         body: { dreamId: dream.id, content: dream.content, title: dream.title, mood: dream.mood },
       });
 
-      if (error) throw error;
+      if (error) {
+        // For non-2xx responses, supabase sets data to null and the body is in error.context
+        let errorMsg = "Analysis failed";
+        try {
+          // error.context is the raw Response object for FunctionsHttpError
+          if (error.context && typeof error.context.json === "function") {
+            const errorBody = await error.context.json();
+            errorMsg = errorBody?.error || error.message;
+          } else {
+            errorMsg = error.message;
+          }
+        } catch {
+          errorMsg = error.message;
+        }
+
+        if (errorMsg.toLowerCase().includes("free analyses") || errorMsg.toLowerCase().includes("upgrade")) {
+          setLimitReached(true);
+          return;
+        }
+        throw new Error(errorMsg);
+      }
       if (data?.error) throw new Error(data.error);
 
       // Refetch analysis
@@ -82,7 +102,7 @@ const DreamDetail = () => {
       toast.success("Dream analyzed!");
     } catch (error: any) {
       const msg = error.message || "Analysis failed";
-      if (msg.toLowerCase().includes("limit") || msg.toLowerCase().includes("upgrade")) {
+      if (msg.toLowerCase().includes("free analyses") || msg.toLowerCase().includes("upgrade")) {
         setLimitReached(true);
       } else {
         toast.error(msg);
