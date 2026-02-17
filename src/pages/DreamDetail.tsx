@@ -69,33 +69,36 @@ const DreamDetail = () => {
       });
 
       if (error) {
-        // For non-2xx responses, supabase sets data to null and the body is in error.context
         let errorMsg = "Analysis failed";
-        let isLimitError = false;
         
         try {
-          // error.context is the raw Response object for FunctionsHttpError
+          // Try to extract error message from the response context
           if (error.context && typeof error.context.json === "function") {
             const errorBody = await error.context.json();
             errorMsg = errorBody?.error || error.message;
-          } else {
+          } else if (error.message) {
             errorMsg = error.message;
           }
         } catch {
-          errorMsg = error.message;
+          errorMsg = error.message || "Analysis failed";
         }
 
-        if (errorMsg.toLowerCase().includes("free analyses") || errorMsg.toLowerCase().includes("upgrade")) {
-          isLimitError = true;
-          setLimitReached(true);
-        }
-        
+        const isLimitError = errorMsg.toLowerCase().includes("free analyses") || errorMsg.toLowerCase().includes("upgrade");
         if (isLimitError) {
+          setLimitReached(true);
           return;
         }
         throw new Error(errorMsg);
       }
-      if (data?.error) throw new Error(data.error);
+      
+      if (data?.error) {
+        const isLimitError = data.error.toLowerCase().includes("free analyses") || data.error.toLowerCase().includes("upgrade");
+        if (isLimitError) {
+          setLimitReached(true);
+          return;
+        }
+        throw new Error(data.error);
+      }
 
       // Refetch analysis
       const { data: analysisData } = await supabase
