@@ -71,6 +71,8 @@ const DreamDetail = () => {
       if (error) {
         // For non-2xx responses, supabase sets data to null and the body is in error.context
         let errorMsg = "Analysis failed";
+        let isLimitError = false;
+        
         try {
           // error.context is the raw Response object for FunctionsHttpError
           if (error.context && typeof error.context.json === "function") {
@@ -84,7 +86,11 @@ const DreamDetail = () => {
         }
 
         if (errorMsg.toLowerCase().includes("free analyses") || errorMsg.toLowerCase().includes("upgrade")) {
+          isLimitError = true;
           setLimitReached(true);
+        }
+        
+        if (isLimitError) {
           return;
         }
         throw new Error(errorMsg);
