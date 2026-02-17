@@ -1,25 +1,45 @@
 
 
-## Fix: Google OAuth redirects to landing page instead of dashboard
+## High-Converting Dream Dashboard Upgrade
 
-### Problem
-When signing in with Google, the OAuth `redirect_uri` sends users back to `/` (the landing page). The redirect-to-dashboard logic lives only in `Auth.tsx`, which isn't mounted at that point.
+### The Problem
+1. **No visual distinction** between analyzed and unanalyzed dreams on the dashboard -- users can't tell which dreams have AI insights
+2. **No proactive upgrade CTA** on the dashboard for free users -- the upgrade prompt only appears AFTER they click into a dream and try to analyze it (too late, too buried)
+3. Free users can record unlimited dreams but only analyze 3/month -- this gap is an untapped conversion lever
 
-### Solution
-Two small changes:
+### The Solution: 3-Part Conversion System
 
-**1. Update `Auth.tsx`** - Change the Google OAuth `redirect_uri` to point to `/auth` instead of the site root:
-```
-redirect_uri: window.location.origin + "/auth"
-```
-This way, after Google sign-in, the user returns to the Auth page where the existing `onAuthStateChange` listener picks up the session and redirects to `/dashboard`.
+#### 1. Analysis Status Badges on Dream Cards
+Each dream card on the dashboard gets a small badge:
+- **Analyzed dreams**: Green "Analyzed" badge with a sparkle icon -- signals value already received
+- **Unanalyzed dreams**: Amber "Not analyzed" badge -- creates curiosity and FOMO
 
-**2. Add redirect in `Index.tsx`** (safety net) - Add a check so that if an authenticated user somehow lands on the landing page, they get redirected to `/dashboard`. This covers edge cases like bookmarking the homepage while logged in.
+This is fetched by joining the `analyses` table when loading dreams (checking if an analysis exists for each dream_id).
 
-### Files Changed
-- `src/pages/Auth.tsx` (line 113) — update `redirect_uri`
-- `src/pages/Index.tsx` — add authenticated user redirect
+#### 2. Inline Upgrade Banner on Dashboard (Free Users Only)
+When a free user has 0 analyses remaining AND has unanalyzed dreams, show a prominent but non-intrusive banner between the search bar and the dream list:
 
-### Risk
-Minimal. No visual or UX changes. Only affects the post-OAuth redirect target.
+> "You have X unanalyzed dreams waiting for insights. Upgrade to unlock unlimited AI analysis."
+> [Unlock All Dreams - $9.99/mo] button
+
+This banner uses urgency (specific count of unanalyzed dreams) + value framing (insights waiting).
+
+#### 3. Smart CTA on Unanalyzed Dream Cards (Free Users at Limit)
+When a free user has hit their limit, unanalyzed dream cards show a small lock icon + "Upgrade to analyze" text overlay on hover, linking directly to pricing. This turns every unanalyzed dream into a conversion touchpoint.
+
+### Technical Changes
+
+**`src/pages/Dashboard.tsx`**:
+- Fetch analyses alongside dreams to determine analysis status per dream (query `analyses` table for `dream_id` matches)
+- Add analysis status badge (sparkle icon + "Analyzed" or "Awaiting analysis") to each dream card
+- Add upgrade banner component for free users at their limit with unanalyzed dream count
+- Show subtle lock/upgrade hint on unanalyzed cards when limit is reached
+
+**No new files needed** -- all changes are contained within Dashboard.tsx.
+
+### Why This Converts
+- **Visibility**: Users SEE the value gap on every visit (analyzed vs not)
+- **Specificity**: "You have 4 unanalyzed dreams" is more compelling than "Upgrade for more"
+- **Friction-free**: The upgrade CTA is always visible, not hidden behind a failed action
+- **Social proof of value**: Analyzed dreams with their green badge show the product works
 
