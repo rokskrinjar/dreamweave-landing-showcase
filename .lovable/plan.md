@@ -1,55 +1,64 @@
 
+# Full App Testing Report and Fixes
 
-# Go-Live Audit: Dead Ends and Fixes
+## Testing Results by Persona
 
-## Issues Found
+### Persona 1: Free User (3 analyses used, wants to upgrade)
+- Dashboard correctly shows "0 free analyses remaining this month" with "Upgrade" link
+- **BUG: "Upgrade" link navigates to landing page but does NOT scroll to pricing section.** `window.location.href = "/#pricing"` triggers a full page reload but the hash scroll doesn't fire reliably in a SPA.
+- Pricing section correctly shows "Current Plan" on Free tier and "Go Pro" / "Get Lifetime Access" buttons on paid tiers
+- Checkout function works -- returns a valid Stripe Checkout URL
+- When a free user tries to analyze a 4th dream, the backend correctly returns a 403 with an upgrade message
+- **BUG: DreamDetail page shows the error as a generic toast but doesn't offer an upgrade path.** The user hits a dead end after seeing the toast.
 
-### 1. "See It In Action" button is a dead end (LANDING PAGE)
-The Hero section has a **"See It In Action"** button that does absolutely nothing -- no `onClick`, no link, no modal. It's a dead-end button sitting right next to your main CTA.
+### Persona 2: Pro User
+- Dashboard would show "Pro" badge with Crown icon and "Manage" button
+- "Manage" button correctly calls `customer-portal` function
+- Patterns page would be unlocked (subscription_tier != "free")
+- **BUG: Patterns page "Upgrade Now" button uses `<Link to="/#pricing">`.** React Router `<Link>` doesn't handle hash-based scrolling across routes -- it navigates to `/` without scrolling to pricing.
 
-**Fix:** Either link it to a demo video / scroll to the "How It Works" section, or remove it entirely to keep the hero clean and focused on one CTA.
+### Persona 3: Lifetime User
+- Dashboard would show "Lifetime Dreamer" badge
+- No "Manage" button shown (correct -- no subscription to manage)
+- All features unlocked
+- No issues specific to this persona
 
-### 2. Footer links are all dead ends
-The Footer has 6 placeholder links pointing to `href="#"` that go nowhere:
-- Dream Guide, Blog, Help Center (Resources)
-- Privacy Policy, Terms of Service, Contact (Legal)
+## Issues Found (Priority Order)
 
-**Fix:** For launch, either remove these placeholder links or create simple static pages for Privacy Policy and Terms of Service (which are legally required for processing payments via Stripe).
+### 1. Upgrade links don't scroll to pricing (affects Free + Patterns page)
+**Where:** Dashboard line 77, Patterns line 102
+**Problem:** Both `window.location.href = "/#pricing"` and `<Link to="/#pricing">` fail to scroll to the pricing section after navigating from `/dashboard` or `/patterns` to `/`.
+**Fix:** Use `window.location.href = "/#pricing"` consistently (which does a full page load), and add a `useEffect` on the Index page that scrolls to the hash on mount.
 
-### 3. No sign-out button anywhere
-Users can log in but there's no visible way to sign out. The `signOut` function exists in `useAuth` but is never wired to any UI element.
+### 2. Dream analysis limit -- no upgrade CTA on the error
+**Where:** `DreamDetail.tsx` line 71
+**Problem:** When a free user clicks "Analyze This Dream" and gets the 403 "limit reached" error, they see a toast message but no button/link to upgrade. Dead end.
+**Fix:** When the error includes the upgrade message (status 403), show a styled upgrade prompt instead of just a toast, with a direct link to pricing.
 
-**Fix:** Add a sign-out button to the `AppLayout` sidebar/header.
+### 3. Negative free analyses counter (cosmetic)
+**Where:** `Dashboard.tsx` line 76
+**Problem:** If `dreams_this_month` exceeds 3 (edge case), the counter shows a negative number.
+**Fix:** Use `Math.max(0, 3 - profile.dreams_this_month)` to clamp at zero.
 
-### 4. Dashboard "Upgrade" link goes to `/#pricing` -- may not scroll correctly
-The Dashboard links free users to `/#pricing` to upgrade. Since this navigates to a different route (`/` from `/dashboard`), the hash-based scroll may not work reliably.
+### 4. Landing page hash scroll on initial load
+**Where:** `Index.tsx` (or wherever the landing page is rendered)
+**Problem:** When navigating to `/#pricing` from another route, the page loads at the top without scrolling to the pricing section.
+**Fix:** Add a `useEffect` in the Index page that checks `window.location.hash` on mount and scrolls to the matching element.
 
-**Fix:** Use programmatic scroll-after-navigate or redirect to `/` and then scroll to the pricing section.
+## Files to Modify
 
-### 5. No back-to-landing navigation from the app
-Once users are inside the app (Dashboard, etc.), there's no way to get back to the marketing landing page without manually editing the URL.
-
-**Fix:** Make the logo in `AppLayout` link to `/` or add a "Home" link.
-
-## Technical Details
-
-### Files to modify:
 | File | Change |
 |------|--------|
-| `src/components/Hero.tsx` (line 43-46) | Wire "See It In Action" button to scroll to `#how-it-works` or remove it |
-| `src/components/Footer.tsx` (lines 30-34, 39-43) | Remove dead `href="#"` links or create Privacy/Terms pages |
-| `src/components/AppLayout.tsx` | Add sign-out button using `useAuth().signOut()` |
-| `src/components/AppLayout.tsx` | Ensure logo links back to `/` |
-| `src/pages/Dashboard.tsx` (line 77) | Fix `/#pricing` link to navigate properly |
+| `src/pages/Index.tsx` | Add `useEffect` to scroll to hash anchor on mount |
+| `src/pages/Dashboard.tsx` | Clamp free analyses counter to 0 minimum |
+| `src/pages/DreamDetail.tsx` | Show upgrade CTA when analysis is blocked (403), not just a toast |
+| `src/pages/Patterns.tsx` | Change `<Link to="/#pricing">` to use `window.location.href` for proper hash navigation |
 
-### New pages to create (recommended for Stripe compliance):
-- `src/pages/Privacy.tsx` -- basic privacy policy
-- `src/pages/Terms.tsx` -- basic terms of service
-- Register both in `src/App.tsx` routes
-
-### Priority order:
-1. Fix the Hero dead-end button (most visible)
-2. Add sign-out functionality (users are trapped)
-3. Fix footer dead links / add Privacy + Terms pages (Stripe requirement)
-4. Fix Dashboard upgrade link navigation
-5. Add back-to-home navigation from app pages
+## No Changes Needed
+- Checkout flow: Works correctly (Stripe URL returned, opens in new tab)
+- Sign-out button: Present and working in AppLayout
+- Footer links: All working (Privacy, Terms, Features, Pricing, How It Works, Reviews, Contact mailto)
+- Hero "See It In Action" button: Correctly scrolls to #how-it-works
+- Logo in AppLayout: Links to `/` (home)
+- Payment success page: Correctly refreshes subscription and shows appropriate message
+- Auth flow: Working (login via Google OAuth confirmed in logs)
