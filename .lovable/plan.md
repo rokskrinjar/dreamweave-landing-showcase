@@ -1,24 +1,25 @@
 
 
-## Redistribute Dream Dates Across 14 Days
+## Update Price IDs for Testing
 
-Spread all 7 dreams evenly across the last 14 days (Feb 5 to Feb 19, 2026).
+Two changes needed to wire up your new Stripe test prices.
 
-### New Timeline
+### 1. Update the edge function (`supabase/functions/create-checkout/index.ts`)
 
-With 7 dreams over 14 days, each dream is spaced roughly 2-3 days apart:
+Replace the hardcoded price IDs in the `PRICE_CONFIG`:
 
-| Dream | New Date |
-|---|---|
-| The Locked Bedroom Door | Feb 19, 2026 (today, unchanged) |
-| The Ocean at Night | Feb 17, 2026 |
-| The High School Reunion | Feb 14, 2026 |
-| The Stranger in the Kitchen | Feb 12, 2026 |
-| Missing the Flight | Feb 10, 2026 |
-| The House With Endless Rooms | Feb 7, 2026 |
-| The Forgotten Presentation | Feb 5, 2026 |
+| Plan | Old Price ID | New Price ID | Amount |
+|---|---|---|---|
+| Pro | `price_1T1Xa7FI9Hj3v9v4Cz3XZhdT` | `price_1T2druFI9Hj3v9v4adwntsGW` | 0.50 EUR/month |
+| Lifetime | `price_1T1XaNFI9Hj3v9v4OxpLvWkN` | `price_1T2dtMFI9Hj3v9v4Uftomk1v` | 1.00 EUR one-time |
 
-### What Will Be Done
+### 2. Update the UI prices (`src/components/CTASection.tsx`)
 
-Run 6 UPDATE statements to set `created_at`, `recorded_at`, and `updated_at` for each dream (the newest one stays as-is). No code or schema changes needed.
+Change the displayed prices to match:
+- Pro: "$9.99" becomes "€0.50"
+- Lifetime: "$99" becomes "€1.00"
+
+### Important Note
+
+When you're ready to go live with real prices, you'll need to swap these IDs back to your production prices and update the UI again.
 
