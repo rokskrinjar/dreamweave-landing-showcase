@@ -1,44 +1,19 @@
 
+## Add Custom Emotions Input to Dream Form
 
-## Fix: check-subscription "Invalid time value" Crash
+Currently the "How did you feel?" section only offers 6 preset moods (peaceful, anxious, euphoric, confused, nostalgic, fearful) as toggle buttons. We'll add a text input below them for users to enter additional custom emotions.
 
-### The Problem
+### Changes
 
-User rok.skrinjar@gmail.com has an active Pro subscription in Stripe, but the `check-subscription` backend function crashes every time with "Invalid time value". This means the user's profile never gets updated from `free` to `pro`, so they still see upgrade prompts and can't analyze dreams.
+**File: `src/pages/NewDream.tsx`**
 
-**Root cause:** In Stripe API version `2025-08-27.basil`, `current_period_end` lives on the subscription **item**, not the top-level subscription object. The code does `new Date(sub.current_period_end * 1000)` but `sub.current_period_end` is `undefined`, producing `new Date(NaN)`, which throws "Invalid time value" when `.toISOString()` is called.
-
-### The Fix
-
-**File: `supabase/functions/check-subscription/index.ts` (line 74)**
-
-Change the subscription end date extraction to safely read from the subscription item, with a fallback:
-
-```text
-Before:
-  const subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
-
-After:
-  const periodEnd = sub.current_period_end
-    ?? sub.items?.data?.[0]?.current_period_end;
-  const subscriptionEnd = periodEnd
-    ? new Date(periodEnd * 1000).toISOString()
-    : null;
-```
-
-This reads `current_period_end` from the top-level subscription first (for compatibility), then falls back to the item-level field. If neither exists, it gracefully returns `null` instead of crashing.
-
-### After Deploying
-
-The function will:
-1. Successfully detect the active subscription for this user
-2. Update their profile `subscription_tier` from `free` to `pro`
-3. The dashboard will stop showing the upgrade banner
-4. Dream analysis will work because `can_analyze_dream` checks the tier
+1. Add a new state variable `customMoods` (string) for the free-text input
+2. Below the existing mood pill buttons, add an `Input` field with placeholder like `"excited, melancholy, hopeful (comma-separated)"`
+3. Update `handleSubmit` to merge the selected preset mood and any custom moods into the `mood` field stored in the database -- we'll combine them into a comma-separated string (e.g. `"anxious, excited, melancholy"`)
 
 ### Technical Details
 
-- Only one line needs to change in the edge function
-- The fix is backward-compatible with any Stripe API version
-- No database changes needed -- the profile update logic already exists in the function, it just never reaches it due to the crash
-
+- The preset buttons will continue to work as toggles (click to select/deselect)
+- Allow selecting multiple preset moods (change from single-select to multi-select since we're opening up to multiple emotions anyway)
+- The final `mood` value saved will be a comma-separated string combining selected presets + custom entries
+- No database changes needed -- the `mood` column is already a text field that can hold comma-separated values
