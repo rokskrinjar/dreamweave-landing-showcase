@@ -1,30 +1,44 @@
 
 
-## Fix: Checkout Buttons Not Opening Stripe
+## Fix: check-subscription "Invalid time value" Crash
 
 ### The Problem
 
-Clicking "Unlock All Dreams" (or any checkout button) does nothing visible. The backend call succeeds and returns a valid Stripe checkout URL, but the browser's **popup blocker** silently prevents `window.open(url, "_blank")` from working because the `await` on the network call breaks the direct user-gesture chain.
+User rok.skrinjar@gmail.com has an active Pro subscription in Stripe, but the `check-subscription` backend function crashes every time with "Invalid time value". This means the user's profile never gets updated from `free` to `pro`, so they still see upgrade prompts and can't analyze dreams.
+
+**Root cause:** In Stripe API version `2025-08-27.basil`, `current_period_end` lives on the subscription **item**, not the top-level subscription object. The code does `new Date(sub.current_period_end * 1000)` but `sub.current_period_end` is `undefined`, producing `new Date(NaN)`, which throws "Invalid time value" when `.toISOString()` is called.
 
 ### The Fix
 
-Replace `window.open(url, "_blank")` with `window.location.href = url` in all checkout flows. This redirects in the same tab instead of opening a new one, which browsers always allow regardless of async timing.
+**File: `supabase/functions/check-subscription/index.ts` (line 74)**
 
-### Files to Change
+Change the subscription end date extraction to safely read from the subscription item, with a fallback:
 
-**1. `src/pages/DreamDetail.tsx` (line 47)**
-- Change: `window.open(data.url, "_blank")` to `window.location.href = data.url`
+```text
+Before:
+  const subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
 
-**2. `src/pages/Dashboard.tsx` (line 38)**
-- Change: `window.open(data.url, "_blank")` to `window.location.href = data.url`
+After:
+  const periodEnd = sub.current_period_end
+    ?? sub.items?.data?.[0]?.current_period_end;
+  const subscriptionEnd = periodEnd
+    ? new Date(periodEnd * 1000).toISOString()
+    : null;
+```
 
-**3. `src/pages/Dashboard.tsx` (line 125)**
-- Change: `window.open(data.url, "_blank")` for customer portal to `window.location.href = data.url`
+This reads `current_period_end` from the top-level subscription first (for compatibility), then falls back to the item-level field. If neither exists, it gracefully returns `null` instead of crashing.
 
-**4. `src/components/CTASection.tsx` (line 92)**
-- Change: `window.open(data.url, "_blank")` to `window.location.href = data.url`
+### After Deploying
 
-### Result
+The function will:
+1. Successfully detect the active subscription for this user
+2. Update their profile `subscription_tier` from `free` to `pro`
+3. The dashboard will stop showing the upgrade banner
+4. Dream analysis will work because `can_analyze_dream` checks the tier
 
-All checkout and billing portal buttons will reliably redirect to Stripe in the same tab. After payment, Stripe redirects back to the app's success page as configured.
+### Technical Details
+
+- Only one line needs to change in the edge function
+- The fix is backward-compatible with any Stripe API version
+- No database changes needed -- the profile update logic already exists in the function, it just never reaches it due to the crash
 
