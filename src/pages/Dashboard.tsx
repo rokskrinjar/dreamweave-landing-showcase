@@ -35,7 +35,7 @@ const Dashboard = () => {
         body: { plan },
       });
       if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
+      if (data?.url) window.location.href = data.url;
     } catch (err: any) {
       toast.error(err.message || "Failed to start checkout");
     } finally {
@@ -122,7 +122,7 @@ const Dashboard = () => {
                 <button
                   onClick={async () => {
                     const { data, error } = await supabase.functions.invoke("customer-portal");
-                    if (data?.url) window.open(data.url, "_blank");
+                    if (data?.url) window.location.href = data.url;
                     else toast.error(error?.message || "Could not open billing portal");
                   }}
                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
