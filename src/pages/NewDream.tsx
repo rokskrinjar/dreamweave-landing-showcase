@@ -16,9 +16,16 @@ const NewDream = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [mood, setMood] = useState("");
+  const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
+  const [customMoods, setCustomMoods] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const toggleMood = (m: string) => {
+    setSelectedMoods((prev) =>
+      prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +43,7 @@ const NewDream = () => {
         user_id: user.id,
         title,
         content,
-        mood: mood || null,
+        mood: [...selectedMoods, ...customMoods.split(",").map((s) => s.trim()).filter(Boolean)].join(", ") || null,
         tags,
       })
       .select()
@@ -96,9 +103,9 @@ const NewDream = () => {
                 <button
                   key={m}
                   type="button"
-                  onClick={() => setMood(mood === m ? "" : m)}
+                  onClick={() => toggleMood(m)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                    mood === m
+                    selectedMoods.includes(m)
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card text-muted-foreground border-border hover:border-primary/50"
                   }`}
@@ -107,6 +114,12 @@ const NewDream = () => {
                 </button>
               ))}
             </div>
+            <Input
+              placeholder="Other emotions — e.g. excited, melancholy, hopeful (comma-separated)"
+              value={customMoods}
+              onChange={(e) => setCustomMoods(e.target.value)}
+              className="mt-3"
+            />
           </div>
 
           <div>
