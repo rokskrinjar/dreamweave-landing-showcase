@@ -39,10 +39,11 @@ const DreamDetail = () => {
   useEffect(() => {
     if (!id || !user) return;
 
-    const fetch = async () => {
-      const [dreamRes, analysisRes] = await Promise.all([
+    const fetchData = async () => {
+      const [dreamRes, analysisRes, profileRes] = await Promise.all([
         supabase.from("dreams").select("*").eq("id", id).maybeSingle(),
         supabase.from("analyses").select("*").eq("dream_id", id).maybeSingle(),
+        supabase.from("profiles").select("subscription_tier, dreams_this_month").eq("user_id", user.id).maybeSingle(),
       ]);
 
       if (dreamRes.error || !dreamRes.data) {
@@ -53,10 +54,19 @@ const DreamDetail = () => {
 
       setDream(dreamRes.data);
       if (analysisRes.data) setAnalysis(analysisRes.data);
+      
+      // Proactively check if limit is reached (no analysis yet + free tier at limit)
+      if (!analysisRes.data && profileRes.data) {
+        const { subscription_tier, dreams_this_month } = profileRes.data;
+        if (subscription_tier === "free" && dreams_this_month >= 3) {
+          setLimitReached(true);
+        }
+      }
+      
       setLoading(false);
     };
 
-    fetch();
+    fetchData();
   }, [id, user]);
 
   const handleAnalyze = async () => {
