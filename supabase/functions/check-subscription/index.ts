@@ -71,7 +71,11 @@ serve(async (req) => {
 
     if (subscriptions.data.length > 0) {
       const sub = subscriptions.data[0];
-      const subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
+      const periodEnd = sub.current_period_end
+        ?? sub.items?.data?.[0]?.current_period_end;
+      const subscriptionEnd = periodEnd
+        ? new Date(periodEnd * 1000).toISOString()
+        : null;
       logStep("Active subscription found", { subscriptionEnd });
 
       await supabaseClient.from("profiles").update({
