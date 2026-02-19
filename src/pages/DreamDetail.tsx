@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, Sparkles, Brain, Heart, Eye, Lightbulb, Trash2, Crown, Loader2 } from "lucide-react";
+import { navigateToExternal } from "@/lib/navigation";
 
 interface Dream {
   id: string;
@@ -44,7 +45,7 @@ const DreamDetail = () => {
         body: { plan },
       });
       if (error) throw error;
-      if (data?.url) window.location.href = data.url;
+      if (data?.url) navigateToExternal(data.url);
     } catch (err: any) {
       toast.error(err.message || "Failed to start checkout");
     } finally {
