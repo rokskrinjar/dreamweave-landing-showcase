@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { navigateToExternal } from "@/lib/navigation";
 
 interface Dream {
   id: string;
@@ -35,7 +36,7 @@ const Dashboard = () => {
         body: { plan },
       });
       if (error) throw error;
-      if (data?.url) window.location.href = data.url;
+      if (data?.url) navigateToExternal(data.url);
     } catch (err: any) {
       toast.error(err.message || "Failed to start checkout");
     } finally {
@@ -122,7 +123,7 @@ const Dashboard = () => {
                 <button
                   onClick={async () => {
                     const { data, error } = await supabase.functions.invoke("customer-portal");
-                    if (data?.url) window.location.href = data.url;
+                    if (data?.url) navigateToExternal(data.url);
                     else toast.error(error?.message || "Could not open billing portal");
                   }}
                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
