@@ -1,52 +1,56 @@
 
 
-## Fix Stripe Checkout and Update induro.io Profile
+## Fix rok@induro.io Lifetime Tier -- Comprehensive Plan
 
-### Problem
-The `create-checkout` function uses `customer_email` for new customers instead of explicitly creating a Stripe customer first. In `mode: "payment"`, this can result in no persistent customer record being created, making it impossible for `check-subscription` to later find the purchase.
+### Root Cause Analysis
 
-### Changes
+The sequence of failures:
+1. Original checkout created the payment without a Stripe customer record (guest checkout)
+2. `check-subscription` finds no Stripe customer for `rok@induro.io`, so it resets `subscription_tier` to `free`
+3. We manually set the tier to `lifetime` in the database
+4. The updated `check-subscription` code (which preserves manually-set lifetime tiers) was deployed AFTER the old function had already reset the tier back to `free`
+5. Now even the new code sees `free` in the database, so the lifetime check does nothing
 
-**1. Manually update rok@induro.io profile to lifetime tier (immediate data fix)**
-- Run an UPDATE query on the `profiles` table to set `subscription_tier = 'lifetime'` for user_id `df4711f7-7cb6-46cb-984e-d3e9f2c91802`
+### Fix Plan
 
-**2. Fix `supabase/functions/create-checkout/index.ts`**
-- When no existing Stripe customer is found, explicitly create one via `stripe.customers.create({ email: user.email })` before passing it to the checkout session
-- Always use the `customer` parameter (never `customer_email`), ensuring a persistent Stripe customer record exists for every checkout
+**Step 1: Re-deploy the check-subscription function**
+- Confirm the deployed edge function has the latest code with the lifetime profile check
+- Deploy it explicitly to be certain
+
+**Step 2: Set the profile back to lifetime**
+- Run: `UPDATE profiles SET subscription_tier = 'lifetime' WHERE user_id = 'df4711f7-7cb6-46cb-984e-d3e9f2c91802'`
+- This must happen AFTER the function is deployed so the next call preserves it
+
+**Step 3: Test by calling check-subscription directly**
+- Use the edge function curl tool to call `check-subscription` with the rok@induro.io auth token
+- Verify response is `{ subscribed: true, tier: "lifetime" }`
+- Check the function logs to confirm "Profile has manually-set lifetime tier" appears
+
+**Step 4: Verify the database was not reset**
+- Query `profiles` again to confirm `subscription_tier` is still `lifetime` after the function call
+
+### Sequence is critical
+
+The order must be: deploy function -> update database -> test. Any other order risks the old function resetting the tier again.
 
 ### Technical Details
 
-The key change in `create-checkout/index.ts`:
+The code in `check-subscription/index.ts` (lines 68-82) already has the correct logic:
 
-```typescript
-// BEFORE (broken for new customers)
-const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-let customerId: string | undefined;
-if (customers.data.length > 0) {
-  customerId = customers.data[0].id;
-}
-// ...
-session = await stripe.checkout.sessions.create({
-  customer: customerId,
-  customer_email: customerId ? undefined : user.email,  // <-- no persistent customer created
-  ...
-});
+```text
+if (customers.data.length === 0) {
+  // Check if profile has a manually-set tier
+  const { data: profile } = await supabaseAdmin.from("profiles")
+    .select("subscription_tier")
+    .eq("user_id", userId)
+    .single();
 
-// AFTER (always creates a customer)
-const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-let customerId: string;
-if (customers.data.length > 0) {
-  customerId = customers.data[0].id;
-} else {
-  const newCustomer = await stripe.customers.create({ email: user.email });
-  customerId = newCustomer.id;
+  if (profile?.subscription_tier === "lifetime") {
+    // Preserves lifetime, does NOT reset to free
+    return { subscribed: true, tier: "lifetime" };
+  }
+  // Only resets to free if tier is NOT lifetime
 }
-// ...
-session = await stripe.checkout.sessions.create({
-  customer: customerId,  // always set, no customer_email fallback
-  ...
-});
 ```
 
-This ensures every future checkout (both subscription and lifetime) creates a traceable Stripe customer, so `check-subscription` can always find the purchase.
-
+No code changes are needed -- only re-deployment and re-setting the database value in the correct order.
