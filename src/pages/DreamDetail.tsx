@@ -285,7 +285,7 @@ const DreamDetail = () => {
                   You've used all 3 free analyses this month. Upgrade to Pro or Lifetime for unlimited dream analyses.
                 </p>
                 <Button
-                  onClick={() => { window.location.href = "/#pricing"; }}
+                  onClick={() => navigate("/dashboard")}
                   className="gradient-indigo text-white font-semibold gap-2 px-8 py-6"
                 >
                   <Sparkles className="w-5 h-5" />
