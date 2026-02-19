@@ -7,10 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PRO_PRODUCT_ID = "prod_TzWdz2is2Z41IA";
-const LIFETIME_PRODUCT_ID = "prod_TzWd26RWhHPEE7";
-const LIFETIME_PRICE_ID = "price_1T1XaNFI9Hj3v9v4OxpLvWkN";
-
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
@@ -21,12 +17,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    { auth: { persistSession: false } }
-  );
-
   try {
     logStep("Function started");
 
@@ -34,25 +24,53 @@ serve(async (req) => {
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
 
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ subscribed: false, tier: "free" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Use getClaims to validate the JWT token
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
-    const user = userData.user;
-    if (!user?.email) throw new Error("User not authenticated");
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      logStep("Invalid token, returning free tier");
+      return new Response(JSON.stringify({ subscribed: false, tier: "free" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = claimsData.claims.sub as string;
+    const email = claimsData.claims.email as string;
+    if (!email) {
+      return new Response(JSON.stringify({ subscribed: false, tier: "free" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    logStep("User authenticated", { userId, email });
+
+    // Use service role client for DB updates
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({ email, limit: 1 });
 
     if (customers.data.length === 0) {
       logStep("No Stripe customer found");
-      // Ensure profile is free
-      await supabaseClient.from("profiles").update({
+      await supabaseAdmin.from("profiles").update({
         subscription_tier: "free",
         stripe_customer_id: null,
-      }).eq("user_id", user.id);
+      }).eq("user_id", userId);
 
       return new Response(JSON.stringify({ subscribed: false, tier: "free" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -78,10 +96,10 @@ serve(async (req) => {
         : null;
       logStep("Active subscription found", { subscriptionEnd });
 
-      await supabaseClient.from("profiles").update({
+      await supabaseAdmin.from("profiles").update({
         subscription_tier: "pro",
         stripe_customer_id: customerId,
-      }).eq("user_id", user.id);
+      }).eq("user_id", userId);
 
       return new Response(JSON.stringify({
         subscribed: true,
@@ -104,10 +122,10 @@ serve(async (req) => {
 
     if (lifetimePurchase) {
       logStep("Lifetime purchase found");
-      await supabaseClient.from("profiles").update({
+      await supabaseAdmin.from("profiles").update({
         subscription_tier: "lifetime",
         stripe_customer_id: customerId,
-      }).eq("user_id", user.id);
+      }).eq("user_id", userId);
 
       return new Response(JSON.stringify({
         subscribed: true,
@@ -118,10 +136,10 @@ serve(async (req) => {
     }
 
     logStep("No active subscription or lifetime purchase");
-    await supabaseClient.from("profiles").update({
+    await supabaseAdmin.from("profiles").update({
       subscription_tier: "free",
       stripe_customer_id: customerId,
-    }).eq("user_id", user.id);
+    }).eq("user_id", userId);
 
     return new Response(JSON.stringify({ subscribed: false, tier: "free" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
