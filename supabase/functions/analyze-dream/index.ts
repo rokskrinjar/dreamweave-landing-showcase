@@ -156,6 +156,21 @@ ${content}`;
 
     const analysis = JSON.parse(toolCall.function.arguments);
 
+    // Sanitize: strip non-ASCII artifacts from string arrays
+    const sanitizeStr = (s: string) => s.replace(/[^\x00-\x7F]/g, '').trim();
+    if (Array.isArray(analysis.themes)) {
+      analysis.themes = analysis.themes.map(sanitizeStr).filter(Boolean);
+    }
+    if (Array.isArray(analysis.emotions)) {
+      analysis.emotions = analysis.emotions.map(sanitizeStr).filter(Boolean);
+    }
+    if (Array.isArray(analysis.symbols)) {
+      analysis.symbols = analysis.symbols.map((s: any) => ({
+        name: sanitizeStr(s.name || ''),
+        meaning: sanitizeStr(s.meaning || ''),
+      })).filter((s: any) => s.name);
+    }
+
     // Save analysis
     const { error: insertError } = await serviceClient.from("analyses").insert({
       dream_id: dreamId,
