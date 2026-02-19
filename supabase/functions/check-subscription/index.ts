@@ -150,6 +150,24 @@ serve(async (req) => {
     }
 
     logStep("No active subscription or lifetime purchase");
+
+    // Check if profile has a manually-set lifetime tier before resetting
+    const { data: profileCheck } = await supabaseAdmin.from("profiles")
+      .select("subscription_tier")
+      .eq("user_id", userId)
+      .single();
+
+    if (profileCheck?.subscription_tier === "lifetime") {
+      logStep("Profile has manually-set lifetime tier, preserving it (with Stripe customer)");
+      await supabaseAdmin.from("profiles").update({
+        stripe_customer_id: customerId,
+      }).eq("user_id", userId);
+
+      return new Response(JSON.stringify({ subscribed: true, tier: "lifetime" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     await supabaseAdmin.from("profiles").update({
       subscription_tier: "free",
       stripe_customer_id: customerId,
