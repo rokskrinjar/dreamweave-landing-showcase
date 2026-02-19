@@ -243,12 +243,6 @@ const Dashboard = () => {
             <Link
               key={dream.id}
               to={`/dreams/${dream.id}`}
-              onClick={(e) => {
-                if (atLimit && !dream.hasAnalysis && upgradeBannerRef.current) {
-                  e.preventDefault();
-                  upgradeBannerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-                }
-              }}
               className="group block bg-card rounded-2xl p-6 border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all relative"
             >
               <div className="flex items-start justify-between gap-4">
