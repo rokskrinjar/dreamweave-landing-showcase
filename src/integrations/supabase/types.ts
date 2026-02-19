@@ -94,6 +94,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pattern_insights: {
+        Row: {
+          created_at: string
+          dreams_analyzed: number
+          emotional_patterns: string
+          id: string
+          recurring_themes: Json
+          suggestions: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dreams_analyzed?: number
+          emotional_patterns?: string
+          id?: string
+          recurring_themes?: Json
+          suggestions?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dreams_analyzed?: number
+          emotional_patterns?: string
+          id?: string
+          recurring_themes?: Json
+          suggestions?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
