@@ -1,23 +1,30 @@
 
 
-## Let Users Always View Their Dreams
+## Fix: Checkout Buttons Not Opening Stripe
 
 ### The Problem
 
-Right now, clicking any unanalyzed dream while at the free limit does nothing visible -- the click is intercepted and tries to scroll to the upgrade banner. But users should always be able to read their own dream entries. The restriction should only prevent *analysis*, not *viewing*.
+Clicking "Unlock All Dreams" (or any checkout button) does nothing visible. The backend call succeeds and returns a valid Stripe checkout URL, but the browser's **popup blocker** silently prevents `window.open(url, "_blank")` from working because the `await` on the network call breaks the direct user-gesture chain.
 
 ### The Fix
 
-**File: `src/pages/Dashboard.tsx`**
+Replace `window.open(url, "_blank")` with `window.location.href = url` in all checkout flows. This redirects in the same tab instead of opening a new one, which browsers always allow regardless of async timing.
 
-Remove the `onClick` handler (lines 246-251) from the dream card `Link` component that intercepts clicks and calls `e.preventDefault()`. Users will navigate to the dream detail page as normal.
+### Files to Change
 
-The Dream Detail page already has the upgrade prompt with direct checkout buttons for users who have hit the free limit, so the upgrade path is covered there.
+**1. `src/pages/DreamDetail.tsx` (line 47)**
+- Change: `window.open(data.url, "_blank")` to `window.location.href = data.url`
 
-The lock overlay on hover (lines 293-300) can stay as a visual hint, or optionally be removed since it implies the card is non-clickable. Keeping it as a subtle indicator that analysis requires an upgrade is acceptable.
+**2. `src/pages/Dashboard.tsx` (line 38)**
+- Change: `window.open(data.url, "_blank")` to `window.location.href = data.url`
+
+**3. `src/pages/Dashboard.tsx` (line 125)**
+- Change: `window.open(data.url, "_blank")` for customer portal to `window.location.href = data.url`
+
+**4. `src/components/CTASection.tsx` (line 92)**
+- Change: `window.open(data.url, "_blank")` to `window.location.href = data.url`
 
 ### Result
 
-- Clicking any dream card always opens the dream detail page
-- If the user is at the free limit and the dream is unanalyzed, the detail page shows the inline upgrade buttons (Pro and Lifetime) -- already implemented
-- No more "nothing happens" dead clicks
+All checkout and billing portal buttons will reliably redirect to Stripe in the same tab. After payment, Stripe redirects back to the app's success page as configured.
+
