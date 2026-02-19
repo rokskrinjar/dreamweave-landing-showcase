@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { BarChart3, Sparkles, Lock, TrendingUp } from "lucide-react";
+import { BarChart3, Sparkles, Lock, TrendingUp, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -17,33 +17,58 @@ const moodValues: Record<string, number> = {
   fearful: 0,
 };
 
+interface PatternData {
+  recurring_themes: string[];
+  emotional_patterns: string;
+  suggestions: string[];
+  dreams_analyzed?: number;
+  created_at?: string;
+}
+
 const Patterns = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<{ subscription_tier: string } | null>(null);
   const [dreams, setDreams] = useState<any[]>([]);
-  const [patternData, setPatternData] = useState<any>(null);
+  const [patternData, setPatternData] = useState<PatternData | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
 
   useEffect(() => {
     if (!user) return;
 
-    const fetch = async () => {
-      const [profileRes, dreamsRes] = await Promise.all([
+    const fetchData = async () => {
+      const [profileRes, dreamsRes, insightsRes] = await Promise.all([
         supabase.from("profiles").select("subscription_tier").eq("user_id", user.id).maybeSingle(),
         supabase
           .from("dreams")
           .select("id, title, mood, recorded_at, tags")
           .order("recorded_at", { ascending: true })
           .limit(30),
+        supabase
+          .from("pattern_insights" as any)
+          .select("recurring_themes, emotional_patterns, suggestions, dreams_analyzed, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ]);
 
       if (profileRes.data) setProfile(profileRes.data);
       if (dreamsRes.data) setDreams(dreamsRes.data);
+      if (insightsRes.data) {
+        const d = insightsRes.data as any;
+        setPatternData({
+          recurring_themes: d.recurring_themes,
+          emotional_patterns: d.emotional_patterns,
+          suggestions: d.suggestions,
+          dreams_analyzed: d.dreams_analyzed,
+          created_at: d.created_at,
+        });
+      }
       setLoading(false);
     };
 
-    fetch();
+    fetchData();
   }, [user]);
 
   const isLocked = profile?.subscription_tier === "free";
@@ -68,7 +93,10 @@ const Patterns = () => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      setPatternData(data);
+      setPatternData({
+        ...data,
+        created_at: new Date().toISOString(),
+      });
       toast.success("Pattern analysis complete!");
     } catch (error: any) {
       toast.error(error.message || "Failed to generate patterns");
@@ -121,14 +149,17 @@ const Patterns = () => {
             </p>
           </div>
           {dreams.length >= 5 && (
-            <Button
-              onClick={handleGeneratePatterns}
-              disabled={analyzing}
-              className="gradient-indigo text-white font-semibold gap-2"
-            >
-              <TrendingUp className="w-4 h-4" />
-              {analyzing ? "Analyzing..." : "Generate Insights"}
-            </Button>
+            <div className="flex flex-col items-end gap-1">
+              <Button
+                onClick={handleGeneratePatterns}
+                disabled={analyzing}
+                className="gradient-indigo text-white font-semibold gap-2"
+              >
+                <TrendingUp className="w-4 h-4" />
+                {analyzing ? "Analyzing..." : patternData ? "Refresh Insights" : "Generate Insights"}
+              </Button>
+              <span className="text-xs text-muted-foreground">Analyzes your last 30 dreams</span>
+            </div>
           )}
         </div>
 
@@ -175,6 +206,19 @@ const Patterns = () => {
         {/* AI Pattern Analysis */}
         {patternData ? (
           <div className="space-y-6">
+            {/* Metadata */}
+            {(patternData.dreams_analyzed || patternData.created_at) && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4" />
+                <span>
+                  Based on {patternData.dreams_analyzed || "?"} dreams
+                  {patternData.created_at && (
+                    <> · Generated {new Date(patternData.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
+                  )}
+                </span>
+              </div>
+            )}
+
             {patternData.recurring_themes && (
               <div className="bg-card rounded-2xl p-6 border border-border">
                 <h3 className="font-bold text-foreground mb-3">Recurring Themes</h3>

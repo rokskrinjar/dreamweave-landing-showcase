@@ -153,7 +153,16 @@ Call the dream_patterns function with your analysis.`;
 
     const patterns = JSON.parse(toolCall.function.arguments);
 
-    return new Response(JSON.stringify(patterns), {
+    // Persist to pattern_insights table
+    await serviceClient.from("pattern_insights").insert({
+      user_id: user.id,
+      recurring_themes: patterns.recurring_themes,
+      emotional_patterns: patterns.emotional_patterns,
+      suggestions: patterns.suggestions,
+      dreams_analyzed: dreams.length,
+    });
+
+    return new Response(JSON.stringify({ ...patterns, dreams_analyzed: dreams.length }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
