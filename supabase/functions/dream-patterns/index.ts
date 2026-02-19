@@ -153,6 +153,18 @@ Call the dream_patterns function with your analysis.`;
 
     const patterns = JSON.parse(toolCall.function.arguments);
 
+    // Sanitize: strip non-ASCII artifacts
+    const sanitizeStr = (s: string) => s.replace(/[^\x00-\x7F]/g, '').trim();
+    if (Array.isArray(patterns.recurring_themes)) {
+      patterns.recurring_themes = patterns.recurring_themes.map(sanitizeStr).filter(Boolean);
+    }
+    if (Array.isArray(patterns.suggestions)) {
+      patterns.suggestions = patterns.suggestions.map(sanitizeStr).filter(Boolean);
+    }
+    if (typeof patterns.emotional_patterns === 'string') {
+      patterns.emotional_patterns = sanitizeStr(patterns.emotional_patterns);
+    }
+
     // Persist to pattern_insights table
     await serviceClient.from("pattern_insights").insert({
       user_id: user.id,
