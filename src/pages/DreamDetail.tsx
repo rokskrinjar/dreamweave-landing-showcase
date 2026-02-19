@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Sparkles, Brain, Heart, Eye, Lightbulb, Trash2, Crown } from "lucide-react";
+import { ArrowLeft, Sparkles, Brain, Heart, Eye, Lightbulb, Trash2, Crown, Loader2 } from "lucide-react";
 
 interface Dream {
   id: string;
@@ -35,6 +35,22 @@ const DreamDetail = () => {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: string) => {
+    setLoadingPlan(plan);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { plan },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   useEffect(() => {
     if (!id || !user) return;
@@ -292,15 +308,43 @@ const DreamDetail = () => {
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-2">Free analysis limit reached</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  You've used all 3 free analyses this month. Upgrade to Pro or Lifetime for unlimited dream analyses.
+                  You've used all 3 free analyses this month. Upgrade to unlock unlimited dream analyses.
                 </p>
-                <Button
-                  onClick={() => navigate("/dashboard")}
-                  className="gradient-indigo text-white font-semibold gap-2 px-8 py-6"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  View Upgrade Options
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    onClick={() => handleCheckout("pro")}
+                    disabled={loadingPlan === "pro"}
+                    className="gradient-indigo text-white font-semibold whitespace-nowrap gap-2 px-8 py-6"
+                  >
+                    {loadingPlan === "pro" ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        <Crown className="w-5 h-5" />
+                        Unlock All Dreams — $9.99/mo
+                      </>
+                    )}
+                  </Button>
+                  <div className="relative">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-lime-400 to-emerald-500 text-emerald-950 text-[11px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap z-10">
+                      Best Value
+                    </span>
+                    <Button
+                      onClick={() => handleCheckout("lifetime")}
+                      disabled={loadingPlan === "lifetime"}
+                      className="bg-gradient-to-r from-lime-400 via-lime-400 to-emerald-500 hover:from-lime-500 hover:to-emerald-600 text-emerald-950 font-semibold whitespace-nowrap gap-2 shadow-lg shadow-emerald-500/20 px-8 py-6"
+                    >
+                      {loadingPlan === "lifetime" ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <Crown className="w-5 h-5" />
+                          Lifetime Access — $99
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </>
             ) : (
               <>
