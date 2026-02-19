@@ -1,22 +1,24 @@
 
 
-## Update Dream Dates (14 Days Apart)
+## Redistribute Dream Dates Across 14 Days
 
-A simple data-only change to backdate 6 of the 7 dreams for rok@induro.io. The newest dream stays at today's date, each prior dream goes back exactly 14 days.
+Spread all 7 dreams evenly across the last 14 days (Feb 5 to Feb 19, 2026).
 
-### Timeline
+### New Timeline
+
+With 7 dreams over 14 days, each dream is spaced roughly 2-3 days apart:
 
 | Dream | New Date |
 |---|---|
-| The Locked Bedroom Door | Feb 19, 2026 (unchanged) |
-| The Ocean at Night | Feb 5, 2026 |
-| The High School Reunion | Jan 22, 2026 |
-| The Stranger in the Kitchen | Jan 8, 2026 |
-| Missing the Flight | Dec 25, 2025 |
-| The House With Endless Rooms | Dec 11, 2025 |
-| The Forgotten Presentation | Nov 27, 2025 |
+| The Locked Bedroom Door | Feb 19, 2026 (today, unchanged) |
+| The Ocean at Night | Feb 17, 2026 |
+| The High School Reunion | Feb 14, 2026 |
+| The Stranger in the Kitchen | Feb 12, 2026 |
+| Missing the Flight | Feb 10, 2026 |
+| The House With Endless Rooms | Feb 7, 2026 |
+| The Forgotten Presentation | Feb 5, 2026 |
 
 ### What Will Be Done
 
-Run 6 UPDATE statements to set `created_at`, `recorded_at`, and `updated_at` for each dream. No code or schema changes required.
+Run 6 UPDATE statements to set `created_at`, `recorded_at`, and `updated_at` for each dream (the newest one stays as-is). No code or schema changes needed.
 
