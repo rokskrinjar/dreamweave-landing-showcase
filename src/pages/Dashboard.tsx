@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +26,7 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [profile, setProfile] = useState<{ subscription_tier: string; dreams_this_month: number } | null>(null);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const upgradeBannerRef = useRef<HTMLDivElement>(null);
 
   const handleCheckout = async (plan: string) => {
     setLoadingPlan(plan);
@@ -153,7 +154,7 @@ const Dashboard = () => {
 
       {/* Upgrade Banner — free users at limit with unanalyzed dreams */}
       {atLimit && unanalyzedCount > 0 && (
-        <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div ref={upgradeBannerRef} className="mb-6 rounded-2xl border border-primary/20 bg-primary/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
               <Sparkles className="w-5 h-5 text-primary" />
@@ -242,6 +243,12 @@ const Dashboard = () => {
             <Link
               key={dream.id}
               to={`/dreams/${dream.id}`}
+              onClick={(e) => {
+                if (atLimit && !dream.hasAnalysis && upgradeBannerRef.current) {
+                  e.preventDefault();
+                  upgradeBannerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+              }}
               className="group block bg-card rounded-2xl p-6 border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all relative"
             >
               <div className="flex items-start justify-between gap-4">
