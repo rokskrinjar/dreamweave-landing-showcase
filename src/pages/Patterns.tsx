@@ -13,7 +13,7 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  Cell,
+  Legend as RechartsLegend,
 } from "recharts";
 
 // --- Sentiment classification ---
@@ -49,37 +49,72 @@ const SENTIMENT_COLORS: Record<Sentiment, string> = {
   neutral: "#f59e0b",
 };
 
-// --- Emotion count data for bar chart ---
+// --- Stacked sentiment data ---
 
-interface EmotionCount {
-  emotion: string;
-  count: number;
-  sentiment: Sentiment;
+const EMOTION_PALETTE: Record<Sentiment, string[]> = {
+  positive: ["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#059669", "#047857"],
+  negative: ["#f43f5e", "#fb7185", "#fda4af", "#e11d48", "#be123c", "#9f1239"],
+  neutral:  ["#f59e0b", "#fbbf24", "#fcd34d", "#d97706", "#b45309", "#92400e"],
+};
+
+interface StackedBar {
+  category: string;
+  [emotion: string]: string | number;
 }
 
-function buildEmotionCounts(dreams: any[]): EmotionCount[] {
-  const counts = new Map<string, number>();
+function buildStackedData(dreams: any[]) {
+  // Count emotions grouped by sentiment
+  const grouped: Record<Sentiment, Map<string, number>> = {
+    positive: new Map(),
+    negative: new Map(),
+    neutral: new Map(),
+  };
 
   dreams.forEach((d) => {
     if (!d.mood) return;
     const emotions = (d.mood as string).split(",").map((s: string) => s.trim().toLowerCase()).filter(Boolean);
     emotions.forEach((e) => {
-      counts.set(e, (counts.get(e) || 0) + 1);
+      const s = classifySentiment(e);
+      grouped[s].set(e, (grouped[s].get(e) || 0) + 1);
     });
   });
 
-  return Array.from(counts.entries())
-    .map(([emotion, count]) => ({ emotion, count, sentiment: classifySentiment(emotion) }))
-    .sort((a, b) => b.count - a.count);
+  // Build one bar per sentiment category
+  const categories: Sentiment[] = ["positive", "neutral", "negative"];
+  const bars: StackedBar[] = [];
+  const allEmotionKeys: { key: string; sentiment: Sentiment; color: string }[] = [];
+
+  categories.forEach((cat) => {
+    const emotions = Array.from(grouped[cat].entries()).sort((a, b) => b[1] - a[1]);
+    const bar: StackedBar = { category: cat.charAt(0).toUpperCase() + cat.slice(1) };
+    emotions.forEach(([emotion, count], i) => {
+      bar[emotion] = count;
+      // Only add key once
+      if (!allEmotionKeys.find((k) => k.key === emotion)) {
+        const palette = EMOTION_PALETTE[cat];
+        allEmotionKeys.push({ key: emotion, sentiment: cat, color: palette[i % palette.length] });
+      }
+    });
+    bars.push(bar);
+  });
+
+  return { bars, allEmotionKeys };
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+const StackedTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload || !payload.length) return null;
-  const data = payload[0]?.payload as EmotionCount;
+  const items = payload.filter((p: any) => p.value > 0).sort((a: any, b: any) => b.value - a.value);
+  const total = items.reduce((sum: number, p: any) => sum + p.value, 0);
   return (
-    <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg text-sm capitalize">
-      <span className="font-semibold text-foreground">{data.emotion}</span>
-      <span className="text-muted-foreground ml-2">× {data.count}</span>
+    <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg text-sm max-w-[200px]">
+      <p className="font-semibold text-foreground mb-1">{label} ({total})</p>
+      {items.map((item: any) => (
+        <div key={item.dataKey} className="flex items-center gap-1.5 capitalize">
+          <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+          <span className="text-muted-foreground">{item.dataKey}</span>
+          <span className="ml-auto text-foreground font-medium">{item.value}</span>
+        </div>
+      ))}
     </div>
   );
 };
@@ -95,9 +130,10 @@ interface PatternData {
 }
 
 const EmotionBarChart = ({ dreams }: { dreams: any[] }) => {
-  const emotionData = useMemo(() => buildEmotionCounts(dreams), [dreams]);
+  const { bars, allEmotionKeys } = useMemo(() => buildStackedData(dreams), [dreams]);
+  const hasData = allEmotionKeys.length > 0;
 
-  if (emotionData.length === 0) {
+  if (!hasData) {
     return (
       <div className="bg-card rounded-2xl p-12 border border-border mb-8 text-center">
         <p className="text-muted-foreground">
@@ -113,8 +149,8 @@ const EmotionBarChart = ({ dreams }: { dreams: any[] }) => {
         <BarChart3 className="w-5 h-5 text-primary" /> Emotion Breakdown
       </h3>
 
-      <ResponsiveContainer width="100%" height={Math.max(280, emotionData.length * 32)}>
-        <BarChart data={emotionData} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={bars} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
           <XAxis
             type="number"
@@ -125,35 +161,27 @@ const EmotionBarChart = ({ dreams }: { dreams: any[] }) => {
           />
           <YAxis
             type="category"
-            dataKey="emotion"
-            width={100}
-            tick={{ fontSize: 12, fill: "hsl(var(--foreground))", textTransform: "capitalize" } as any}
+            dataKey="category"
+            width={80}
+            tick={{ fontSize: 13, fill: "hsl(var(--foreground))", fontWeight: 600 } as any}
             tickLine={false}
             axisLine={false}
           />
-          <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted) / 0.3)" }} />
-          <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
-            {emotionData.map((entry, index) => (
-              <Cell key={index} fill={SENTIMENT_COLORS[entry.sentiment]} fillOpacity={0.85} />
-            ))}
-          </Bar>
+          <RechartsTooltip content={<StackedTooltip />} cursor={{ fill: "hsl(var(--muted) / 0.3)" }} />
+          {allEmotionKeys.map((ek) => (
+            <Bar key={ek.key} dataKey={ek.key} stackId="a" fill={ek.color} radius={0} barSize={28} />
+          ))}
         </BarChart>
       </ResponsiveContainer>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.positive }} />
-          Positive
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.neutral }} />
-          Neutral
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.negative }} />
-          Negative
-        </div>
+      <div className="flex flex-wrap items-center gap-3 mt-4 text-xs text-muted-foreground">
+        {allEmotionKeys.map((ek) => (
+          <div key={ek.key} className="flex items-center gap-1 capitalize">
+            <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: ek.color }} />
+            {ek.key}
+          </div>
+        ))}
       </div>
     </div>
   );
