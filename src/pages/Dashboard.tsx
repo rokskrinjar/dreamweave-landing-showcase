@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
@@ -22,6 +22,7 @@ interface Dream {
 
 const Dashboard = () => {
   const { user, subscription } = useAuth();
+  const navigate = useNavigate();
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -111,7 +112,7 @@ const Dashboard = () => {
           {isFree ? (
             <p className="text-sm text-muted-foreground mt-1">
               {profile ? remaining : "..."} free analyses remaining this month ·{" "}
-              <button type="button" onClick={() => { if (upgradeBannerRef.current) { upgradeBannerRef.current.scrollIntoView({ behavior: "smooth" }); } else { window.location.href = "/#pricing"; } }} className="text-primary hover:underline">Upgrade</button>
+              <button type="button" onClick={() => { if (upgradeBannerRef.current) { upgradeBannerRef.current.scrollIntoView({ behavior: "smooth" }); } else { navigate("/"); setTimeout(() => { const el = document.getElementById("pricing"); if (el) el.scrollIntoView({ behavior: "smooth" }); }, 300); } }} className="text-primary hover:underline">Upgrade</button>
             </p>
           ) : (
             <div className="flex items-center gap-2 mt-1">
