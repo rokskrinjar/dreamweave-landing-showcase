@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { BarChart3, Sparkles, Lock, TrendingUp, Clock } from "lucide-react";
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  Legend,
+  Cell,
 } from "recharts";
 
 // --- Sentiment classification ---
@@ -49,119 +49,37 @@ const SENTIMENT_COLORS: Record<Sentiment, string> = {
   neutral: "#f59e0b",
 };
 
-// --- Weekly sentiment data for stacked area chart ---
+// --- Emotion count data for bar chart ---
 
-interface WeekData {
-  label: string;
-  positive: number;
-  neutral: number;
-  negative: number;
-  emotions: string[];
-  dreamCount: number;
+interface EmotionCount {
+  emotion: string;
+  count: number;
+  sentiment: Sentiment;
 }
 
-function toDateKey(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
+function buildEmotionCounts(dreams: any[]): EmotionCount[] {
+  const counts = new Map<string, number>();
 
-function buildWeeklyData(dreams: any[]): WeekData[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Find the Monday that starts the grid (up to 14 weeks back)
-  const dayOfWeek = today.getDay();
-  const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-  const endMonday = new Date(today);
-  endMonday.setDate(today.getDate() - mondayOffset);
-  const startDate = new Date(endMonday);
-  startDate.setDate(endMonday.getDate() - 13 * 7);
-
-  // Index dream emotions by date
-  const dreamsByDate = new Map<string, string[]>();
   dreams.forEach((d) => {
     if (!d.mood) return;
-    const dateKey = toDateKey(new Date(d.recorded_at));
     const emotions = (d.mood as string).split(",").map((s: string) => s.trim().toLowerCase()).filter(Boolean);
-    const existing = dreamsByDate.get(dateKey) || [];
-    existing.push(...emotions);
-    dreamsByDate.set(dateKey, existing);
+    emotions.forEach((e) => {
+      counts.set(e, (counts.get(e) || 0) + 1);
+    });
   });
 
-  const weeks: WeekData[] = [];
-  for (let w = 0; w < 14; w++) {
-    const weekStart = new Date(startDate);
-    weekStart.setDate(startDate.getDate() + w * 7);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-
-    // Skip fully future weeks
-    if (weekStart > today) continue;
-
-    const counts: Record<Sentiment, number> = { positive: 0, negative: 0, neutral: 0 };
-    const allEmotions: string[] = [];
-    let dreamCount = 0;
-
-    for (let d = 0; d < 7; d++) {
-      const date = new Date(weekStart);
-      date.setDate(weekStart.getDate() + d);
-      if (date > today) break;
-      const key = toDateKey(date);
-      const emotions = dreamsByDate.get(key) || [];
-      if (emotions.length > 0) dreamCount++;
-      emotions.forEach((e) => {
-        counts[classifySentiment(e)]++;
-        allEmotions.push(e);
-      });
-    }
-
-    const total = counts.positive + counts.negative + counts.neutral;
-    const label = weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-
-    weeks.push({
-      label,
-      positive: total > 0 ? Math.round((counts.positive / total) * 100) : 0,
-      neutral: total > 0 ? Math.round((counts.neutral / total) * 100) : 0,
-      negative: total > 0 ? Math.round((counts.negative / total) * 100) : 0,
-      emotions: [...new Set(allEmotions)],
-      dreamCount,
-    });
-  }
-
-  return weeks;
+  return Array.from(counts.entries())
+    .map(([emotion, count]) => ({ emotion, count, sentiment: classifySentiment(emotion) }))
+    .sort((a, b) => b.count - a.count);
 }
 
-// Custom tooltip for the area chart
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload }: any) => {
   if (!active || !payload || !payload.length) return null;
-  const data = payload[0]?.payload as WeekData;
+  const data = payload[0]?.payload as EmotionCount;
   return (
-    <div className="bg-card border border-border rounded-lg p-3 shadow-lg text-sm">
-      <p className="font-semibold text-foreground mb-1">Week of {label}</p>
-      <p className="text-muted-foreground mb-2">
-        {data.dreamCount} day{data.dreamCount !== 1 ? "s" : ""} with dreams
-      </p>
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.positive }} />
-          <span>Positive: {data.positive}%</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.neutral }} />
-          <span>Neutral: {data.neutral}%</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.negative }} />
-          <span>Negative: {data.negative}%</span>
-        </div>
-      </div>
-      {data.emotions.length > 0 && (
-        <p className="text-muted-foreground mt-2 capitalize text-xs">
-          {data.emotions.join(", ")}
-        </p>
-      )}
+    <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg text-sm capitalize">
+      <span className="font-semibold text-foreground">{data.emotion}</span>
+      <span className="text-muted-foreground ml-2">× {data.count}</span>
     </div>
   );
 };
@@ -176,26 +94,15 @@ interface PatternData {
   created_at?: string;
 }
 
-const SentimentTrendChart = ({ dreams }: { dreams: any[] }) => {
-  const weeklyData = useMemo(() => buildWeeklyData(dreams), [dreams]);
+const EmotionBarChart = ({ dreams }: { dreams: any[] }) => {
+  const emotionData = useMemo(() => buildEmotionCounts(dreams), [dreams]);
 
-  const dreamsWithMood = dreams.filter((d) => d.mood);
-  if (dreamsWithMood.length < 3) {
+  if (emotionData.length === 0) {
     return (
       <div className="bg-card rounded-2xl p-12 border border-border mb-8 text-center">
         <p className="text-muted-foreground">
-          Record at least 3 dreams with moods to see your sentiment trends.
+          Record dreams with moods to see your emotion breakdown.
         </p>
-      </div>
-    );
-  }
-
-  // Filter to only weeks that have any data
-  const hasData = weeklyData.some((w) => w.dreamCount > 0);
-  if (!hasData) {
-    return (
-      <div className="bg-card rounded-2xl p-12 border border-border mb-8 text-center">
-        <p className="text-muted-foreground">No mood data found for the last 14 weeks.</p>
       </div>
     );
   }
@@ -203,50 +110,34 @@ const SentimentTrendChart = ({ dreams }: { dreams: any[] }) => {
   return (
     <div className="bg-card rounded-2xl p-6 border border-border mb-8">
       <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-        <BarChart3 className="w-5 h-5 text-primary" /> Sentiment Trends
+        <BarChart3 className="w-5 h-5 text-primary" /> Emotion Breakdown
       </h3>
 
-      <ResponsiveContainer width="100%" height={280}>
-        <AreaChart data={weeklyData} stackOffset="expand" margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+      <ResponsiveContainer width="100%" height={Math.max(280, emotionData.length * 32)}>
+        <BarChart data={emotionData} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
           <XAxis
-            dataKey="label"
+            type="number"
+            allowDecimals={false}
             tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
             tickLine={false}
             axisLine={{ stroke: "hsl(var(--border))" }}
           />
           <YAxis
-            tickFormatter={(v: number) => `${Math.round(v * 100)}%`}
-            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            type="category"
+            dataKey="emotion"
+            width={100}
+            tick={{ fontSize: 12, fill: "hsl(var(--foreground))", textTransform: "capitalize" } as any}
             tickLine={false}
             axisLine={false}
           />
-          <RechartsTooltip content={<CustomTooltip />} />
-          <Area
-            type="monotone"
-            dataKey="positive"
-            stackId="1"
-            stroke={SENTIMENT_COLORS.positive}
-            fill={SENTIMENT_COLORS.positive}
-            fillOpacity={0.8}
-          />
-          <Area
-            type="monotone"
-            dataKey="neutral"
-            stackId="1"
-            stroke={SENTIMENT_COLORS.neutral}
-            fill={SENTIMENT_COLORS.neutral}
-            fillOpacity={0.8}
-          />
-          <Area
-            type="monotone"
-            dataKey="negative"
-            stackId="1"
-            stroke={SENTIMENT_COLORS.negative}
-            fill={SENTIMENT_COLORS.negative}
-            fillOpacity={0.8}
-          />
-        </AreaChart>
+          <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted) / 0.3)" }} />
+          <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
+            {emotionData.map((entry, index) => (
+              <Cell key={index} fill={SENTIMENT_COLORS[entry.sentiment]} fillOpacity={0.85} />
+            ))}
+          </Bar>
+        </BarChart>
       </ResponsiveContainer>
 
       {/* Legend */}
@@ -399,8 +290,8 @@ const Patterns = () => {
           )}
         </div>
 
-        {/* Sentiment Trend Chart */}
-        <SentimentTrendChart dreams={dreams} />
+        {/* Emotion Bar Chart */}
+        <EmotionBarChart dreams={dreams} />
 
         {/* AI Pattern Analysis */}
         {patternData ? (
