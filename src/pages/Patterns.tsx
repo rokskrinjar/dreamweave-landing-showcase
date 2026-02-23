@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
@@ -19,6 +19,7 @@ type Sentiment = "positive" | "negative" | "neutral";
 const POSITIVE_EMOTIONS = new Set([
   "happy", "excited", "peaceful", "euphoric", "hopeful", "joyful", "content",
   "relieved", "grateful", "loved", "inspired", "confident", "optimistic", "amused",
+  "calm", "safe", "brave", "proud", "serene", "relaxed",
 ]);
 
 const NEGATIVE_EMOTIONS = new Set([
@@ -26,10 +27,16 @@ const NEGATIVE_EMOTIONS = new Set([
   "ashamed", "jealous", "disgusted", "desperate", "hopeless", "terrified", "overwhelmed",
 ]);
 
+const NEUTRAL_EMOTIONS = new Set([
+  "confused", "nostalgic", "surprised", "curious", "melancholic", "bittersweet",
+  "curiosity", "urgency", "wonder", "contemplative",
+]);
+
 const classifySentiment = (emotion: string): Sentiment => {
   const e = emotion.trim().toLowerCase();
   if (POSITIVE_EMOTIONS.has(e)) return "positive";
   if (NEGATIVE_EMOTIONS.has(e)) return "negative";
+  // Explicitly listed neutrals + any unrecognized emotion
   return "neutral";
 };
 
@@ -94,9 +101,9 @@ function buildCalendarData(dreams: any[]): CalendarDay[][] {
       if (emotions.length > 0) {
         const counts: Record<Sentiment, number> = { positive: 0, negative: 0, neutral: 0 };
         emotions.forEach((e) => counts[classifySentiment(e)]++);
-        dominantSentiment = (Object.keys(counts) as Sentiment[]).reduce((a, b) =>
-          counts[a] >= counts[b] ? a : b
-        );
+        // Pick the sentiment with strictly the highest count; default to neutral on tie
+        const sorted = (Object.keys(counts) as Sentiment[]).sort((a, b) => counts[b] - counts[a]);
+        dominantSentiment = counts[sorted[0]] > counts[sorted[1]] ? sorted[0] : "neutral";
       }
 
       // Don't show future days
@@ -143,12 +150,29 @@ interface PatternData {
 }
 
 const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
-const CELL_SIZE = 16;
+const DAY_LABEL_WIDTH = 32;
 const CELL_GAP = 3;
+const MIN_CELL = 14;
+const MAX_CELL = 24;
 
 const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
   const weeks = useMemo(() => buildCalendarData(dreams), [dreams]);
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cellSize, setCellSize] = useState(16);
+
+  const measure = useCallback(() => {
+    if (!containerRef.current) return;
+    const available = containerRef.current.clientWidth - DAY_LABEL_WIDTH;
+    const size = Math.floor((available - CELL_GAP * 13) / 14);
+    setCellSize(Math.max(MIN_CELL, Math.min(MAX_CELL, size)));
+  }, []);
+
+  useEffect(() => {
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
 
   const dreamsWithMood = dreams.filter((d) => d.mood);
   if (dreamsWithMood.length < 3) {
@@ -162,21 +186,21 @@ const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
   }
 
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border mb-8">
+    <div className="bg-card rounded-2xl p-6 border border-border mb-8" ref={containerRef}>
       <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
         <BarChart3 className="w-5 h-5 text-primary" /> Emotion Calendar
       </h3>
 
       <div className="overflow-x-auto">
         {/* Month labels */}
-        <div className="flex" style={{ paddingLeft: 36 }}>
+        <div className="flex" style={{ paddingLeft: DAY_LABEL_WIDTH + 4 }}>
           {monthLabels.map((m, i) => (
             <span
               key={i}
               className="text-xs text-muted-foreground"
               style={{
                 position: "relative",
-                left: m.colIndex * (CELL_SIZE + CELL_GAP),
+                left: m.colIndex * (cellSize + CELL_GAP),
                 width: 0,
                 whiteSpace: "nowrap",
               }}
@@ -189,12 +213,12 @@ const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
         {/* Grid */}
         <div className="flex mt-1">
           {/* Day labels */}
-          <div className="flex flex-col" style={{ width: 32 }}>
+          <div className="flex flex-col" style={{ width: DAY_LABEL_WIDTH }}>
             {DAY_LABELS.map((label, i) => (
               <span
                 key={i}
                 className="text-xs text-muted-foreground flex items-center"
-                style={{ height: CELL_SIZE + CELL_GAP }}
+                style={{ height: cellSize + CELL_GAP }}
               >
                 {label}
               </span>
@@ -203,9 +227,9 @@ const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
 
           {/* Cells */}
           <TooltipProvider delayDuration={100}>
-            <div className="flex gap-[3px]">
+            <div className="flex" style={{ gap: CELL_GAP }}>
               {weeks.map((week, wIdx) => (
-                <div key={wIdx} className="flex flex-col gap-[3px]">
+                <div key={wIdx} className="flex flex-col" style={{ gap: CELL_GAP }}>
                   {week.map((day, dIdx) => {
                     const isFuture = day.emotions.length === 0 && day.dreamCount === 0 && day.date > new Date();
                     const bgColor = day.dominantSentiment
@@ -215,8 +239,8 @@ const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
                     const cell = (
                       <div
                         style={{
-                          width: CELL_SIZE,
-                          height: CELL_SIZE,
+                          width: cellSize,
+                          height: cellSize,
                           backgroundColor: isFuture ? "transparent" : bgColor,
                           borderRadius: 3,
                           opacity: isFuture ? 0 : 1,
@@ -224,7 +248,7 @@ const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
                       />
                     );
 
-                    if (isFuture) return <div key={dIdx} style={{ width: CELL_SIZE, height: CELL_SIZE }} />;
+                    if (isFuture) return <div key={dIdx} style={{ width: cellSize, height: cellSize }} />;
 
                     return (
                       <Tooltip key={dIdx}>
