@@ -8,13 +8,56 @@ import { BarChart3, Sparkles, Lock, TrendingUp, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const moodValues: Record<string, number> = {
-  euphoric: 5,
-  peaceful: 4,
-  nostalgic: 3,
-  confused: 2,
-  anxious: 1,
+const defaultMoodValues: Record<string, number> = {
   fearful: 0,
+  anxious: 1,
+  confused: 2,
+  nostalgic: 3,
+  peaceful: 4,
+  euphoric: 5,
+};
+
+/**
+ * Build a dynamic mood scale that includes both default moods and any custom
+ * moods found in the user's dreams, assigning them numeric positions.
+ */
+const buildMoodScale = (dreams: any[]): { values: Record<string, number>; labels: string[] } => {
+  const customMoods = new Set<string>();
+
+  dreams.forEach((d) => {
+    if (!d.mood) return;
+    const parts = (d.mood as string).split(",").map((s: string) => s.trim().toLowerCase()).filter(Boolean);
+    parts.forEach((m) => {
+      if (!defaultMoodValues.hasOwnProperty(m)) {
+        customMoods.add(m);
+      }
+    });
+  });
+
+  // Insert custom moods between "nostalgic" (3) and "peaceful" (4) by shifting upper defaults up
+  const sortedCustom = [...customMoods].sort();
+  const customCount = sortedCustom.length;
+
+  // Build full ordered list: fearful(0), anxious(1), confused(2), nostalgic(3), ...custom..., peaceful, euphoric
+  const labels: string[] = ["fearful", "anxious", "confused", "nostalgic", ...sortedCustom, "peaceful", "euphoric"];
+  const values: Record<string, number> = {};
+  labels.forEach((label, i) => {
+    values[label] = i;
+  });
+
+  return { values, labels };
+};
+
+/** Extract the primary mood from a comma-separated mood string */
+const getPrimaryMood = (moodStr: string, scale: Record<string, number>): { value: number; label: string } | null => {
+  const parts = moodStr.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  // Prefer the first mood that's in our scale
+  for (const m of parts) {
+    if (scale.hasOwnProperty(m)) {
+      return { value: scale[m], label: m };
+    }
+  }
+  return null;
 };
 
 interface PatternData {
@@ -73,13 +116,21 @@ const Patterns = () => {
 
   const isLocked = profile?.subscription_tier === "free";
 
+  const moodScale = buildMoodScale(dreams);
+  const maxMoodValue = moodScale.labels.length - 1;
+
   const moodChartData = dreams
-    .filter((d) => d.mood && moodValues[d.mood] !== undefined)
-    .map((d) => ({
-      date: new Date(d.recorded_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      mood: moodValues[d.mood],
-      label: d.mood,
-    }));
+    .filter((d) => d.mood)
+    .map((d) => {
+      const parsed = getPrimaryMood(d.mood, moodScale.values);
+      if (!parsed) return null;
+      return {
+        date: new Date(d.recorded_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        mood: parsed.value,
+        label: parsed.label,
+      };
+    })
+    .filter(Boolean);
 
   const handleGeneratePatterns = async () => {
     if (!user) return;
@@ -174,15 +225,12 @@ const Patterns = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
                 <YAxis
-                  domain={[0, 5]}
-                  ticks={[0, 1, 2, 3, 4, 5]}
-                  tickFormatter={(v) => {
-                    const labels = ["fearful", "anxious", "confused", "nostalgic", "peaceful", "euphoric"];
-                    return labels[v] || "";
-                  }}
+                  domain={[0, maxMoodValue]}
+                  ticks={moodScale.labels.map((_: string, i: number) => i)}
+                  tickFormatter={(v: number) => moodScale.labels[v] || ""}
                   tick={{ fontSize: 11 }}
                   stroke="hsl(var(--muted-foreground))"
-                  width={80}
+                  width={90}
                 />
                 <Tooltip
                   contentStyle={{
