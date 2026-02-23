@@ -8,8 +8,8 @@ const corsHeaders = {
 };
 
 const PRICE_CONFIG: Record<string, { priceId: string; mode: "subscription" | "payment" }> = {
-  pro: { priceId: "price_1T2druFI9Hj3v9v4adwntsGW", mode: "subscription" },
-  lifetime: { priceId: "price_1T2dtMFI9Hj3v9v4Uftomk1v", mode: "payment" },
+  pro: { priceId: "price_1T45nvF0C59Hu24kVOo4kDyX", mode: "subscription" },
+  lifetime: { priceId: "price_1T45p3F0C59Hu24kQawUN8gv", mode: "payment" },
 };
 
 serve(async (req) => {
