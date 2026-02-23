@@ -112,7 +112,7 @@ const Dashboard = () => {
           {isFree ? (
             <p className="text-sm text-muted-foreground mt-1">
               {profile ? remaining : "..."} free analyses remaining this month ·{" "}
-              <button type="button" onClick={() => { if (upgradeBannerRef.current) { upgradeBannerRef.current.scrollIntoView({ behavior: "smooth" }); } else { navigate("/"); setTimeout(() => { const el = document.getElementById("pricing"); if (el) el.scrollIntoView({ behavior: "smooth" }); }, 300); } }} className="text-primary hover:underline">Upgrade</button>
+              <button type="button" onClick={() => { if (upgradeBannerRef.current) { upgradeBannerRef.current.scrollIntoView({ behavior: "smooth" }); } else { handleCheckout("pro"); } }} className="text-primary hover:underline">Upgrade</button>
             </p>
           ) : (
             <div className="flex items-center gap-2 mt-1">
