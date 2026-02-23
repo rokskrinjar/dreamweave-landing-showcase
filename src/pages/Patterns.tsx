@@ -56,44 +56,47 @@ interface CalendarDay {
   dominantSentiment: Sentiment | null;
 }
 
+function toDateKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function buildCalendarData(dreams: any[]): CalendarDay[][] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Find the Monday that starts the grid (14 weeks back from end of current week)
-  const dayOfWeek = today.getDay(); // 0=Sun
+  const dayOfWeek = today.getDay();
   const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   const endMonday = new Date(today);
   endMonday.setDate(today.getDate() - mondayOffset);
   const startDate = new Date(endMonday);
-  startDate.setDate(endMonday.getDate() - 13 * 7); // 14 weeks total
+  startDate.setDate(endMonday.getDate() - 13 * 7);
 
-  // Index dreams by date string
   const dreamsByDate = new Map<string, string[]>();
   dreams.forEach((d) => {
     if (!d.mood) return;
-    const dateKey = new Date(d.recorded_at).toISOString().slice(0, 10);
+    const dateKey = toDateKey(new Date(d.recorded_at));
     const emotions = (d.mood as string).split(",").map((s: string) => s.trim().toLowerCase()).filter(Boolean);
     const existing = dreamsByDate.get(dateKey) || [];
     existing.push(...emotions);
     dreamsByDate.set(dateKey, existing);
   });
 
-  // Count dreams per date
   const dreamCountByDate = new Map<string, number>();
   dreams.forEach((d) => {
-    const dateKey = new Date(d.recorded_at).toISOString().slice(0, 10);
+    const dateKey = toDateKey(new Date(d.recorded_at));
     dreamCountByDate.set(dateKey, (dreamCountByDate.get(dateKey) || 0) + 1);
   });
 
-  // Build weeks (columns) x days (rows)
   const weeks: CalendarDay[][] = [];
   for (let w = 0; w < 14; w++) {
     const week: CalendarDay[] = [];
     for (let d = 0; d < 7; d++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + w * 7 + d);
-      const dateStr = date.toISOString().slice(0, 10);
+      const dateStr = toDateKey(date);
       const emotions = dreamsByDate.get(dateStr) || [];
       const dreamCount = dreamCountByDate.get(dateStr) || 0;
 
@@ -153,7 +156,7 @@ const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
 const DAY_LABEL_WIDTH = 32;
 const CELL_GAP = 3;
 const MIN_CELL = 14;
-const MAX_CELL = 24;
+const MAX_CELL = 60;
 
 const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
   const weeks = useMemo(() => buildCalendarData(dreams), [dreams]);
