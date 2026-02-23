@@ -1,39 +1,39 @@
 
 
-## GitHub-style Emotion Calendar Heatmap
+## Fix Emotion Calendar: Stretch to Fill + Fix Neutral Display
 
-Replace the current misleading line chart with a GitHub contributions-style calendar heatmap using 3 sentiment colors.
+### Problems Found
 
-### What changes
+1. **Chart doesn't fill the card width** -- cells are fixed at 16px regardless of available space
+2. **Missing neutral dreams** -- Two causes:
+   - The emotion classifier doesn't recognize some mood strings from your dreams: "curiosity" (only "curious" is listed), "calm", "safe", "urgency" -- these all default to neutral but "calm" and "safe" should arguably be positive
+   - Tie-breaking bug: when a day has equal counts of two sentiments (e.g. "confused, fearful" = 1 neutral + 1 negative), negative always wins because of how the code compares. Neutral never gets a fair shot at ties.
+3. **Empty day color is fine** -- no changes there per your feedback
 
-**File: `src/pages/Patterns.tsx`**
+### Changes (all in `src/pages/Patterns.tsx`)
 
-1. **Remove** the Recharts imports (`LineChart`, `Line`, `XAxis`, `YAxis`, `CartesianGrid`, `Tooltip`, `ResponsiveContainer`) and all the old mood scale helpers (`defaultMoodValues`, `buildMoodScale`, `getPrimaryMood`, `moodScale`, `maxMoodValue`, `moodChartData`).
+1. **Make the grid stretch to fill the card width**
+   - Use a container ref to measure available width
+   - Dynamically calculate cell size: `(availableWidth - dayLabelWidth) / 14 weeks - gap`
+   - Set a min of 14px and max of 24px for the cells
+   - This makes the calendar fill the entire card on both desktop and mobile
 
-2. **Add sentiment classifier** -- a function that maps any emotion string to one of three categories:
-   - Positive (green `#10b981`): happy, excited, peaceful, euphoric, hopeful, joyful, content, relieved, grateful, loved, inspired, confident, optimistic, amused
-   - Negative (rose `#f43f5e`): fearful, anxious, sad, angry, frustrated, lonely, guilty, ashamed, jealous, disgusted, desperate, hopeless, terrified, overwhelmed
-   - Neutral (amber `#f59e0b`): confused, nostalgic, surprised, curious, melancholic, bittersweet, and any unrecognized emotion
+2. **Expand the emotion word lists** to catch more variations from your actual dream data:
+   - Add to Positive: "calm", "safe", "brave", "proud", "serene", "relaxed"
+   - Add to Neutral: "curiosity", "urgency", "wonder", "contemplative"
+   - This ensures your dreams with "calm", "safe", "curiosity" get properly colored
 
-3. **Add calendar data builder** -- generates a grid covering the last 14 weeks (98 days). For each day:
-   - Collect all dreams recorded that day
-   - Parse all emotions from comma-separated mood strings
-   - Determine dominant sentiment (whichever category has more emotions that day)
-   - Store the list of all emotions for the tooltip
+3. **Fix tie-breaking logic** so that when sentiments are tied, neutral gets a fair chance instead of always losing. The new logic will pick the sentiment with strictly the highest count, and default to neutral on a perfect tie.
 
-4. **Render a custom calendar grid** using simple HTML/CSS (no library needed):
-   - 7 rows (Mon-Sun) x 14 columns (weeks)
-   - Each cell is a ~16x16px rounded rectangle with 2px gap
-   - Cell color: green/amber/rose based on dominant sentiment, or light gray for empty days
-   - Day-of-week labels on the left (Mon, Wed, Fri)
-   - Month labels along the top where months change
-   - Hover tooltip showing: date, all emotions listed, dream count
+### What stays the same
 
-5. **Add a color legend** below the chart showing: Empty / Positive / Neutral / Negative
-
-6. **Keep the fallback** for fewer than 3 dreams with moods.
+- Empty day squares stay as they are (gray)
+- Three sentiment colors unchanged (green/amber/rose)
+- Hover tooltips unchanged
+- Legend unchanged
+- Fallback for fewer than 3 dreams unchanged
 
 ### How to undo
 
-If you don't like the result, click the **Restore** button on the AI message right before this change to revert instantly.
+Click the **Restore** button on the previous AI message to revert.
 
