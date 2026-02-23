@@ -1,39 +1,46 @@
 
 
-## Fix Emotion Calendar: Stretch to Fill + Fix Neutral Display
+## Fix Emotion Calendar: Timezone Bug + Width
 
-### Problems Found
+### Root Causes Found
 
-1. **Chart doesn't fill the card width** -- cells are fixed at 16px regardless of available space
-2. **Missing neutral dreams** -- Two causes:
-   - The emotion classifier doesn't recognize some mood strings from your dreams: "curiosity" (only "curious" is listed), "calm", "safe", "urgency" -- these all default to neutral but "calm" and "safe" should arguably be positive
-   - Tie-breaking bug: when a day has equal counts of two sentiments (e.g. "confused, fearful" = 1 neutral + 1 negative), negative always wins because of how the code compares. Neutral never gets a fair shot at ties.
-3. **Empty day color is fine** -- no changes there per your feedback
+**1. Timezone date mismatch (why dreams are missing)**
+The grid builds dates using local time (`new Date()` with `setHours(0,0,0,0)`), then converts them to date strings with `.toISOString().slice(0,10)` which outputs UTC. If you're in any timezone east of UTC (e.g. UTC+1), local midnight Feb 17 becomes "2026-02-16" in UTC. Meanwhile, dream dates from the database (already in UTC) produce correct UTC date strings. The grid keys and dream keys never match, so cells stay empty.
 
-### Changes (all in `src/pages/Patterns.tsx`)
+This explains why only 2 of your ~16 dreams with moods show up -- those 2 happen to land on dates where the timezone offset doesn't cause a mismatch (likely dreams recorded around midnight UTC).
 
-1. **Make the grid stretch to fill the card width**
-   - Use a container ref to measure available width
-   - Dynamically calculate cell size: `(availableWidth - dayLabelWidth) / 14 weeks - gap`
-   - Set a min of 14px and max of 24px for the cells
-   - This makes the calendar fill the entire card on both desktop and mobile
+**2. Cell size cap too small (why grid doesn't fill the card)**
+`MAX_CELL` is capped at 24px. With 14 columns: `14 x 24 + 13 x 3 = 375px`. Your card is roughly 800px wide, so the grid only fills half.
 
-2. **Expand the emotion word lists** to catch more variations from your actual dream data:
-   - Add to Positive: "calm", "safe", "brave", "proud", "serene", "relaxed"
-   - Add to Neutral: "curiosity", "urgency", "wonder", "contemplative"
-   - This ensures your dreams with "calm", "safe", "curiosity" get properly colored
+### Fixes (all in `src/pages/Patterns.tsx`)
 
-3. **Fix tie-breaking logic** so that when sentiments are tied, neutral gets a fair chance instead of always losing. The new logic will pick the sentiment with strictly the highest count, and default to neutral on a perfect tie.
+**Fix 1: Use a timezone-safe date formatter**
+Replace all `.toISOString().slice(0,10)` calls with a helper that formats dates using local year/month/day:
+
+```text
+function toDateKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+```
+
+For dream `recorded_at` strings, parse them into a local date first:
+```text
+const dateKey = toDateKey(new Date(d.recorded_at));
+```
+
+For grid dates (already local): same function. Now both sides produce matching local date keys.
+
+**Fix 2: Remove the cell size cap**
+- Remove the `MAX_CELL = 24` constant (or raise it to something like 60)
+- This lets cells grow to fill the full card width naturally
+- Keep `MIN_CELL = 14` so cells don't get too tiny on mobile
 
 ### What stays the same
-
-- Empty day squares stay as they are (gray)
-- Three sentiment colors unchanged (green/amber/rose)
-- Hover tooltips unchanged
+- All sentiment colors and classifier logic unchanged
+- Tooltip behavior unchanged
 - Legend unchanged
-- Fallback for fewer than 3 dreams unchanged
-
-### How to undo
-
-Click the **Restore** button on the previous AI message to revert.
+- Month/day labels unchanged
 
