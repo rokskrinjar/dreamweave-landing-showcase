@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
@@ -6,11 +6,15 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { BarChart3, Sparkles, Lock, TrendingUp, Clock } from "lucide-react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
 // --- Sentiment classification ---
 
@@ -36,7 +40,6 @@ const classifySentiment = (emotion: string): Sentiment => {
   const e = emotion.trim().toLowerCase();
   if (POSITIVE_EMOTIONS.has(e)) return "positive";
   if (NEGATIVE_EMOTIONS.has(e)) return "negative";
-  // Explicitly listed neutrals + any unrecognized emotion
   return "neutral";
 };
 
@@ -46,14 +49,15 @@ const SENTIMENT_COLORS: Record<Sentiment, string> = {
   neutral: "#f59e0b",
 };
 
-// --- Calendar data ---
+// --- Weekly sentiment data for stacked area chart ---
 
-interface CalendarDay {
-  date: Date;
-  dateStr: string;
+interface WeekData {
+  label: string;
+  positive: number;
+  neutral: number;
+  negative: number;
   emotions: string[];
   dreamCount: number;
-  dominantSentiment: Sentiment | null;
 }
 
 function toDateKey(date: Date): string {
@@ -63,10 +67,11 @@ function toDateKey(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-function buildCalendarData(dreams: any[]): CalendarDay[][] {
+function buildWeeklyData(dreams: any[]): WeekData[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Find the Monday that starts the grid (up to 14 weeks back)
   const dayOfWeek = today.getDay();
   const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   const endMonday = new Date(today);
@@ -74,6 +79,7 @@ function buildCalendarData(dreams: any[]): CalendarDay[][] {
   const startDate = new Date(endMonday);
   startDate.setDate(endMonday.getDate() - 13 * 7);
 
+  // Index dream emotions by date
   const dreamsByDate = new Map<string, string[]>();
   dreams.forEach((d) => {
     if (!d.mood) return;
@@ -84,63 +90,81 @@ function buildCalendarData(dreams: any[]): CalendarDay[][] {
     dreamsByDate.set(dateKey, existing);
   });
 
-  const dreamCountByDate = new Map<string, number>();
-  dreams.forEach((d) => {
-    const dateKey = toDateKey(new Date(d.recorded_at));
-    dreamCountByDate.set(dateKey, (dreamCountByDate.get(dateKey) || 0) + 1);
-  });
-
-  const weeks: CalendarDay[][] = [];
+  const weeks: WeekData[] = [];
   for (let w = 0; w < 14; w++) {
-    const week: CalendarDay[] = [];
+    const weekStart = new Date(startDate);
+    weekStart.setDate(startDate.getDate() + w * 7);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    // Skip fully future weeks
+    if (weekStart > today) continue;
+
+    const counts: Record<Sentiment, number> = { positive: 0, negative: 0, neutral: 0 };
+    const allEmotions: string[] = [];
+    let dreamCount = 0;
+
     for (let d = 0; d < 7; d++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + w * 7 + d);
-      const dateStr = toDateKey(date);
-      const emotions = dreamsByDate.get(dateStr) || [];
-      const dreamCount = dreamCountByDate.get(dateStr) || 0;
-
-      let dominantSentiment: Sentiment | null = null;
-      if (emotions.length > 0) {
-        const counts: Record<Sentiment, number> = { positive: 0, negative: 0, neutral: 0 };
-        emotions.forEach((e) => counts[classifySentiment(e)]++);
-        // Pick the sentiment with strictly the highest count; default to neutral on tie
-        const sorted = (Object.keys(counts) as Sentiment[]).sort((a, b) => counts[b] - counts[a]);
-        dominantSentiment = counts[sorted[0]] > counts[sorted[1]] ? sorted[0] : "neutral";
-      }
-
-      // Don't show future days
-      const isFuture = date > today;
-      week.push({
-        date,
-        dateStr,
-        emotions: isFuture ? [] : emotions,
-        dreamCount: isFuture ? 0 : dreamCount,
-        dominantSentiment: isFuture ? null : dominantSentiment,
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + d);
+      if (date > today) break;
+      const key = toDateKey(date);
+      const emotions = dreamsByDate.get(key) || [];
+      if (emotions.length > 0) dreamCount++;
+      emotions.forEach((e) => {
+        counts[classifySentiment(e)]++;
+        allEmotions.push(e);
       });
     }
-    weeks.push(week);
+
+    const total = counts.positive + counts.negative + counts.neutral;
+    const label = weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+    weeks.push({
+      label,
+      positive: total > 0 ? Math.round((counts.positive / total) * 100) : 0,
+      neutral: total > 0 ? Math.round((counts.neutral / total) * 100) : 0,
+      negative: total > 0 ? Math.round((counts.negative / total) * 100) : 0,
+      emotions: [...new Set(allEmotions)],
+      dreamCount,
+    });
   }
 
   return weeks;
 }
 
-function getMonthLabels(weeks: CalendarDay[][]): { label: string; colIndex: number }[] {
-  const labels: { label: string; colIndex: number }[] = [];
-  let lastMonth = -1;
-  weeks.forEach((week, colIndex) => {
-    // Use the Monday of each week
-    const month = week[0].date.getMonth();
-    if (month !== lastMonth) {
-      labels.push({
-        label: week[0].date.toLocaleDateString("en-US", { month: "short" }),
-        colIndex,
-      });
-      lastMonth = month;
-    }
-  });
-  return labels;
-}
+// Custom tooltip for the area chart
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload || !payload.length) return null;
+  const data = payload[0]?.payload as WeekData;
+  return (
+    <div className="bg-card border border-border rounded-lg p-3 shadow-lg text-sm">
+      <p className="font-semibold text-foreground mb-1">Week of {label}</p>
+      <p className="text-muted-foreground mb-2">
+        {data.dreamCount} day{data.dreamCount !== 1 ? "s" : ""} with dreams
+      </p>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.positive }} />
+          <span>Positive: {data.positive}%</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.neutral }} />
+          <span>Neutral: {data.neutral}%</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.negative }} />
+          <span>Negative: {data.negative}%</span>
+        </div>
+      </div>
+      {data.emotions.length > 0 && (
+        <p className="text-muted-foreground mt-2 capitalize text-xs">
+          {data.emotions.join(", ")}
+        </p>
+      )}
+    </div>
+  );
+};
 
 // --- Component ---
 
@@ -152,166 +176,98 @@ interface PatternData {
   created_at?: string;
 }
 
-const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
-const DAY_LABEL_WIDTH = 32;
-const CELL_GAP = 3;
-const MIN_CELL = 14;
-const MAX_CELL = 44;
-const CARD_PADDING = 48; // p-6 = 24px × 2
-
-const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
-  const weeks = useMemo(() => buildCalendarData(dreams), [dreams]);
-  const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [cellSize, setCellSize] = useState(16);
-
-  const measure = useCallback(() => {
-    if (!containerRef.current) return;
-    const available = containerRef.current.clientWidth - DAY_LABEL_WIDTH - CARD_PADDING;
-    const size = Math.floor((available - CELL_GAP * 13) / 14);
-    setCellSize(Math.max(MIN_CELL, Math.min(MAX_CELL, size)));
-  }, []);
-
-  useEffect(() => {
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [measure]);
+const SentimentTrendChart = ({ dreams }: { dreams: any[] }) => {
+  const weeklyData = useMemo(() => buildWeeklyData(dreams), [dreams]);
 
   const dreamsWithMood = dreams.filter((d) => d.mood);
   if (dreamsWithMood.length < 3) {
     return (
       <div className="bg-card rounded-2xl p-12 border border-border mb-8 text-center">
         <p className="text-muted-foreground">
-          Record at least 3 dreams with moods to see your emotion calendar.
+          Record at least 3 dreams with moods to see your sentiment trends.
         </p>
       </div>
     );
   }
 
+  // Filter to only weeks that have any data
+  const hasData = weeklyData.some((w) => w.dreamCount > 0);
+  if (!hasData) {
+    return (
+      <div className="bg-card rounded-2xl p-12 border border-border mb-8 text-center">
+        <p className="text-muted-foreground">No mood data found for the last 14 weeks.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border mb-8" ref={containerRef}>
+    <div className="bg-card rounded-2xl p-6 border border-border mb-8">
       <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-        <BarChart3 className="w-5 h-5 text-primary" /> Emotion Calendar
+        <BarChart3 className="w-5 h-5 text-primary" /> Sentiment Trends
       </h3>
 
-      <div className="overflow-x-auto">
-        {/* Month labels */}
-        <div className="flex" style={{ paddingLeft: DAY_LABEL_WIDTH + 4 }}>
-          {monthLabels.map((m, i) => (
-            <span
-              key={i}
-              className="text-xs text-muted-foreground"
-              style={{
-                position: "relative",
-                left: m.colIndex * (cellSize + CELL_GAP),
-                width: 0,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {m.label}
-            </span>
-          ))}
-        </div>
-
-        {/* Grid */}
-        <div className="flex mt-1">
-          {/* Day labels */}
-          <div className="flex flex-col" style={{ width: DAY_LABEL_WIDTH }}>
-            {DAY_LABELS.map((label, i) => (
-              <span
-                key={i}
-                className="text-xs text-muted-foreground flex items-center"
-                style={{ height: cellSize + CELL_GAP }}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-
-          {/* Cells */}
-          <TooltipProvider delayDuration={100}>
-            <div className="flex" style={{ gap: CELL_GAP }}>
-              {weeks.map((week, wIdx) => (
-                <div key={wIdx} className="flex flex-col" style={{ gap: CELL_GAP }}>
-                  {week.map((day, dIdx) => {
-                    const isFuture = day.emotions.length === 0 && day.dreamCount === 0 && day.date > new Date();
-                    const bgColor = day.dominantSentiment
-                      ? SENTIMENT_COLORS[day.dominantSentiment]
-                      : "hsl(var(--muted))";
-
-                    const cell = (
-                      <div
-                        style={{
-                          width: cellSize,
-                          height: cellSize,
-                          backgroundColor: isFuture ? "transparent" : bgColor,
-                          borderRadius: 3,
-                          opacity: isFuture ? 0 : 1,
-                        }}
-                      />
-                    );
-
-                    if (isFuture) return <div key={dIdx} style={{ width: cellSize, height: cellSize }} />;
-
-                    return (
-                      <Tooltip key={dIdx}>
-                        <TooltipTrigger asChild>
-                          {cell}
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="text-xs max-w-[200px]">
-                          <p className="font-semibold">
-                            {day.date.toLocaleDateString("en-US", {
-                              weekday: "short",
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </p>
-                          {day.dreamCount > 0 ? (
-                            <>
-                              <p className="text-muted-foreground">
-                                {day.dreamCount} dream{day.dreamCount > 1 ? "s" : ""}
-                              </p>
-                              <p className="capitalize">
-                                {[...new Set(day.emotions)].join(", ")}
-                              </p>
-                            </>
-                          ) : (
-                            <p className="text-muted-foreground">No dreams</p>
-                          )}
-                        </TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          </TooltipProvider>
-        </div>
-      </div>
+      <ResponsiveContainer width="100%" height={280}>
+        <AreaChart data={weeklyData} stackOffset="expand" margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis
+            dataKey="label"
+            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            tickLine={false}
+            axisLine={{ stroke: "hsl(var(--border))" }}
+          />
+          <YAxis
+            tickFormatter={(v: number) => `${Math.round(v * 100)}%`}
+            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <RechartsTooltip content={<CustomTooltip />} />
+          <Area
+            type="monotone"
+            dataKey="positive"
+            stackId="1"
+            stroke={SENTIMENT_COLORS.positive}
+            fill={SENTIMENT_COLORS.positive}
+            fillOpacity={0.8}
+          />
+          <Area
+            type="monotone"
+            dataKey="neutral"
+            stackId="1"
+            stroke={SENTIMENT_COLORS.neutral}
+            fill={SENTIMENT_COLORS.neutral}
+            fillOpacity={0.8}
+          />
+          <Area
+            type="monotone"
+            dataKey="negative"
+            stackId="1"
+            stroke={SENTIMENT_COLORS.negative}
+            fill={SENTIMENT_COLORS.negative}
+            fillOpacity={0.8}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
 
       {/* Legend */}
       <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: "hsl(var(--muted))" }} />
-          Empty
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: SENTIMENT_COLORS.positive }} />
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.positive }} />
           Positive
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: SENTIMENT_COLORS.neutral }} />
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.neutral }} />
           Neutral
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: SENTIMENT_COLORS.negative }} />
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SENTIMENT_COLORS.negative }} />
           Negative
         </div>
       </div>
     </div>
   );
 };
+
 
 const Patterns = () => {
   const { user } = useAuth();
@@ -443,8 +399,8 @@ const Patterns = () => {
           )}
         </div>
 
-        {/* Emotion Calendar Heatmap */}
-        <EmotionCalendar dreams={dreams} />
+        {/* Sentiment Trend Chart */}
+        <SentimentTrendChart dreams={dreams} />
 
         {/* AI Pattern Analysis */}
         {patternData ? (
