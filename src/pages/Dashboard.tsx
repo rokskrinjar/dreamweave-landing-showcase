@@ -111,7 +111,7 @@ const Dashboard = () => {
           {isFree ? (
             <p className="text-sm text-muted-foreground mt-1">
               {profile ? remaining : "..."} free analyses remaining this month ·{" "}
-              <a href="/#pricing" onClick={(e) => { e.preventDefault(); window.location.href = "/#pricing"; }} className="text-primary hover:underline">Upgrade</a>
+              <button type="button" onClick={() => { if (upgradeBannerRef.current) { upgradeBannerRef.current.scrollIntoView({ behavior: "smooth" }); } else { window.location.href = "/#pricing"; } }} className="text-primary hover:underline">Upgrade</button>
             </p>
           ) : (
             <div className="flex items-center gap-2 mt-1">
