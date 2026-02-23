@@ -156,7 +156,8 @@ const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
 const DAY_LABEL_WIDTH = 32;
 const CELL_GAP = 3;
 const MIN_CELL = 14;
-const MAX_CELL = 60;
+const MAX_CELL = 44;
+const CARD_PADDING = 48; // p-6 = 24px × 2
 
 const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
   const weeks = useMemo(() => buildCalendarData(dreams), [dreams]);
@@ -166,7 +167,7 @@ const EmotionCalendar = ({ dreams }: { dreams: any[] }) => {
 
   const measure = useCallback(() => {
     if (!containerRef.current) return;
-    const available = containerRef.current.clientWidth - DAY_LABEL_WIDTH;
+    const available = containerRef.current.clientWidth - DAY_LABEL_WIDTH - CARD_PADDING;
     const size = Math.floor((available - CELL_GAP * 13) / 14);
     setCellSize(Math.max(MIN_CELL, Math.min(MAX_CELL, size)));
   }, []);
