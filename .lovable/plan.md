@@ -1,25 +1,19 @@
 
 
-## Update Price IDs for Testing
+## Update Live Stripe Price IDs
 
-Two changes needed to wire up your new Stripe test prices.
+### What changes
+Only one file needs updating — the backend checkout function:
 
-### 1. Update the edge function (`supabase/functions/create-checkout/index.ts`)
+**File: `supabase/functions/create-checkout/index.ts`**
+- Replace test Price ID `price_1T2druFI9Hj3v9v4adwntsGW` with live `price_1T45nvF0C59Hu24kVOo4kDyX` (Pro)
+- Replace test Price ID `price_1T2dtMFI9Hj3v9v4Uftomk1v` with live `price_1T45p3F0C59Hu24kQawUN8gv` (Lifetime)
 
-Replace the hardcoded price IDs in the `PRICE_CONFIG`:
+No UI changes needed since the prices (EUR 0.50/month and EUR 1.00 one-time) remain the same.
 
-| Plan | Old Price ID | New Price ID | Amount |
-|---|---|---|---|
-| Pro | `price_1T1Xa7FI9Hj3v9v4Cz3XZhdT` | `price_1T2druFI9Hj3v9v4adwntsGW` | 0.50 EUR/month |
-| Lifetime | `price_1T1XaNFI9Hj3v9v4OxpLvWkN` | `price_1T2dtMFI9Hj3v9v4Uftomk1v` | 1.00 EUR one-time |
+### Technical detail
+The `PRICE_CONFIG` object in the edge function will be updated with the two new live Price IDs. The function will be automatically redeployed.
 
-### 2. Update the UI prices (`src/components/CTASection.tsx`)
-
-Change the displayed prices to match:
-- Pro: "$9.99" becomes "€0.50"
-- Lifetime: "$99" becomes "€1.00"
-
-### Important Note
-
-When you're ready to go live with real prices, you'll need to swap these IDs back to your production prices and update the UI again.
+### After this change
+Your checkout flow will create real charges. Make sure your Stripe account is fully activated before testing with a real card.
 
