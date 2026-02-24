@@ -1,46 +1,57 @@
 
 
-## Fix Emotion Calendar: Timezone Bug + Width
+## Add AI-Powered Sentiment to Dream Analysis
 
-### Root Causes Found
+### Approach
+Instead of classifying emotions on the frontend with brittle word lists, we'll have the AI classify the overall dream sentiment during the existing analysis step -- no extra AI calls needed. We store the result as a new `sentiment` column on the `dreams` table. The Patterns page then reads this attribute directly.
 
-**1. Timezone date mismatch (why dreams are missing)**
-The grid builds dates using local time (`new Date()` with `setHours(0,0,0,0)`), then converts them to date strings with `.toISOString().slice(0,10)` which outputs UTC. If you're in any timezone east of UTC (e.g. UTC+1), local midnight Feb 17 becomes "2026-02-16" in UTC. Meanwhile, dream dates from the database (already in UTC) produce correct UTC date strings. The grid keys and dream keys never match, so cells stay empty.
+### Changes
 
-This explains why only 2 of your ~16 dreams with moods show up -- those 2 happen to land on dates where the timezone offset doesn't cause a mismatch (likely dreams recorded around midnight UTC).
-
-**2. Cell size cap too small (why grid doesn't fill the card)**
-`MAX_CELL` is capped at 24px. With 14 columns: `14 x 24 + 13 x 3 = 375px`. Your card is roughly 800px wide, so the grid only fills half.
-
-### Fixes (all in `src/pages/Patterns.tsx`)
-
-**Fix 1: Use a timezone-safe date formatter**
-Replace all `.toISOString().slice(0,10)` calls with a helper that formats dates using local year/month/day:
-
-```text
-function toDateKey(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
+#### 1. Database Migration
+Add a `sentiment` column to the `dreams` table:
+```sql
+ALTER TABLE public.dreams
+ADD COLUMN sentiment text CHECK (sentiment IN ('positive', 'neutral', 'negative'));
 ```
+Nullable so existing dreams aren't broken.
 
-For dream `recorded_at` strings, parse them into a local date first:
-```text
-const dateKey = toDateKey(new Date(d.recorded_at));
-```
+#### 2. Edge Function: `analyze-dream/index.ts`
+Add `sentiment` to the AI tool-calling schema:
+- New property in the `analyze_dream` function parameters:
+  ```
+  sentiment: {
+    type: "string",
+    enum: ["positive", "neutral", "negative"],
+    description: "Overall sentiment of the dream: positive, neutral, or negative"
+  }
+  ```
+- Add `sentiment` to the `required` array.
+- After parsing the AI response, update the dream record:
+  ```typescript
+  await serviceClient.from("dreams").update({ sentiment: analysis.sentiment }).eq("id", dreamId);
+  ```
+- Include `sentiment` in the response payload.
 
-For grid dates (already local): same function. Now both sides produce matching local date keys.
+#### 3. One-Off Backfill: New Edge Function `backfill-sentiments/index.ts`
+A small edge function to classify old dreams that don't have a sentiment yet:
+- Fetches all dreams where `sentiment IS NULL` (for the authenticated user).
+- Sends their moods/titles in a single AI call asking to classify each as positive/neutral/negative.
+- Updates each dream's `sentiment` column.
+- Called once from the Patterns page if any dreams lack a sentiment value.
 
-**Fix 2: Remove the cell size cap**
-- Remove the `MAX_CELL = 24` constant (or raise it to something like 60)
-- This lets cells grow to fill the full card width naturally
-- Keep `MIN_CELL = 14` so cells don't get too tiny on mobile
+#### 4. Frontend: `src/pages/Patterns.tsx`
+- Remove all hardcoded emotion sets (`POSITIVE_EMOTIONS`, `NEGATIVE_EMOTIONS`, `NEUTRAL_EMOTIONS`) and `classifySentiment`.
+- Fetch dreams including the new `sentiment` column.
+- On mount, check if any dreams have `sentiment = null`. If so, call the `backfill-sentiments` function, then refresh.
+- **Emotion Breakdown chart**: Group emotions by `dream.sentiment` instead of classifying each emotion individually. Each dream's mood strings go into the bar matching its sentiment.
+- **Mood over Time chart**: Map `dream.sentiment` directly to score (positive=1, neutral=0, negative=-1) instead of averaging per-emotion scores.
 
-### What stays the same
-- All sentiment colors and classifier logic unchanged
-- Tooltip behavior unchanged
-- Legend unchanged
-- Month/day labels unchanged
+### Technical Summary
+
+| File | Change |
+|------|--------|
+| Database migration | Add `sentiment` column to `dreams` |
+| `supabase/functions/analyze-dream/index.ts` | Add `sentiment` to AI tool schema + save to dreams table |
+| `supabase/functions/backfill-sentiments/index.ts` | New function: batch-classify old dreams via one AI call |
+| `src/pages/Patterns.tsx` | Remove hardcoded lists, read `sentiment` from dream data, trigger backfill if needed |
 
