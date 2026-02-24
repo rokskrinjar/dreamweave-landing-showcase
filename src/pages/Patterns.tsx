@@ -189,30 +189,36 @@ const EmotionBarChartInner = ({ dreams }: { dreams: any[] }) => {
 // --- Mood over Time chart ---
 
 function buildMoodOverTimeData(dreams: any[]) {
+  const SCORE: Record<Sentiment, number> = { positive: 1, neutral: 0, negative: -1 };
   return dreams
     .filter((d) => d.mood)
     .map((d) => {
       const emotions = (d.mood as string).split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      const counts = { positive: 0, neutral: 0, negative: 0 };
-      emotions.forEach((e) => { counts[classifySentiment(e)]++; });
+      if (emotions.length === 0) return null;
+      const avg = emotions.reduce((sum, e) => sum + SCORE[classifySentiment(e)], 0) / emotions.length;
+      const score = Math.round(avg * 100) / 100;
       const date = new Date(d.recorded_at);
-      return { date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }), timestamp: date.getTime(), ...counts };
+      return {
+        date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        timestamp: date.getTime(),
+        score,
+        emotions: emotions.join(", "),
+      };
     })
-    .sort((a, b) => a.timestamp - b.timestamp);
+    .filter(Boolean)
+    .sort((a: any, b: any) => a.timestamp - b.timestamp);
 }
 
 const MoodTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
+  const d = payload[0]?.payload;
+  const score = d?.score ?? 0;
+  const sentimentLabel = score > 0.25 ? "Positive" : score < -0.25 ? "Negative" : "Neutral";
   return (
-    <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg text-sm">
+    <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg text-sm max-w-[220px]">
       <p className="font-semibold text-foreground mb-1">{label}</p>
-      {payload.map((p: any) => (
-        <div key={p.dataKey} className="flex items-center gap-1.5 capitalize">
-          <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-          <span className="text-muted-foreground">{p.dataKey}</span>
-          <span className="ml-auto text-foreground font-medium">{p.value}</span>
-        </div>
-      ))}
+      <p className="text-muted-foreground capitalize text-xs mb-1">{d?.emotions}</p>
+      <p className="text-foreground font-medium">{sentimentLabel} ({score})</p>
     </div>
   );
 };
@@ -232,18 +238,19 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
         <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+          <YAxis
+            domain={[-1, 1]}
+            ticks={[-1, -0.5, 0, 0.5, 1]}
+            tickFormatter={(v: number) => v === 1 ? "Positive" : v === -1 ? "Negative" : v === 0 ? "Neutral" : ""}
+            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+            tickLine={false}
+            axisLine={false}
+            width={70}
+          />
           <RechartsTooltip content={<MoodTooltip />} />
-          <Line type="monotone" dataKey="positive" stroke="#10b981" strokeWidth={2} dot={{ r: 4, fill: "#10b981" }} />
-          <Line type="monotone" dataKey="neutral" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4, fill: "#f59e0b" }} />
-          <Line type="monotone" dataKey="negative" stroke="#f43f5e" strokeWidth={2} dot={{ r: 4, fill: "#f43f5e" }} />
+          <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: "hsl(var(--primary))" }} />
         </LineChart>
       </ResponsiveContainer>
-      <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground justify-center">
-        <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#10b981" }} />Positive</div>
-        <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#f59e0b" }} />Neutral</div>
-        <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#f43f5e" }} />Negative</div>
-      </div>
     </div>
   );
 };
