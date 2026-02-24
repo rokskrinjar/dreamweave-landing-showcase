@@ -5,9 +5,12 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { BarChart3, Sparkles, Lock, TrendingUp, Clock } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -129,13 +132,13 @@ interface PatternData {
   created_at?: string;
 }
 
-const EmotionBarChart = ({ dreams }: { dreams: any[] }) => {
+const EmotionBarChartInner = ({ dreams }: { dreams: any[] }) => {
   const { bars, allEmotionKeys } = useMemo(() => buildStackedData(dreams), [dreams]);
   const hasData = allEmotionKeys.length > 0;
 
   if (!hasData) {
     return (
-      <div className="bg-card rounded-2xl p-12 border border-border mb-8 text-center">
+      <div className="p-12 text-center">
         <p className="text-muted-foreground">
           Record dreams with moods to see your emotion breakdown.
         </p>
@@ -144,11 +147,7 @@ const EmotionBarChart = ({ dreams }: { dreams: any[] }) => {
   }
 
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border mb-8">
-      <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-        <BarChart3 className="w-5 h-5 text-primary" /> Emotion Breakdown
-      </h3>
-
+    <div>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={bars} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
@@ -187,6 +186,67 @@ const EmotionBarChart = ({ dreams }: { dreams: any[] }) => {
   );
 };
 
+// --- Mood over Time chart ---
+
+function buildMoodOverTimeData(dreams: any[]) {
+  return dreams
+    .filter((d) => d.mood)
+    .map((d) => {
+      const emotions = (d.mood as string).split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+      const counts = { positive: 0, neutral: 0, negative: 0 };
+      emotions.forEach((e) => { counts[classifySentiment(e)]++; });
+      const date = new Date(d.recorded_at);
+      return { date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }), timestamp: date.getTime(), ...counts };
+    })
+    .sort((a, b) => a.timestamp - b.timestamp);
+}
+
+const MoodTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg text-sm">
+      <p className="font-semibold text-foreground mb-1">{label}</p>
+      {payload.map((p: any) => (
+        <div key={p.dataKey} className="flex items-center gap-1.5 capitalize">
+          <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+          <span className="text-muted-foreground">{p.dataKey}</span>
+          <span className="ml-auto text-foreground font-medium">{p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
+  const data = useMemo(() => buildMoodOverTimeData(dreams), [dreams]);
+  if (data.length < 2) {
+    return (
+      <div className="p-12 text-center">
+        <p className="text-muted-foreground">Record at least 2 dreams with moods to see trends.</p>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <ResponsiveContainer width="100%" height={280}>
+        <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+          <RechartsTooltip content={<MoodTooltip />} />
+          <Line type="monotone" dataKey="positive" stroke="#10b981" strokeWidth={2} dot={{ r: 4, fill: "#10b981" }} />
+          <Line type="monotone" dataKey="neutral" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4, fill: "#f59e0b" }} />
+          <Line type="monotone" dataKey="negative" stroke="#f43f5e" strokeWidth={2} dot={{ r: 4, fill: "#f43f5e" }} />
+        </LineChart>
+      </ResponsiveContainer>
+      <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground justify-center">
+        <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#10b981" }} />Positive</div>
+        <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#f59e0b" }} />Neutral</div>
+        <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#f43f5e" }} />Negative</div>
+      </div>
+    </div>
+  );
+};
 
 const Patterns = () => {
   const { user } = useAuth();
@@ -318,8 +378,25 @@ const Patterns = () => {
           )}
         </div>
 
-        {/* Emotion Bar Chart */}
-        <EmotionBarChart dreams={dreams} />
+        {/* Tabbed Charts */}
+        <div className="bg-card rounded-2xl p-6 border border-border mb-8">
+          <Tabs defaultValue="emotions">
+            <TabsList className="mb-4">
+              <TabsTrigger value="emotions" className="gap-1.5">
+                <BarChart3 className="w-4 h-4" /> Emotion Breakdown
+              </TabsTrigger>
+              <TabsTrigger value="mood-time" className="gap-1.5">
+                <TrendingUp className="w-4 h-4" /> Mood over Time
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="emotions">
+              <EmotionBarChartInner dreams={dreams} />
+            </TabsContent>
+            <TabsContent value="mood-time">
+              <MoodOverTimeChart dreams={dreams} />
+            </TabsContent>
+          </Tabs>
+        </div>
 
         {/* AI Pattern Analysis */}
         {patternData ? (
