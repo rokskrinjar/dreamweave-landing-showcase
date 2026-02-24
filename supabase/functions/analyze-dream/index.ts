@@ -119,9 +119,14 @@ ${content}`;
                   psychological_insight: {
                     type: "string",
                     description: "A detailed psychological interpretation (3-5 sentences) connecting dream content to potential waking life situations"
+                  },
+                  sentiment: {
+                    type: "string",
+                    enum: ["positive", "neutral", "negative"],
+                    description: "Overall sentiment of the dream: positive, neutral, or negative"
                   }
                 },
-                required: ["summary", "symbols", "themes", "emotions", "psychological_insight"],
+                required: ["summary", "symbols", "themes", "emotions", "psychological_insight", "sentiment"],
                 additionalProperties: false
               }
             }
@@ -169,6 +174,11 @@ ${content}`;
         name: sanitizeStr(s.name || ''),
         meaning: sanitizeStr(s.meaning || ''),
       })).filter((s: any) => s.name);
+    }
+
+    // Save sentiment to dream record
+    if (analysis.sentiment) {
+      await serviceClient.from("dreams").update({ sentiment: analysis.sentiment }).eq("id", dreamId);
     }
 
     // Save analysis
