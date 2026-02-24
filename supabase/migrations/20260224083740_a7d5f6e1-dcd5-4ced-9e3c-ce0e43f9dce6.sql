@@ -1,0 +1,1 @@
+ALTER TABLE public.dreams ADD COLUMN sentiment text CHECK (sentiment IN ('positive', 'neutral', 'negative'));

@@ -65,6 +65,7 @@ export type Database = {
           id: string
           mood: string | null
           recorded_at: string
+          sentiment: string | null
           tags: string[] | null
           title: string
           updated_at: string
@@ -76,6 +77,7 @@ export type Database = {
           id?: string
           mood?: string | null
           recorded_at?: string
+          sentiment?: string | null
           tags?: string[] | null
           title: string
           updated_at?: string
@@ -87,6 +89,7 @@ export type Database = {
           id?: string
           mood?: string | null
           recorded_at?: string
+          sentiment?: string | null
           tags?: string[] | null
           title?: string
           updated_at?: string

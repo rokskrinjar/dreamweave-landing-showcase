@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
@@ -19,40 +19,15 @@ import {
   Legend as RechartsLegend,
 } from "recharts";
 
-// --- Sentiment classification ---
+// --- Sentiment types ---
 
 type Sentiment = "positive" | "negative" | "neutral";
-
-const POSITIVE_EMOTIONS = new Set([
-  "happy", "excited", "peaceful", "euphoric", "hopeful", "joyful", "content",
-  "relieved", "grateful", "loved", "inspired", "confident", "optimistic", "amused",
-  "calm", "safe", "brave", "proud", "serene", "relaxed",
-]);
-
-const NEGATIVE_EMOTIONS = new Set([
-  "fearful", "anxious", "sad", "angry", "frustrated", "lonely", "guilty",
-  "ashamed", "jealous", "disgusted", "desperate", "hopeless", "terrified", "overwhelmed",
-]);
-
-const NEUTRAL_EMOTIONS = new Set([
-  "confused", "nostalgic", "surprised", "curious", "melancholic", "bittersweet",
-  "curiosity", "urgency", "wonder", "contemplative",
-]);
-
-const classifySentiment = (emotion: string): Sentiment => {
-  const e = emotion.trim().toLowerCase();
-  if (POSITIVE_EMOTIONS.has(e)) return "positive";
-  if (NEGATIVE_EMOTIONS.has(e)) return "negative";
-  return "neutral";
-};
 
 const SENTIMENT_COLORS: Record<Sentiment, string> = {
   positive: "#10b981",
   negative: "#f43f5e",
   neutral: "#f59e0b",
 };
-
-// --- Stacked sentiment data ---
 
 const EMOTION_PALETTE: Record<Sentiment, string[]> = {
   positive: ["#10b981", "#34d399", "#6ee7b7", "#a7f3d0", "#059669", "#047857"],
@@ -66,7 +41,7 @@ interface StackedBar {
 }
 
 function buildStackedData(dreams: any[]) {
-  // Count emotions grouped by sentiment
+  // Group emotions by the dream's AI-classified sentiment
   const grouped: Record<Sentiment, Map<string, number>> = {
     positive: new Map(),
     negative: new Map(),
@@ -75,14 +50,13 @@ function buildStackedData(dreams: any[]) {
 
   dreams.forEach((d) => {
     if (!d.mood) return;
+    const sentiment: Sentiment = d.sentiment || "neutral";
     const emotions = (d.mood as string).split(",").map((s: string) => s.trim().toLowerCase()).filter(Boolean);
     emotions.forEach((e) => {
-      const s = classifySentiment(e);
-      grouped[s].set(e, (grouped[s].get(e) || 0) + 1);
+      grouped[sentiment].set(e, (grouped[sentiment].get(e) || 0) + 1);
     });
   });
 
-  // Build one bar per sentiment category
   const categories: Sentiment[] = ["positive", "neutral", "negative"];
   const bars: StackedBar[] = [];
   const allEmotionKeys: { key: string; sentiment: Sentiment; color: string }[] = [];
@@ -92,7 +66,6 @@ function buildStackedData(dreams: any[]) {
     const bar: StackedBar = { category: cat.charAt(0).toUpperCase() + cat.slice(1) };
     emotions.forEach(([emotion, count], i) => {
       bar[emotion] = count;
-      // Only add key once
       if (!allEmotionKeys.find((k) => k.key === emotion)) {
         const palette = EMOTION_PALETTE[cat];
         allEmotionKeys.push({ key: emotion, sentiment: cat, color: palette[i % palette.length] });
@@ -191,21 +164,19 @@ const EmotionBarChartInner = ({ dreams }: { dreams: any[] }) => {
 function buildMoodOverTimeData(dreams: any[]) {
   const SCORE: Record<Sentiment, number> = { positive: 1, neutral: 0, negative: -1 };
   return dreams
-    .filter((d) => d.mood)
+    .filter((d) => d.sentiment)
     .map((d) => {
-      const emotions = (d.mood as string).split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-      if (emotions.length === 0) return null;
-      const avg = emotions.reduce((sum, e) => sum + SCORE[classifySentiment(e)], 0) / emotions.length;
-      const score = Math.round(avg * 100) / 100;
+      const sentiment: Sentiment = d.sentiment;
+      const score = SCORE[sentiment];
       const date = new Date(d.recorded_at);
+      const emotions = d.mood ? (d.mood as string).split(",").map((s: string) => s.trim()).filter(Boolean).join(", ") : "";
       return {
         date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
         timestamp: date.getTime(),
         score,
-        emotions: emotions.join(", "),
+        emotions,
       };
     })
-    .filter(Boolean)
     .sort((a: any, b: any) => a.timestamp - b.timestamp);
 }
 
@@ -262,18 +233,25 @@ const Patterns = () => {
   const [patternData, setPatternData] = useState<PatternData | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
+  const [backfilling, setBackfilling] = useState(false);
+
+  const fetchDreams = useCallback(async () => {
+    if (!user) return [];
+    const { data } = await supabase
+      .from("dreams")
+      .select("id, title, mood, recorded_at, tags, sentiment")
+      .order("recorded_at", { ascending: true })
+      .limit(30);
+    return data || [];
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
 
     const fetchData = async () => {
-      const [profileRes, dreamsRes, insightsRes] = await Promise.all([
+      const [profileRes, dreamsData, insightsRes] = await Promise.all([
         supabase.from("profiles").select("subscription_tier").eq("user_id", user.id).maybeSingle(),
-        supabase
-          .from("dreams")
-          .select("id, title, mood, recorded_at, tags")
-          .order("recorded_at", { ascending: true })
-          .limit(30),
+        fetchDreams(),
         supabase
           .from("pattern_insights" as any)
           .select("recurring_themes, emotional_patterns, suggestions, dreams_analyzed, created_at")
@@ -284,7 +262,7 @@ const Patterns = () => {
       ]);
 
       if (profileRes.data) setProfile(profileRes.data);
-      if (dreamsRes.data) setDreams(dreamsRes.data);
+      setDreams(dreamsData);
       if (insightsRes.data) {
         const d = insightsRes.data as any;
         setPatternData({
@@ -296,10 +274,29 @@ const Patterns = () => {
         });
       }
       setLoading(false);
+
+      // Backfill sentiments for dreams missing them
+      const needsBackfill = dreamsData.some((d: any) => !d.sentiment);
+      if (needsBackfill) {
+        setBackfilling(true);
+        try {
+          const { data, error } = await supabase.functions.invoke("backfill-sentiments");
+          if (error) console.error("Backfill error:", error);
+          if (data?.updated > 0) {
+            // Re-fetch dreams with updated sentiments
+            const refreshed = await fetchDreams();
+            setDreams(refreshed);
+          }
+        } catch (err) {
+          console.error("Backfill failed:", err);
+        } finally {
+          setBackfilling(false);
+        }
+      }
     };
 
     fetchData();
-  }, [user]);
+  }, [user, fetchDreams]);
 
   const isLocked = profile?.subscription_tier === "free";
 
