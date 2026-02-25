@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, PenLine, BarChart3, LogOut, MessageSquare } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const AppLayout = ({ children }: { children: React.ReactNode }) => {
@@ -11,7 +11,6 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/dreams/new", icon: PenLine, label: "Record Dream" },
     { to: "/patterns", icon: BarChart3, label: "Patterns" },
-    { to: "/contact", icon: MessageSquare, label: "Contact" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
