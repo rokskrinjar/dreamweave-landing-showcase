@@ -2,3 +2,6 @@ project_id = "cpxjhyxzleomwgpyvkun"
 
 [functions.create-demo-user]
 verify_jwt = false
+
+[functions.seed-demo-dreams]
+verify_jwt = false
