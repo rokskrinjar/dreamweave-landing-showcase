@@ -39,7 +39,7 @@ export const Footer = () => {
             <ul className="space-y-2">
               <li><a href="/privacy" className="text-sm hover:text-white transition-colors">Privacy Policy</a></li>
               <li><a href="/terms" className="text-sm hover:text-white transition-colors">Terms of Service</a></li>
-              <li><a href="mailto:hello@dreamweave.me" className="text-sm hover:text-white transition-colors">Contact</a></li>
+              <li><a href="/contact" className="text-sm hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>
