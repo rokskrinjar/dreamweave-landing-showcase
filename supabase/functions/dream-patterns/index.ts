@@ -56,9 +56,9 @@ serve(async (req) => {
       .order("created_at", { ascending: false })
       .limit(30);
 
-    if (!analyses || analyses.length < 3) {
+    if (!analyses || analyses.length < 5) {
       return new Response(
-        JSON.stringify({ error: "You need at least 3 analyzed dreams to generate pattern insights." }),
+        JSON.stringify({ error: "You need at least 5 analyzed dreams to generate pattern insights." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
