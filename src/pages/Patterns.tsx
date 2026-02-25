@@ -254,9 +254,16 @@ const Patterns = () => {
 
   const fetchDreams = useCallback(async () => {
     if (!user) return [];
+    // Only fetch dreams that have been analyzed
+    const { data: analysisRows } = await supabase
+      .from("analyses")
+      .select("dream_id");
+    const analyzedIds = (analysisRows || []).map((a: any) => a.dream_id);
+    if (analyzedIds.length === 0) return [];
     const { data } = await supabase
       .from("dreams")
       .select("id, title, mood, recorded_at, tags, sentiment")
+      .in("id", analyzedIds)
       .order("recorded_at", { ascending: true })
       .limit(30);
     return data || [];
@@ -291,25 +298,6 @@ const Patterns = () => {
         });
       }
       setLoading(false);
-
-      // Backfill sentiments for dreams missing them
-      const needsBackfill = dreamsData.some((d: any) => !d.sentiment);
-      if (needsBackfill) {
-        setBackfilling(true);
-        try {
-          const { data, error } = await supabase.functions.invoke("backfill-sentiments");
-          if (error) console.error("Backfill error:", error);
-          if (data?.updated > 0) {
-            // Re-fetch dreams with updated sentiments
-            const refreshed = await fetchDreams();
-            setDreams(refreshed);
-          }
-        } catch (err) {
-          console.error("Backfill failed:", err);
-        } finally {
-          setBackfilling(false);
-        }
-      }
     };
 
     fetchData();
@@ -381,7 +369,7 @@ const Patterns = () => {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Dream Patterns</h1>
             <p className="text-muted-foreground mt-1">
-              {dreams.length} dreams recorded · Insights from your subconscious
+              {dreams.length} dreams analyzed · Insights from your subconscious
             </p>
           </div>
           {dreams.length >= 5 && (
@@ -394,7 +382,7 @@ const Patterns = () => {
                 <TrendingUp className="w-4 h-4" />
                 {analyzing ? "Analyzing..." : patternData ? "Refresh Insights" : "Generate Insights"}
               </Button>
-              <span className="text-xs text-muted-foreground">Analyzes your last 30 dreams</span>
+              <span className="text-xs text-muted-foreground">Based on your last 30 analyses</span>
             </div>
           )}
         </div>
@@ -471,7 +459,7 @@ const Patterns = () => {
         ) : dreams.length < 5 ? (
           <div className="bg-card rounded-2xl p-12 border border-border text-center">
             <p className="text-muted-foreground">
-              Record at least 5 dreams to unlock AI pattern recognition.
+              Analyze at least 5 dreams to unlock AI pattern recognition.
             </p>
           </div>
         ) : null}

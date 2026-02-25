@@ -27,12 +27,26 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Fetch dreams without sentiment for this user
+    // Get dream IDs that have analyses
+    const { data: analysisRows } = await serviceClient
+      .from("analyses")
+      .select("dream_id")
+      .eq("user_id", user.id);
+    const analyzedIds = (analysisRows || []).map((a: any) => a.dream_id);
+
+    if (analyzedIds.length === 0) {
+      return new Response(JSON.stringify({ updated: 0 }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Only fetch analyzed dreams that are missing sentiment
     const { data: dreams, error: fetchError } = await serviceClient
       .from("dreams")
       .select("id, title, mood")
       .eq("user_id", user.id)
-      .is("sentiment", null);
+      .is("sentiment", null)
+      .in("id", analyzedIds);
 
     if (fetchError) throw fetchError;
     if (!dreams || dreams.length === 0) {

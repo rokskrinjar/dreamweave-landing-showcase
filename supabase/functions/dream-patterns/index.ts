@@ -56,9 +56,9 @@ serve(async (req) => {
       .order("created_at", { ascending: false })
       .limit(30);
 
-    if (!dreams || dreams.length < 5) {
+    if (!analyses || analyses.length < 5) {
       return new Response(
-        JSON.stringify({ error: "You need at least 5 dreams to generate pattern insights." }),
+        JSON.stringify({ error: "You need at least 5 analyzed dreams to generate pattern insights." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -66,23 +66,23 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("AI key not configured");
 
-    const dreamsText = dreams.map((d, i) =>
-      `Dream ${i + 1}: "${d.title}" (mood: ${d.mood || "unknown"}, date: ${d.recorded_at})\n${d.content}`
-    ).join("\n\n---\n\n");
+    const analysesText = analyses.map((a: any, i: number) =>
+      `Analysis ${i + 1}: ${a.summary}\nThemes: ${JSON.stringify(a.themes)}\nSymbols: ${JSON.stringify(a.symbols)}\nEmotions: ${JSON.stringify(a.emotions)}\nInsight: ${a.psychological_insight || "N/A"}`
+    ).join("\n\n");
 
-    const analysesText = analyses && analyses.length > 0
-      ? analyses.map((a, i) =>
-          `Analysis ${i + 1}: ${a.summary}\nThemes: ${JSON.stringify(a.themes)}\nSymbols: ${JSON.stringify(a.symbols)}`
-        ).join("\n\n")
-      : "No prior analyses available.";
+    const dreamsText = dreams && dreams.length > 0
+      ? dreams.map((d: any, i: number) =>
+          `Dream ${i + 1}: "${d.title}" (mood: ${d.mood || "unknown"}, date: ${d.recorded_at})\n${d.content}`
+        ).join("\n\n---\n\n")
+      : "";
 
-    const systemPrompt = `You are DreamWeave's pattern recognition AI. You analyze collections of dreams to find recurring patterns, emotional trends, and provide actionable life suggestions.
+    const systemPrompt = `You are DreamWeave's pattern recognition AI. You analyze dream analyses to find recurring patterns, emotional trends, and provide actionable life suggestions.
 
-Be specific and personal. Don't give generic advice. Reference actual patterns you see in the data.
+Be specific and personal. Don't give generic advice. Reference actual patterns you see in the analysis data.
 
 Call the dream_patterns function with your analysis.`;
 
-    const userPrompt = `Here are the user's recent dreams:\n\n${dreamsText}\n\nPrior analyses:\n${analysesText}\n\nFind recurring patterns across these dreams and provide actionable suggestions.`;
+    const userPrompt = `Here are the AI analyses of the user's dreams (primary source):\n\n${analysesText}${dreamsText ? `\n\nSupplementary raw dream content:\n\n${dreamsText}` : ""}\n\nFind recurring patterns across these analyses and provide actionable suggestions.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -171,10 +171,10 @@ Call the dream_patterns function with your analysis.`;
       recurring_themes: patterns.recurring_themes,
       emotional_patterns: patterns.emotional_patterns,
       suggestions: patterns.suggestions,
-      dreams_analyzed: dreams.length,
+      dreams_analyzed: analyses.length,
     });
 
-    return new Response(JSON.stringify({ ...patterns, dreams_analyzed: dreams.length }), {
+    return new Response(JSON.stringify({ ...patterns, dreams_analyzed: analyses.length }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
