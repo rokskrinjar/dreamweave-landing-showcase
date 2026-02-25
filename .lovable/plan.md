@@ -1,35 +1,28 @@
 
 
-## Fix: Mood over Time line invisible when all points share the same sentiment
+## Expand Actionable Suggestions
 
-### Problem
-The trend line uses a vertical linear gradient (`y1=0, y2=1`) for its stroke color. When all data points have the same score (e.g., all Negative at -1), the line is perfectly horizontal with zero height. This causes the SVG gradient to degenerate -- it has no vertical extent to interpolate across, so the stroke renders as invisible.
+### What changes
 
-### Solution
-Replace the gradient stroke with a solid stroke color, and determine the color dynamically based on the data. Since the gradient was purely decorative (it doesn't accurately map to the Y-axis position anyway), a single representative color based on the average score is cleaner.
+**1. Edge function (`supabase/functions/dream-patterns/index.ts`)**
+- Increase the suggestions count from "3-5" to "5-10" in the tool parameter description
+- Update the system prompt to ask the AI for more detailed, varied suggestions covering different angles (e.g. bedtime habits, emotional processing, daily mindset shifts, social/relational, physical wellbeing)
 
-**File: `src/pages/Patterns.tsx`**
+**2. Frontend (`src/pages/Patterns.tsx`)**
+- No structural changes needed -- the suggestions list already renders dynamically from the array, so more items will appear automatically
 
-1. Compute the average score of all data points in `MoodOverTimeChart`
-2. Pick a stroke color: green if avg > 0.25, red if avg < -0.25, amber otherwise
-3. Use that solid color for the `<Line stroke={...}>` instead of `url(#moodGradient)`
-4. Remove the now-unused `<defs>` gradient block
+### Technical details
 
-This ensures the connecting line is always visible regardless of data distribution, and the color still meaningfully represents the overall emotional trend.
-
-### Technical Detail
-
-In the `MoodOverTimeChart` component (~line 197-243):
-
-```typescript
-const avgScore = data.reduce((sum, d) => sum + d.score, 0) / data.length;
-const lineColor = avgScore > 0.25 ? "#10b981" : avgScore < -0.25 ? "#f43f5e" : "#f59e0b";
+In the edge function, the tool schema description on line ~120 changes from:
+```
+"3-5 specific, actionable suggestions based on the patterns found"
+```
+to:
+```
+"5-10 specific, actionable suggestions spanning different life areas (mindset, daily habits, sleep hygiene, emotional processing, relationships, physical wellbeing)"
 ```
 
-Then on the `<Line>` element:
-```
-stroke={lineColor}
-```
+The system prompt (line ~78-82) gets a small addition asking the AI to provide a wider range of suggestions across multiple life domains, not just psychological ones.
 
-Remove the `<defs>` gradient block (lines 210-216) as it's no longer needed.
+This keeps things simple -- no new UI components, no categories, just more and better suggestions from the AI.
 
