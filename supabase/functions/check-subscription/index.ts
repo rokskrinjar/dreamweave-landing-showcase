@@ -62,6 +62,23 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
+    // Check if this is a demo user - skip Stripe entirely
+    const { data: profile } = await supabaseAdmin.from("profiles")
+      .select("subscription_tier, is_demo")
+      .eq("user_id", userId)
+      .single();
+
+    if (profile?.is_demo) {
+      const tier = profile.subscription_tier || "free";
+      logStep("Demo user, skipping Stripe", { tier });
+      return new Response(JSON.stringify({
+        subscribed: tier !== "free",
+        tier,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email, limit: 1 });
 
