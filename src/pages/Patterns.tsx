@@ -372,7 +372,7 @@ const Patterns = () => {
               {dreams.length} dreams analyzed · Insights from your subconscious
             </p>
           </div>
-          {(dreams.length >= 5 || patternData) && (
+          {(dreams.length >= 3 || patternData) && (
             <div className="flex flex-col items-end gap-1">
               <Button
                 onClick={handleGeneratePatterns}
@@ -456,10 +456,10 @@ const Patterns = () => {
               </div>
             )}
           </div>
-        ) : dreams.length < 5 ? (
+        ) : dreams.length < 3 ? (
           <div className="bg-card rounded-2xl p-12 border border-border text-center">
             <p className="text-muted-foreground">
-              Analyze at least 5 dreams to unlock AI pattern recognition.
+              Analyze at least 3 dreams to unlock AI pattern recognition.
             </p>
           </div>
         ) : null}
