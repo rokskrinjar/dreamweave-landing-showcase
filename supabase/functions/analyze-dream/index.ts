@@ -1,5 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
+
+const analyzeDreamSchema = z.object({
+  dreamId: z.string().uuid(),
+  content: z.string().min(10).max(10000),
+  title: z.string().min(1).max(200),
+  mood: z.string().max(500).optional().nullable(),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,8 +30,13 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Not authenticated");
 
-    const { dreamId, content, title, mood } = await req.json();
-    if (!dreamId || !content) throw new Error("Missing dream data");
+    const parsed = analyzeDreamSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid input" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { dreamId, content, title, mood } = parsed.data;
 
     // Check if user can analyze
     const serviceClient = createClient(
