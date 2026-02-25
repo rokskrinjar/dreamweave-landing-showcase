@@ -1,70 +1,82 @@
 
 
-## Fix Demo User Tier Persistence
+## Fix: Patterns Page Should Only Use Analyzed Dreams
 
 ### Problem
-The `check-subscription` function runs every time a user logs in (and every 60 seconds). For demo users like Elena who have no Stripe customer record, it overwrites their manually-set "pro" tier back to "free" -- even though we added code to preserve it. The deployed function likely hadn't been updated when Elena logged in, so her profile was already reset to "free" before the fix could take effect.
+Three related issues:
 
-### Solution: Add an `is_demo` flag to profiles
+1. **Emotion Breakdown and Mood over Time charts** display data from ALL 15 recorded dreams, even though only 2 have been analyzed. This happens because the `backfill-sentiments` function assigns sentiment to every dream (even unanalyzed ones) based on just the title/mood, and the charts use this data.
 
-Add a boolean `is_demo` column to the `profiles` table. When this flag is `true`, the `check-subscription` function will skip Stripe entirely and return whatever tier is stored in the profile. This cleanly separates demo users from regular users with zero impact on paying customers.
+2. **Pattern Insights ("Refresh Insights")** generated insights based on 15 raw dream texts, not the 2 actual AI analyses. The function should require a minimum number of analyses and use analysis data as the primary source.
 
-### Step 1: Database migration
+3. **The button label says "Analyzes your last 30 dreams"** -- it should say "analyses" since that's the real data source.
 
-Add `is_demo` column to `profiles`:
+### Solution
 
-```sql
-ALTER TABLE public.profiles
-  ADD COLUMN is_demo boolean NOT NULL DEFAULT false;
-```
+#### 1. Patterns Page (`src/pages/Patterns.tsx`)
+- Change `fetchDreams` to only fetch dreams that have a matching entry in the `analyses` table. Do this by first fetching the user's analysis `dream_id`s, then filtering dreams to only those IDs.
+- Update the subtitle to show "X dreams analyzed" instead of "X dreams recorded".
+- Update the button hint text to "Based on your last 30 analyses".
+- Remove the automatic `backfill-sentiments` call -- sentiment should only come from the real analysis process, not a separate backfill on unanalyzed dreams.
 
-### Step 2: Set Elena as a demo user
+#### 2. Dream Patterns Edge Function (`supabase/functions/dream-patterns/index.ts`)
+- Change the minimum check from `dreams.length < 5` to `analyses.length < 5` -- require at least 5 analyzed dreams.
+- Make analyses the PRIMARY data sent to the AI, with raw dream content as supplementary context.
+- Update `dreams_analyzed` in the response/persistence to reflect the number of analyses used, not raw dreams.
+- Update the error message: "You need at least 5 analyzed dreams to generate pattern insights."
 
-```sql
-UPDATE public.profiles
-SET is_demo = true, subscription_tier = 'pro'
-WHERE user_id = '7dbb8eba-4514-426c-91bb-353d314f94c0';
-```
+#### 3. Backfill Sentiments (`supabase/functions/backfill-sentiments/index.ts`)
+- Add a filter so it only backfills sentiment for dreams that HAVE a corresponding entry in the `analyses` table. This prevents unanalyzed dreams from getting sentiment values they shouldn't have.
 
-### Step 3: Update `check-subscription` edge function
+### Technical Details
 
-Early in the function, after authenticating the user and before any Stripe calls, add:
-
+**Patterns.tsx - fetching only analyzed dreams:**
 ```typescript
-// Check if this is a demo user - skip Stripe entirely
-const { data: profile } = await supabaseAdmin.from("profiles")
-  .select("subscription_tier, is_demo")
-  .eq("user_id", userId)
-  .single();
+// Fetch dream IDs that have analyses
+const { data: analysisRows } = await supabase
+  .from("analyses")
+  .select("dream_id");
+const analyzedIds = (analysisRows || []).map(a => a.dream_id);
 
-if (profile?.is_demo) {
-  const tier = profile.subscription_tier || "free";
-  logStep("Demo user, skipping Stripe", { tier });
-  return new Response(JSON.stringify({
-    subscribed: tier !== "free",
-    tier,
-  }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+// Fetch only those dreams
+const { data } = await supabase
+  .from("dreams")
+  .select("id, title, mood, recorded_at, tags, sentiment")
+  .in("id", analyzedIds)
+  .order("recorded_at", { ascending: true })
+  .limit(30);
+```
+
+**dream-patterns/index.ts - require 5 analyses:**
+```typescript
+if (!analyses || analyses.length < 5) {
+  return new Response(
+    JSON.stringify({ error: "You need at least 5 analyzed dreams to generate pattern insights." }),
+    { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
 }
 ```
 
-This goes right after line 63 (the `supabaseAdmin` creation), before the Stripe customer lookup.
-
-### Step 4: Update `create-demo-user` function
-
-Update the function to also set `is_demo = true` when creating demo users, so future demo users are automatically flagged:
-
+**backfill-sentiments/index.ts - only backfill analyzed dreams:**
 ```typescript
-.update({ subscription_tier: tier, display_name: displayName, is_demo: true })
+// Get dream IDs that have analyses
+const { data: analysisRows } = await serviceClient
+  .from("analyses")
+  .select("dream_id")
+  .eq("user_id", user.id);
+const analyzedIds = (analysisRows || []).map(a => a.dream_id);
+
+// Only fetch dreams that are analyzed AND missing sentiment
+const { data: dreams } = await serviceClient
+  .from("dreams")
+  .select("id, title, mood")
+  .eq("user_id", user.id)
+  .is("sentiment", null)
+  .in("id", analyzedIds);
 ```
 
-### Step 5: Redeploy `check-subscription`
-
-Deploy the updated function so it takes effect immediately.
-
-### What this does NOT change
-- Regular users are completely unaffected -- `is_demo` defaults to `false`
-- Stripe sync continues to work normally for real customers
-- The only difference: demo users bypass Stripe and use whatever tier you set in their profile
+### Files to Change
+- `src/pages/Patterns.tsx` -- filter to analyzed dreams, update labels, remove auto-backfill
+- `supabase/functions/dream-patterns/index.ts` -- require 5 analyses minimum, make analyses primary
+- `supabase/functions/backfill-sentiments/index.ts` -- only backfill analyzed dreams
 
