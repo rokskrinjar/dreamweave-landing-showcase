@@ -1,28 +1,35 @@
 
 
-## Fix: Emotion Breakdown showing unclassified dreams
+## Fix: Mood over Time line invisible when all points share the same sentiment
 
 ### Problem
-The `buildStackedData` function on line 53 does `d.sentiment || "neutral"`, which means dreams that have been analyzed but don't yet have a sentiment classification (sentiment is null) still get their mood emotions counted under the "Neutral" category. This inflates the chart with emotions that haven't been properly classified by the AI.
+The trend line uses a vertical linear gradient (`y1=0, y2=1`) for its stroke color. When all data points have the same score (e.g., all Negative at -1), the line is perfectly horizontal with zero height. This causes the SVG gradient to degenerate -- it has no vertical extent to interpolate across, so the stroke renders as invisible.
 
-### Fix
+### Solution
+Replace the gradient stroke with a solid stroke color, and determine the color dynamically based on the data. Since the gradient was purely decorative (it doesn't accurately map to the Y-axis position anyway), a single representative color based on the average score is cleaner.
 
 **File: `src/pages/Patterns.tsx`**
 
-In `buildStackedData` (line 51-52), add a check to skip dreams without a classified sentiment:
+1. Compute the average score of all data points in `MoodOverTimeChart`
+2. Pick a stroke color: green if avg > 0.25, red if avg < -0.25, amber otherwise
+3. Use that solid color for the `<Line stroke={...}>` instead of `url(#moodGradient)`
+4. Remove the now-unused `<defs>` gradient block
+
+This ensures the connecting line is always visible regardless of data distribution, and the color still meaningfully represents the overall emotional trend.
+
+### Technical Detail
+
+In the `MoodOverTimeChart` component (~line 197-243):
 
 ```typescript
-dreams.forEach((d) => {
-  if (!d.mood || !d.sentiment) return;  // skip unclassified dreams
-  const sentiment: Sentiment = d.sentiment;
-  // ...rest unchanged
-});
+const avgScore = data.reduce((sum, d) => sum + d.score, 0) / data.length;
+const lineColor = avgScore > 0.25 ? "#10b981" : avgScore < -0.25 ? "#f43f5e" : "#f59e0b";
 ```
 
-This is a 1-line change (line 52-53). Only dreams with an AI-assigned sentiment (positive, neutral, or negative) will contribute to the Emotion Breakdown chart, ensuring the visualization accurately reflects classified data only.
+Then on the `<Line>` element:
+```
+stroke={lineColor}
+```
 
-### Impact
-- Charts will only show emotions from dreams that have been fully processed (sentiment assigned)
-- The Mood over Time chart already filters by `d.sentiment` (line 167), so it's not affected
-- No backend changes needed
+Remove the `<defs>` gradient block (lines 210-216) as it's no longer needed.
 
