@@ -4,7 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2 } from "lucide-react";
+import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2, Zap } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { navigateToExternal } from "@/lib/navigation";
@@ -112,7 +118,19 @@ const Dashboard = () => {
           {isFree ? (
             <p className="text-sm text-muted-foreground mt-1">
               {profile ? remaining : "..."} free analyses remaining this month ·{" "}
-              <button type="button" onClick={() => { if (upgradeBannerRef.current) { upgradeBannerRef.current.scrollIntoView({ behavior: "smooth" }); } else { handleCheckout("pro"); } }} className="text-primary hover:underline">Upgrade</button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="text-primary hover:underline">Upgrade</button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => handleCheckout("pro")} disabled={loadingPlan === "pro"} className="gap-2 cursor-pointer">
+                    <Zap className="w-4 h-4" /> Pro — €0.50/mo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleCheckout("lifetime")} disabled={loadingPlan === "lifetime"} className="gap-2 cursor-pointer">
+                    <Crown className="w-4 h-4" /> Lifetime — €1.00
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </p>
           ) : (
             <div className="flex items-center gap-2 mt-1">
@@ -181,7 +199,7 @@ const Dashboard = () => {
               ) : (
                 <>
                   <Crown className="w-4 h-4" />
-                  Unlock All Dreams — $9.99/mo
+                  Go Pro — €0.50/mo
                 </>
               )}
             </Button>
@@ -199,7 +217,7 @@ const Dashboard = () => {
                 ) : (
                   <>
                     <Crown className="w-4 h-4" />
-                    Lifetime Access — $99
+                    Lifetime — €1.00
                   </>
                 )}
               </Button>
