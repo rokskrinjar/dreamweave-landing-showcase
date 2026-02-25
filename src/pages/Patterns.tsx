@@ -372,7 +372,7 @@ const Patterns = () => {
               {dreams.length} dreams analyzed · Insights from your subconscious
             </p>
           </div>
-          {(dreams.length >= 3 || patternData) && (
+          {dreams.length >= 5 && (
             <div className="flex flex-col items-end gap-1">
               <Button
                 onClick={handleGeneratePatterns}
@@ -387,82 +387,88 @@ const Patterns = () => {
           )}
         </div>
 
-        {/* Tabbed Charts */}
-        <div className="bg-card rounded-2xl p-6 border border-border mb-8">
-          <Tabs defaultValue="emotions">
-            <TabsList className="mb-4">
-              <TabsTrigger value="emotions" className="gap-1.5">
-                <BarChart3 className="w-4 h-4" /> Emotion Breakdown
-              </TabsTrigger>
-              <TabsTrigger value="mood-time" className="gap-1.5">
-                <TrendingUp className="w-4 h-4" /> Mood over Time
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="emotions">
-              <EmotionBarChartInner dreams={dreams} />
-            </TabsContent>
-            <TabsContent value="mood-time">
-              <MoodOverTimeChart dreams={dreams} />
-            </TabsContent>
-          </Tabs>
-        </div>
-
-        {/* AI Pattern Analysis */}
-        {patternData ? (
-          <div className="space-y-6">
-            {(patternData.dreams_analyzed || patternData.created_at) && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-4 h-4" />
-                <span>
-                  Based on {patternData.dreams_analyzed || "?"} dreams
-                  {patternData.created_at && (
-                    <> · Generated {new Date(patternData.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
-                  )}
-                </span>
-              </div>
-            )}
-
-            {patternData.recurring_themes && (
-              <div className="bg-card rounded-2xl p-6 border border-border">
-                <h3 className="font-bold text-foreground mb-3">Recurring Themes</h3>
-                <div className="flex flex-wrap gap-2">
-                  {patternData.recurring_themes.map((theme: string, i: number) => (
-                    <span key={i} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                      {theme}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {patternData.emotional_patterns && (
-              <div className="bg-card rounded-2xl p-6 border border-border">
-                <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
-                <p className="text-muted-foreground leading-relaxed">{patternData.emotional_patterns}</p>
-              </div>
-            )}
-
-            {patternData.suggestions && (
-              <div className="bg-card rounded-2xl p-6 border border-border">
-                <h3 className="font-bold text-foreground mb-3">Actionable Suggestions</h3>
-                <ul className="space-y-2">
-                  {patternData.suggestions.map((s: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                      <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        ) : dreams.length < 3 ? (
+        {dreams.length < 5 ? (
           <div className="bg-card rounded-2xl p-12 border border-border text-center">
+            <BarChart3 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Unlock Pattern Insights</h3>
             <p className="text-muted-foreground">
-              Analyze at least 3 dreams to unlock AI pattern recognition.
+              Analyze at least 5 dreams to unlock AI pattern recognition and charts. You have {dreams.length} analyzed so far.
             </p>
           </div>
-        ) : null}
+        ) : (
+          <>
+            {/* Tabbed Charts */}
+            <div className="bg-card rounded-2xl p-6 border border-border mb-8">
+              <Tabs defaultValue="emotions">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="emotions" className="gap-1.5">
+                    <BarChart3 className="w-4 h-4" /> Emotion Breakdown
+                  </TabsTrigger>
+                  <TabsTrigger value="mood-time" className="gap-1.5">
+                    <TrendingUp className="w-4 h-4" /> Mood over Time
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="emotions">
+                  <EmotionBarChartInner dreams={dreams} />
+                </TabsContent>
+                <TabsContent value="mood-time">
+                  <MoodOverTimeChart dreams={dreams} />
+                </TabsContent>
+              </Tabs>
+            </div>
+
+            {/* AI Pattern Analysis */}
+            {patternData && (
+              <div className="space-y-6">
+                {(patternData.dreams_analyzed || patternData.created_at) && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4" />
+                    <span>
+                      Based on {patternData.dreams_analyzed || "?"} dreams
+                      {patternData.created_at && (
+                        <> · Generated {new Date(patternData.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {patternData.recurring_themes && (
+                  <div className="bg-card rounded-2xl p-6 border border-border">
+                    <h3 className="font-bold text-foreground mb-3">Recurring Themes</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {patternData.recurring_themes.map((theme: string, i: number) => (
+                        <span key={i} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                          {theme}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {patternData.emotional_patterns && (
+                  <div className="bg-card rounded-2xl p-6 border border-border">
+                    <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
+                    <p className="text-muted-foreground leading-relaxed">{patternData.emotional_patterns}</p>
+                  </div>
+                )}
+
+                {patternData.suggestions && (
+                  <div className="bg-card rounded-2xl p-6 border border-border">
+                    <h3 className="font-bold text-foreground mb-3">Actionable Suggestions</h3>
+                    <ul className="space-y-2">
+                      {patternData.suggestions.map((s: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-muted-foreground">
+                          <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </AppLayout>
   );
