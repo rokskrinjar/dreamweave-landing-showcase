@@ -16,7 +16,6 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  Customized,
   Legend as RechartsLegend,
 } from "recharts";
 
@@ -247,44 +246,27 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
             width={70}
           />
           <RechartsTooltip content={<MoodTooltip />} />
+          <defs>
+            <linearGradient id="moodGradient" x1="0" y1="0" x2="1" y2="0">
+              {data.map((d, i) => {
+                const pct = data.length === 1 ? 50 : (i / (data.length - 1)) * 100;
+                return (
+                  <stop key={i} offset={`${pct}%`} stopColor={sentimentColor(d.score)} />
+                );
+              })}
+            </linearGradient>
+          </defs>
           <Line
             type="monotone"
             dataKey="score"
-            stroke="transparent"
-            strokeWidth={0}
+            stroke="url(#moodGradient)"
+            strokeWidth={2}
             dot={({ cx, cy, payload }: any) => {
               const score = payload?.score ?? 0;
               const color = sentimentColor(score);
               return <circle cx={cx} cy={cy} r={4} fill={color} stroke={color} />;
             }}
-            isAnimationActive={false}
           />
-          {/* Per-segment colored lines rendered via Customized */}
-          {data.length >= 2 && (
-            <Customized component={(props: any) => {
-              const { xAxisMap, yAxisMap } = props;
-              if (!xAxisMap || !yAxisMap) return null;
-              const xAxis = Object.values(xAxisMap)[0] as any;
-              const yAxis = Object.values(yAxisMap)[0] as any;
-              if (!xAxis?.scale || !yAxis?.scale) return null;
-              return (
-                <g>
-                  {data.slice(1).map((d, i) => {
-                    const prev = data[i];
-                    const x1 = xAxis.scale(prev.date) + (xAxis.bandSize || 0) / 2;
-                    const y1 = yAxis.scale(prev.score);
-                    const x2 = xAxis.scale(d.date) + (xAxis.bandSize || 0) / 2;
-                    const y2 = yAxis.scale(d.score);
-                    const avgScore = (prev.score + d.score) / 2;
-                    return (
-                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                        stroke={sentimentColor(avgScore)} strokeWidth={2} />
-                    );
-                  })}
-                </g>
-              );
-            }} />
-          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
