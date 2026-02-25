@@ -1,18 +1,38 @@
 
 
-## Add "Contact Us" Link to Dashboard Layout
+## Add Export Button Next to "Record a Dream"
 
-The contact form exists at `/contact` but there's no way to reach it from the logged-in app layout. We'll add a link in two places:
+Place the download/export button right beside the existing "Record a Dream" button on the Dashboard page. Only visible for Pro/Lifetime users.
 
 ### Changes
 
-**`src/components/AppLayout.tsx`**
+**1. Install dependency**
+- Add `xlsx` (SheetJS) for client-side Excel generation.
 
-1. Add a "Contact" nav item (using `MessageSquare` icon from lucide) to the `navItems` array so it appears in both the desktop top nav and the mobile bottom nav.
-2. This keeps it consistent with the existing nav pattern -- no extra UI needed.
+**2. New file: `src/lib/exportDreams.ts`**
+- Utility function that takes an array of dreams, builds an Excel worksheet with columns (Title, Date, Mood, Tags, Content), and triggers a `.xlsx` download.
 
-| Location | What user sees |
-|----------|---------------|
-| Desktop top nav bar | "Contact" link next to Dashboard, Record Dream, Patterns |
-| Mobile bottom nav | Contact icon + label alongside existing items |
+**3. Update `src/pages/Dashboard.tsx`** (lines 156-161)
+- Wrap the "Record a Dream" button in a flex container with a new "Export" button beside it.
+- The Export button uses the `Download` icon, only renders when `subscription.tier !== "free"`, and calls the export utility with the current `dreams` array on click.
+
+```text
+Before:
+  [ Record a Dream ]
+
+After (Pro/Lifetime users):
+  [ Download ]  [ Record a Dream ]
+```
+
+**4. Remove "Contact" from `AppLayout.tsx` nav**
+- Revert the Contact nav item added earlier since it belongs in the footer, not the main nav.
+
+### Technical Details
+
+| Item | Detail |
+|------|--------|
+| New dependency | `xlsx` |
+| New file | `src/lib/exportDreams.ts` |
+| Modified | `src/pages/Dashboard.tsx` -- add export button next to Record a Dream |
+| Modified | `src/components/AppLayout.tsx` -- remove Contact from nav items |
 
