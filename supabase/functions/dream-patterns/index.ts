@@ -6,6 +6,37 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Number words to digits mapping for dream count validation
+const NUMBER_WORDS: Record<string, number> = {
+  zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7,
+  eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13,
+  fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18,
+  nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50,
+};
+
+/**
+ * Detect and fix any dream-count mentions in emotional_patterns text
+ * that don't match the actual dreamCount.
+ */
+function normalizeDreamCount(text: string, dreamCount: number): string {
+  // Pattern: "across/based on/of/from [these/the/their] <number> dreams"
+  // Matches both digit and spelled-out number words
+  const numberWordsPattern = Object.keys(NUMBER_WORDS).join("|");
+  const regex = new RegExp(
+    `(across|based on|of|from|analyzing|analyzed|in)\\s+(these|the|their)?\\s*(\\d+|${numberWordsPattern})\\s+dreams?`,
+    "gi"
+  );
+
+  return text.replace(regex, (match, preposition, article, countStr) => {
+    // Parse the mentioned count
+    const mentioned = NUMBER_WORDS[countStr.toLowerCase()] ?? parseInt(countStr, 10);
+    if (isNaN(mentioned) || mentioned === dreamCount) return match;
+    // Mismatch detected — rewrite with correct count
+    const articlePart = article ? `${article} ` : "";
+    return `${preposition} ${articlePart}${dreamCount} dreams`;
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -177,6 +208,8 @@ Call the dream_patterns function with your analysis.`;
     }
     if (typeof patterns.emotional_patterns === 'string') {
       patterns.emotional_patterns = sanitizeStr(patterns.emotional_patterns);
+      // Deterministic guard: fix any mismatched dream count mentions
+      patterns.emotional_patterns = normalizeDreamCount(patterns.emotional_patterns, dreamCount);
     }
 
     // Persist to pattern_insights table
