@@ -16,6 +16,7 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
+  Customized,
   Legend as RechartsLegend,
 } from "recharts";
 
@@ -194,13 +195,35 @@ const MoodTooltip = ({ active, payload, label }: any) => {
   );
 };
 
+const sentimentColor = (score: number) =>
+  score > 0.25 ? "#10b981" : score < -0.25 ? "#f43f5e" : "#f59e0b";
+
+const CustomMoodLine = (props: any) => {
+  const { points } = props;
+  if (!points || points.length < 2) return null;
+  return (
+    <g>
+      {points.slice(1).map((point: any, i: number) => {
+        const prev = points[i];
+        const avgScore = ((prev.payload?.score ?? 0) + (point.payload?.score ?? 0)) / 2;
+        return (
+          <line
+            key={i}
+            x1={prev.x}
+            y1={prev.y}
+            x2={point.x}
+            y2={point.y}
+            stroke={sentimentColor(avgScore)}
+            strokeWidth={2}
+          />
+        );
+      })}
+    </g>
+  );
+};
+
 const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
   const data = useMemo(() => buildMoodOverTimeData(dreams), [dreams]);
-  const lineColor = useMemo(() => {
-    if (data.length === 0) return "#f59e0b";
-    const avgScore = data.reduce((sum, d) => sum + d.score, 0) / data.length;
-    return avgScore > 0.25 ? "#10b981" : avgScore < -0.25 ? "#f43f5e" : "#f59e0b";
-  }, [data]);
   if (data.length < 2) {
     return (
       <div className="p-12 text-center">
@@ -227,14 +250,41 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
           <Line
             type="monotone"
             dataKey="score"
-            stroke={lineColor}
-            strokeWidth={2}
+            stroke="transparent"
+            strokeWidth={0}
             dot={({ cx, cy, payload }: any) => {
               const score = payload?.score ?? 0;
-              const color = score > 0.25 ? "#10b981" : score < -0.25 ? "#f43f5e" : "#f59e0b";
+              const color = sentimentColor(score);
               return <circle cx={cx} cy={cy} r={4} fill={color} stroke={color} />;
             }}
+            isAnimationActive={false}
           />
+          {/* Per-segment colored lines rendered via Customized */}
+          {data.length >= 2 && (
+            <Customized component={(props: any) => {
+              const { xAxisMap, yAxisMap } = props;
+              if (!xAxisMap || !yAxisMap) return null;
+              const xAxis = Object.values(xAxisMap)[0] as any;
+              const yAxis = Object.values(yAxisMap)[0] as any;
+              if (!xAxis?.scale || !yAxis?.scale) return null;
+              return (
+                <g>
+                  {data.slice(1).map((d, i) => {
+                    const prev = data[i];
+                    const x1 = xAxis.scale(prev.date) + (xAxis.bandSize || 0) / 2;
+                    const y1 = yAxis.scale(prev.score);
+                    const x2 = xAxis.scale(d.date) + (xAxis.bandSize || 0) / 2;
+                    const y2 = yAxis.scale(d.score);
+                    const avgScore = (prev.score + d.score) / 2;
+                    return (
+                      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                        stroke={sentimentColor(avgScore)} strokeWidth={2} />
+                    );
+                  })}
+                </g>
+              );
+            }} />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
