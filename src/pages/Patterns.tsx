@@ -207,6 +207,13 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
     <div>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="moodGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="50%" stopColor="#f59e0b" />
+              <stop offset="100%" stopColor="#f43f5e" />
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
           <YAxis
@@ -219,7 +226,17 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
             width={70}
           />
           <RechartsTooltip content={<MoodTooltip />} />
-          <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: "hsl(var(--primary))" }} />
+          <Line
+            type="monotone"
+            dataKey="score"
+            stroke="url(#moodGradient)"
+            strokeWidth={2}
+            dot={({ cx, cy, payload }: any) => {
+              const score = payload?.score ?? 0;
+              const color = score > 0.25 ? "#10b981" : score < -0.25 ? "#f43f5e" : "#f59e0b";
+              return <circle cx={cx} cy={cy} r={4} fill={color} stroke={color} />;
+            }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
