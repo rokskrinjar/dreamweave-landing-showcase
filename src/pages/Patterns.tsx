@@ -495,10 +495,10 @@ const Patterns = () => {
                             }
                           );
                         }
+                        // Strip markdown bold markers instead of rendering them
+                        const plain = cleaned.replace(/\*\*(.*?)\*\*/g, '$1');
                         return (
-                          <p key={i} dangerouslySetInnerHTML={{
-                            __html: cleaned.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
-                          }} />
+                          <p key={i}>{plain}</p>
                         );
                       })}
                     </div>
