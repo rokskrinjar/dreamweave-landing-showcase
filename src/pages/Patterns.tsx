@@ -372,7 +372,7 @@ const Patterns = () => {
               {dreams.length} dreams analyzed · Insights from your subconscious
             </p>
           </div>
-          {dreams.length >= 5 && (
+          {(dreams.length >= 5 || patternData) && (
             <div className="flex flex-col items-end gap-1">
               <Button
                 onClick={handleGeneratePatterns}
