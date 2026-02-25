@@ -1,6 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { z } from "https://esm.sh/zod@3.23.8";
+
+const checkoutSchema = z.object({
+  plan: z.enum(["pro", "lifetime"]),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -29,9 +34,14 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { plan } = await req.json();
+    const parsed = checkoutSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: "Invalid plan" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { plan } = parsed.data;
     const config = PRICE_CONFIG[plan];
-    if (!config) throw new Error("Invalid plan");
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
