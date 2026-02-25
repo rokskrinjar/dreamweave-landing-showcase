@@ -478,7 +478,13 @@ const Patterns = () => {
                 {patternData.emotional_patterns && (
                   <div className="bg-card rounded-2xl p-6 border border-border">
                     <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
-                    <p className="text-muted-foreground leading-relaxed">{patternData.emotional_patterns}</p>
+                    <div className="text-muted-foreground leading-relaxed space-y-3">
+                      {patternData.emotional_patterns.split('\n').filter(Boolean).map((paragraph, i) => (
+                        <p key={i} dangerouslySetInnerHTML={{
+                          __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
+                        }} />
+                      ))}
+                    </div>
                   </div>
                 )}
 

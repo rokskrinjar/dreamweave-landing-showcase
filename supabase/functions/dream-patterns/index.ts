@@ -76,15 +76,27 @@ serve(async (req) => {
         ).join("\n\n---\n\n")
       : "";
 
+    const dreamCount = analyses.length;
+    let depthInstruction: string;
+    if (dreamCount >= 15) {
+      depthInstruction = `The user has ${dreamCount} analyzed dreams — this is a substantial dataset. Write a COMPREHENSIVE psychological profile for the emotional_patterns field. This should be 4-6 paragraphs covering: dominant emotional cycles, defense mechanisms, unresolved tensions, attachment patterns visible in dream content, and how their emotional landscape has evolved over time. Use **bold** for key psychological terms and pattern names. Be specific and reference actual patterns from the data.`;
+    } else if (dreamCount >= 10) {
+      depthInstruction = `The user has ${dreamCount} analyzed dreams — a solid dataset. Write a DETAILED emotional analysis for the emotional_patterns field. This should be 2-3 paragraphs covering: primary emotional cycles, recurring emotional triggers, and notable shifts over time. Use **bold** for key findings. Be specific and reference actual patterns.`;
+    } else {
+      depthInstruction = `The user has ${dreamCount} analyzed dreams. Write a concise but insightful paragraph for the emotional_patterns field, highlighting the most prominent emotional trends. Use **bold** for key findings.`;
+    }
+
     const systemPrompt = `You are DreamWeave's pattern recognition AI. You analyze dream analyses to find recurring patterns, emotional trends, and provide actionable life suggestions.
 
 Be specific and personal. Don't give generic advice. Reference actual patterns you see in the analysis data.
+
+${depthInstruction}
 
 Provide 5-10 actionable suggestions spanning different life areas: mindset shifts, daily habits, sleep hygiene, emotional processing techniques, relationships/social, and physical wellbeing. Go beyond purely psychological advice.
 
 Call the dream_patterns function with your analysis.`;
 
-    const userPrompt = `Here are the AI analyses of the user's dreams (primary source):\n\n${analysesText}${dreamsText ? `\n\nSupplementary raw dream content:\n\n${dreamsText}` : ""}\n\nFind recurring patterns across these analyses and provide actionable suggestions.`;
+    const userPrompt = `Here are the AI analyses of the user's ${dreamCount} dreams (primary source):\n\n${analysesText}${dreamsText ? `\n\nSupplementary raw dream content:\n\n${dreamsText}` : ""}\n\nFind recurring patterns across these analyses and provide actionable suggestions. Remember: scale the depth of your emotional patterns analysis to match the volume of data available.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -114,7 +126,7 @@ Call the dream_patterns function with your analysis.`;
                   },
                   emotional_patterns: {
                     type: "string",
-                    description: "A paragraph describing emotional patterns and cycles detected"
+                    description: "Emotional patterns analysis with **bold** markdown for key terms. Length scales with data: 1 paragraph for 5-9 dreams, 2-3 paragraphs for 10-14 dreams, 4-6 paragraphs as a full psychological profile for 15+ dreams."
                   },
                   suggestions: {
                     type: "array",
