@@ -1,57 +1,54 @@
 
 
-## Add AI-Powered Sentiment to Dream Analysis
+## In-App Contact Form
 
-### Approach
-Instead of classifying emotions on the frontend with brittle word lists, we'll have the AI classify the overall dream sentiment during the existing analysis step -- no extra AI calls needed. We store the result as a new `sentiment` column on the `dreams` table. The Patterns page then reads this attribute directly.
+A simple contact form that saves messages to the database. No email setup needed -- you check messages directly in your backend.
 
 ### Changes
 
-#### 1. Database Migration
-Add a `sentiment` column to the `dreams` table:
+#### 1. Database: `contact_messages` table
+
 ```sql
-ALTER TABLE public.dreams
-ADD COLUMN sentiment text CHECK (sentiment IN ('positive', 'neutral', 'negative'));
+CREATE TABLE public.contact_messages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid,
+  email text NOT NULL,
+  message text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can insert" ON public.contact_messages FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can view own" ON public.contact_messages FOR SELECT USING (auth.uid() = user_id);
 ```
-Nullable so existing dreams aren't broken.
 
-#### 2. Edge Function: `analyze-dream/index.ts`
-Add `sentiment` to the AI tool-calling schema:
-- New property in the `analyze_dream` function parameters:
-  ```
-  sentiment: {
-    type: "string",
-    enum: ["positive", "neutral", "negative"],
-    description: "Overall sentiment of the dream: positive, neutral, or negative"
-  }
-  ```
-- Add `sentiment` to the `required` array.
-- After parsing the AI response, update the dream record:
-  ```typescript
-  await serviceClient.from("dreams").update({ sentiment: analysis.sentiment }).eq("id", dreamId);
-  ```
-- Include `sentiment` in the response payload.
+Allows both logged-in and anonymous visitors to submit. `user_id` is optional (nullable) so unauthenticated users from the landing page can also reach out.
 
-#### 3. One-Off Backfill: New Edge Function `backfill-sentiments/index.ts`
-A small edge function to classify old dreams that don't have a sentiment yet:
-- Fetches all dreams where `sentiment IS NULL` (for the authenticated user).
-- Sends their moods/titles in a single AI call asking to classify each as positive/neutral/negative.
-- Updates each dream's `sentiment` column.
-- Called once from the Patterns page if any dreams lack a sentiment value.
+#### 2. New page: `src/pages/Contact.tsx`
 
-#### 4. Frontend: `src/pages/Patterns.tsx`
-- Remove all hardcoded emotion sets (`POSITIVE_EMOTIONS`, `NEGATIVE_EMOTIONS`, `NEUTRAL_EMOTIONS`) and `classifySentiment`.
-- Fetch dreams including the new `sentiment` column.
-- On mount, check if any dreams have `sentiment = null`. If so, call the `backfill-sentiments` function, then refresh.
-- **Emotion Breakdown chart**: Group emotions by `dream.sentiment` instead of classifying each emotion individually. Each dream's mood strings go into the bar matching its sentiment.
-- **Mood over Time chart**: Map `dream.sentiment` directly to score (positive=1, neutral=0, negative=-1) instead of averaging per-emotion scores.
+Simple form with two fields:
+- **Email** (pre-filled if logged in)
+- **Message** (textarea)
+
+On submit, inserts into `contact_messages` and shows a success toast. Wrapped in the same layout as other pages.
+
+#### 3. Routing: `src/App.tsx`
+
+Add `/contact` route pointing to the new Contact page.
+
+#### 4. Footer update: `src/components/Footer.tsx`
+
+Change the existing `mailto:hello@dreamweave.me` link to point to `/contact` instead.
+
+#### 5. Dashboard link (optional but nice)
+
+Add a small "Contact Us" or "Feedback" link in the dashboard sidebar/header area so logged-in users can easily find it.
 
 ### Technical Summary
 
 | File | Change |
 |------|--------|
-| Database migration | Add `sentiment` column to `dreams` |
-| `supabase/functions/analyze-dream/index.ts` | Add `sentiment` to AI tool schema + save to dreams table |
-| `supabase/functions/backfill-sentiments/index.ts` | New function: batch-classify old dreams via one AI call |
-| `src/pages/Patterns.tsx` | Remove hardcoded lists, read `sentiment` from dream data, trigger backfill if needed |
+| Database migration | New `contact_messages` table with RLS |
+| `src/pages/Contact.tsx` | New contact form page |
+| `src/App.tsx` | Add `/contact` route |
+| `src/components/Footer.tsx` | Link to `/contact` instead of mailto |
 
