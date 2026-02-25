@@ -1,46 +1,28 @@
 
 
-## Create Rachel Morgan Demo Profile with 15 Dreams
+## Fix: Emotion Breakdown showing unclassified dreams
 
-### Step 1: Create the Demo User
-Call the `create-demo-user` edge function with Rachel's credentials:
-- Email: `rachel.morgan40@gmail.com`
-- Password: `DreamWeave#40`
-- Display Name: `Rachel Morgan`
-- Tier: `pro`
+### Problem
+The `buildStackedData` function on line 53 does `d.sentiment || "neutral"`, which means dreams that have been analyzed but don't yet have a sentiment classification (sentiment is null) still get their mood emotions counted under the "Neutral" category. This inflates the chart with emotions that haven't been properly classified by the AI.
 
-### Step 2: Seed 15 Dreams
-Insert all 15 dreams into the `dreams` table using a backend function call (via the service role). Each dream will include:
-- Title, content (description), mood (emotions), and the correct `recorded_at` date
-- No sentiment or analysis -- Rachel starts fresh so you can demonstrate the analyze-then-patterns flow
+### Fix
 
-| Date | Title | Emotions |
-|------|-------|----------|
-| Feb 1 | The Empty House | loneliness, grief |
-| Feb 3 | The Locked Phone | frustration, anxiety |
-| Feb 5 | The Tidal Wave | fear, helplessness |
-| Feb 7 | Lost Child | panic, guilt |
-| Feb 9 | The Cracked Mirror | insecurity, sadness |
-| Feb 11 | High School Hallway | embarrassment, nostalgia |
-| Feb 13 | The Burning Journal | conflict, dread |
-| Feb 15 | The Stray Dog | compassion, overwhelm |
-| Feb 17 | Falling Elevator | loss of control, shock |
-| Feb 18 | The Wedding Dress | regret, confusion |
-| Feb 20 | The Hidden Room | curiosity, hope |
-| Feb 21 | The Silent Argument | frustration, longing |
-| Feb 22 | Floating Above the City | detachment, calm |
-| Feb 24 | The Missed Train | regret, urgency |
-| Feb 25 | Planting Seeds | renewal, cautious optimism |
+**File: `src/pages/Patterns.tsx`**
 
-### Step 3: Create a Seed Edge Function
-Create a new edge function `seed-demo-dreams` that accepts a `userId` and an array of dream objects, then bulk-inserts them into the `dreams` table using the service role client. This keeps the seeding process clean and reusable for future demo profiles.
+In `buildStackedData` (line 51-52), add a check to skip dreams without a classified sentiment:
 
-### Files to Create/Modify
-- **Create** `supabase/functions/seed-demo-dreams/index.ts` -- new edge function for bulk dream insertion
-- No frontend changes needed
+```typescript
+dreams.forEach((d) => {
+  if (!d.mood || !d.sentiment) return;  // skip unclassified dreams
+  const sentiment: Sentiment = d.sentiment;
+  // ...rest unchanged
+});
+```
 
-### After Deployment
-1. Call `create-demo-user` to create Rachel's account
-2. Call `seed-demo-dreams` with Rachel's user ID and all 15 dreams
-3. Rachel will have 15 recorded dreams, 0 analyzed -- ready to demonstrate the full flow
+This is a 1-line change (line 52-53). Only dreams with an AI-assigned sentiment (positive, neutral, or negative) will contribute to the Emotion Breakdown chart, ensuring the visualization accurately reflects classified data only.
+
+### Impact
+- Charts will only show emotions from dreams that have been fully processed (sentiment assigned)
+- The Mood over Time chart already filters by `d.sentiment` (line 167), so it's not affected
+- No backend changes needed
 
