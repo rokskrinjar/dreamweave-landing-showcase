@@ -79,11 +79,11 @@ serve(async (req) => {
     const dreamCount = analyses.length;
     let depthInstruction: string;
     if (dreamCount >= 15) {
-      depthInstruction = `The user has ${dreamCount} analyzed dreams — this is a substantial dataset. Write a COMPREHENSIVE psychological profile for the emotional_patterns field. This should be 4-6 paragraphs covering: dominant emotional cycles, defense mechanisms, unresolved tensions, attachment patterns visible in dream content, and how their emotional landscape has evolved over time. Use **bold** for key psychological terms and pattern names. Be specific and reference actual patterns from the data.`;
+      depthInstruction = `The user has EXACTLY ${dreamCount} analyzed dreams — this is a substantial dataset. Write a COMPREHENSIVE psychological profile for the emotional_patterns field. This should be 4-6 paragraphs covering: dominant emotional cycles, defense mechanisms, unresolved tensions, attachment patterns visible in dream content, and how their emotional landscape has evolved over time. Use **bold** for key psychological terms and pattern names. Be specific and reference actual patterns from the data. IMPORTANT: When referring to the number of dreams, always say "${dreamCount} dreams" — never round or approximate.`;
     } else if (dreamCount >= 10) {
-      depthInstruction = `The user has ${dreamCount} analyzed dreams — a solid dataset. Write a DETAILED emotional analysis for the emotional_patterns field. This should be 2-3 paragraphs covering: primary emotional cycles, recurring emotional triggers, and notable shifts over time. Use **bold** for key findings. Be specific and reference actual patterns.`;
+      depthInstruction = `The user has EXACTLY ${dreamCount} analyzed dreams — a solid dataset. Write a DETAILED emotional analysis for the emotional_patterns field. This should be 2-3 paragraphs covering: primary emotional cycles, recurring emotional triggers, and notable shifts over time. Use **bold** for key findings. Be specific and reference actual patterns. IMPORTANT: When referring to the number of dreams, always say "${dreamCount} dreams" — never round or approximate.`;
     } else {
-      depthInstruction = `The user has ${dreamCount} analyzed dreams. Write a concise but insightful paragraph for the emotional_patterns field, highlighting the most prominent emotional trends. Use **bold** for key findings.`;
+      depthInstruction = `The user has EXACTLY ${dreamCount} analyzed dreams. Write a concise but insightful paragraph for the emotional_patterns field, highlighting the most prominent emotional trends. Use **bold** for key findings. IMPORTANT: When referring to the number of dreams, always say "${dreamCount} dreams" — never round or approximate.`;
     }
 
     const systemPrompt = `You are DreamWeave's pattern recognition AI. You analyze dream analyses to find recurring patterns, emotional trends, and provide actionable life suggestions.
