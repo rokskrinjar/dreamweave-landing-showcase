@@ -158,6 +158,7 @@ export type Database = {
           display_name: string | null
           dreams_this_month: number
           id: string
+          is_demo: boolean
           stripe_customer_id: string | null
           subscription_tier: string
           updated_at: string
@@ -169,6 +170,7 @@ export type Database = {
           display_name?: string | null
           dreams_this_month?: number
           id?: string
+          is_demo?: boolean
           stripe_customer_id?: string | null
           subscription_tier?: string
           updated_at?: string
@@ -180,6 +182,7 @@ export type Database = {
           display_name?: string | null
           dreams_this_month?: number
           id?: string
+          is_demo?: boolean
           stripe_customer_id?: string | null
           subscription_tier?: string
           updated_at?: string

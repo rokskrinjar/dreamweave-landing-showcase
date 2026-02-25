@@ -48,7 +48,7 @@ serve(async (req) => {
 
     const { error: updateError } = await supabaseAdmin
       .from("profiles")
-      .update({ subscription_tier: tier, display_name: displayName })
+      .update({ subscription_tier: tier, display_name: displayName, is_demo: true })
       .eq("user_id", user.user.id);
 
     if (updateError) {
