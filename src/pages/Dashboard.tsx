@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2, Zap } from "lucide-react";
+import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2, Zap, Download } from "lucide-react";
+import { exportDreamsToExcel } from "@/lib/exportDreams";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -153,12 +154,24 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-        <Link to="/dreams/new">
-          <Button className="gradient-indigo text-white font-semibold gap-2">
-            <PenLine className="w-4 h-4" />
-            Record a Dream
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          {subscription.tier !== "free" && (
+            <Button
+              variant="outline"
+              className="gap-2 font-semibold"
+              onClick={() => exportDreamsToExcel(dreams)}
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
+          )}
+          <Link to="/dreams/new">
+            <Button className="gradient-indigo text-white font-semibold gap-2">
+              <PenLine className="w-4 h-4" />
+              Record a Dream
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Search */}
