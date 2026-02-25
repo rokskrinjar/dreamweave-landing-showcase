@@ -479,11 +479,28 @@ const Patterns = () => {
                   <div className="bg-card rounded-2xl p-6 border border-border">
                     <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
                     <div className="text-muted-foreground leading-relaxed space-y-3">
-                      {patternData.emotional_patterns.split('\n').filter(Boolean).map((paragraph, i) => (
-                        <p key={i} dangerouslySetInnerHTML={{
-                          __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
-                        }} />
-                      ))}
+                      {patternData.emotional_patterns.split('\n').filter(Boolean).map((paragraph, i) => {
+                        // Frontend safety net: strip lead-ins with wrong dream counts
+                        let cleaned = paragraph;
+                        if (patternData.dreams_analyzed) {
+                          const count = patternData.dreams_analyzed;
+                          cleaned = cleaned.replace(
+                            /(across|based on|of|from|analyzing|analyzed|in)\s+(these|the|their)?\s*(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty)\s+dreams?/gi,
+                            (match, prep, article, num) => {
+                              const wordToNum: Record<string, number> = { zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50 };
+                              const mentioned = wordToNum[num.toLowerCase()] ?? parseInt(num, 10);
+                              if (isNaN(mentioned) || mentioned === count) return match;
+                              const art = article ? `${article} ` : "";
+                              return `${prep} ${art}${count} dreams`;
+                            }
+                          );
+                        }
+                        return (
+                          <p key={i} dangerouslySetInnerHTML={{
+                            __html: cleaned.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
+                          }} />
+                        );
+                      })}
                     </div>
                   </div>
                 )}
