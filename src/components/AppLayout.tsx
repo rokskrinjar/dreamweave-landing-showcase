@@ -54,7 +54,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 pb-24 md:pb-8">
         {children}
       </main>
 
