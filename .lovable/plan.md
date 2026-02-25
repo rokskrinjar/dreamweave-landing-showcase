@@ -1,29 +1,46 @@
 
 
-## Restore 5-Dream Minimum for Pattern Insights
+## Create Rachel Morgan Demo Profile with 15 Dreams
 
-### Changes
+### Step 1: Create the Demo User
+Call the `create-demo-user` edge function with Rachel's credentials:
+- Email: `rachel.morgan40@gmail.com`
+- Password: `DreamWeave#40`
+- Display Name: `Rachel Morgan`
+- Tier: `pro`
 
-#### 1. Backend: `supabase/functions/dream-patterns/index.ts`
-- Change `analyses.length < 3` back to `analyses.length < 5`
-- Update error message to "You need at least 5 analyzed dreams to generate pattern insights."
+### Step 2: Seed 15 Dreams
+Insert all 15 dreams into the `dreams` table using a backend function call (via the service role). Each dream will include:
+- Title, content (description), mood (emotions), and the correct `recorded_at` date
+- No sentiment or analysis -- Rachel starts fresh so you can demonstrate the analyze-then-patterns flow
 
-#### 2. Frontend: `src/pages/Patterns.tsx`
+| Date | Title | Emotions |
+|------|-------|----------|
+| Feb 1 | The Empty House | loneliness, grief |
+| Feb 3 | The Locked Phone | frustration, anxiety |
+| Feb 5 | The Tidal Wave | fear, helplessness |
+| Feb 7 | Lost Child | panic, guilt |
+| Feb 9 | The Cracked Mirror | insecurity, sadness |
+| Feb 11 | High School Hallway | embarrassment, nostalgia |
+| Feb 13 | The Burning Journal | conflict, dread |
+| Feb 15 | The Stray Dog | compassion, overwhelm |
+| Feb 17 | Falling Elevator | loss of control, shock |
+| Feb 18 | The Wedding Dress | regret, confusion |
+| Feb 20 | The Hidden Room | curiosity, hope |
+| Feb 21 | The Silent Argument | frustration, longing |
+| Feb 22 | Floating Above the City | detachment, calm |
+| Feb 24 | The Missed Train | regret, urgency |
+| Feb 25 | Planting Seeds | renewal, cautious optimism |
 
-**Button logic** (line 375-386):
-- Show button only when `dreams.length >= 5`
-- Label: "Generate Insights" when no `patternData` exists, "Refresh Insights" when it does
+### Step 3: Create a Seed Edge Function
+Create a new edge function `seed-demo-dreams` that accepts a `userId` and an array of dream objects, then bulk-inserts them into the `dreams` table using the service role client. This keeps the seeding process clean and reusable for future demo profiles.
 
-**Charts section** (lines 390-408):
-- Only show charts when `dreams.length >= 5` (no point showing charts with fewer analyzed dreams)
+### Files to Create/Modify
+- **Create** `supabase/functions/seed-demo-dreams/index.ts` -- new edge function for bulk dream insertion
+- No frontend changes needed
 
-**Empty state** (lines 459-465):
-- Change threshold from `dreams.length < 3` to `dreams.length < 5`
-- When fewer than 5 analyzed dreams: show a message like "Analyze at least 5 dreams to unlock AI pattern recognition and charts. You have X so far."
-- This message replaces both the charts and the insights section when under threshold
-
-### Summary of UX Flow
-- **< 5 analyzed dreams**: Show only the header with count + a single card saying "Analyze at least 5 dreams to unlock pattern insights. You have X analyzed so far."
-- **>= 5 analyzed dreams, no insights yet**: Show charts + "Generate Insights" button
-- **>= 5 analyzed dreams, insights exist**: Show charts + "Refresh Insights" button + insight cards
+### After Deployment
+1. Call `create-demo-user` to create Rachel's account
+2. Call `seed-demo-dreams` with Rachel's user ID and all 15 dreams
+3. Rachel will have 15 recorded dreams, 0 analyzed -- ready to demonstrate the full flow
 
