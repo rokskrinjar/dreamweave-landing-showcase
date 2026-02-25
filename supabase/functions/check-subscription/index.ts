@@ -74,9 +74,9 @@ serve(async (req) => {
         .eq("user_id", userId)
         .single();
 
-      if (profile?.subscription_tier === "lifetime") {
-        logStep("Profile has manually-set lifetime tier, preserving it");
-        return new Response(JSON.stringify({ subscribed: true, tier: "lifetime" }), {
+      if (profile?.subscription_tier === "lifetime" || profile?.subscription_tier === "pro") {
+        logStep("Profile has manually-set tier, preserving it", { tier: profile.subscription_tier });
+        return new Response(JSON.stringify({ subscribed: true, tier: profile.subscription_tier }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -157,13 +157,13 @@ serve(async (req) => {
       .eq("user_id", userId)
       .single();
 
-    if (profileCheck?.subscription_tier === "lifetime") {
-      logStep("Profile has manually-set lifetime tier, preserving it (with Stripe customer)");
+    if (profileCheck?.subscription_tier === "lifetime" || profileCheck?.subscription_tier === "pro") {
+      logStep("Profile has manually-set tier, preserving it (with Stripe customer)", { tier: profileCheck.subscription_tier });
       await supabaseAdmin.from("profiles").update({
         stripe_customer_id: customerId,
       }).eq("user_id", userId);
 
-      return new Response(JSON.stringify({ subscribed: true, tier: "lifetime" }), {
+      return new Response(JSON.stringify({ subscribed: true, tier: profileCheck.subscription_tier }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
