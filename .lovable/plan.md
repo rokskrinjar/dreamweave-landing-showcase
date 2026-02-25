@@ -1,79 +1,40 @@
 
 
-## Make Your Landing Page Visible to Bots, Facebook, and Google
+## Rewrite All Meta + Bot Content for Your Actual Audience
 
-### The Problem
-Your app is a client-side React app. When Facebook, Google, or any crawler visits your site, they see this:
+Target: Women 30-45 who journal, are into self-development, psychology, and personal growth. The tone should feel like a trusted friend, not a SaaS product page.
 
-```text
-<div id="root"></div>
-```
+### File: `index.html` -- Full rewrite of copy
 
-That's it. No text, no content, no pitch. Your beautiful landing page only appears after JavaScript runs, which most bots don't do.
+**1. Page Title**
+- Before: "DreamWeave.me - Your Personal Dream Journal & Analysis"
+- After: "DreamWeave.me -- Your dreams are trying to tell you something"
 
-### The Fix
-We'll add three things to `index.html` that bots CAN read -- without changing how your site looks or works for real users (React will replace the content instantly when it loads).
+**2. Meta Description**
+- Before: "Unlock the wisdom in your dreams with DreamWeave.me. AI-powered dream analysis using Jungian and Freudian psychology..."
+- After: "You remember that dream for a reason. DreamWeave helps you capture it, understand it, and see what your subconscious has been trying to say. Start your free dream journal today."
 
----
+**3. OG Tags**
+- `og:title`: "Your dreams are trying to tell you something"
+- `og:description`: "That dream you can't stop thinking about? It means something. DreamWeave helps you journal your dreams, uncover patterns, and finally understand what's going on beneath the surface."
+- Twitter tags updated to match
 
-### 1. Better Meta Tags and OG Image
+**4. JSON-LD Structured Data**
+- Soften the description: "A dream journal that helps you capture, reflect on, and understand your dreams. Discover recurring themes, emotional patterns, and what your subconscious mind is working through."
+- Update offer names: "Free" and "Full Access" instead of "Free Plan" / "Pro Plan"
 
-**File: `index.html`**
+**5. Noscript Fallback -- Complete rewrite for warmth**
 
-- Update `og:url` to `https://dreamweave.me/`
-- Update Twitter `site` from `@Lovable` to your brand
-- Add `og:site_name`
-- Replace the generic Lovable placeholder OG image URL with your own (you'll need to upload a screenshot or branded image to `public/og-image.png`)
+New copy:
 
-### 2. Noscript / Bot-Readable Content
+- **H1**: "Your dreams are trying to tell you something"
+- **Intro**: "You woke up with that feeling again. The dream was so vivid, so real -- and you know it meant something. But by the time you've made coffee, it's already slipping away. DreamWeave is a simple, beautiful dream journal that helps you capture those moments and actually understand them."
+- **H2**: "What if you could finally make sense of your dreams?"
+- **Feature 1 -- "Write it down before it fades"**: "Roll over, open the app, and get it out of your head. It takes 60 seconds. No pressure to be perfect -- just capture what you remember. The feelings, the images, the people. It's all safe here."
+- **Feature 2 -- "Understand what it actually means"**: "DreamWeave draws from Jungian and depth psychology to help you see what your dreams might be telling you. Not vague horoscope stuff -- real, thoughtful reflections that make you go 'oh... that makes sense.'"
+- **Feature 3 -- "Notice what keeps coming back"**: "After a few entries, you'll start to see it. The water dreams. The running dreams. The ones about your mother. DreamWeave connects the threads so you can see what your inner world has been working through."
+- **Feature 4 -- "A private space for your inner life"**: "This isn't social media. Nobody sees your dreams but you. It's just you, your journal, and a quiet space to explore what's happening beneath the surface."
+- **Pricing**: "Try everything free for 7 days. Then just $4.99/month -- a price we're locking in for early members."
+- **CTA**: "Start Your Free Dream Journal"
 
-**File: `index.html`**
-
-Add a `<noscript>` block inside `<body>` that contains your full landing page copy as plain HTML. This is what bots, Facebook previews, and Google will actually read. It includes:
-
-- Hero headline: "That dream meant something. Find out what."
-- Hero description paragraph
-- All 4 feature titles and descriptions
-- Pricing info
-- A call-to-action link
-
-Real users with JavaScript enabled will never see this -- React replaces it immediately. But crawlers get a full page of rich, keyword-dense content.
-
-### 3. JSON-LD Structured Data
-
-**File: `index.html`**
-
-Add a `<script type="application/ld+json">` block in the `<head>` with structured data telling Google:
-- What your site is (SoftwareApplication)
-- Name, description, URL
-- Pricing info
-- Rating/review snippet (optional)
-
-This helps Google show rich results (star ratings, pricing) in search.
-
-### 4. Sitemap
-
-**New file: `public/sitemap.xml`**
-
-A simple sitemap listing your public pages (`/`, `/auth`, `/contact`, `/privacy`, `/terms`) so Google can discover and index them.
-
-### 5. Robots.txt Update
-
-**File: `public/robots.txt`**
-
-Add a reference to the sitemap URL.
-
----
-
-### What This Solves
-
-| Platform | Before | After |
-|----------|--------|-------|
-| Facebook Ads | Empty preview, no text | Full headline, description, image |
-| Google Ads | Can't read landing page | Sees all your copy and features |
-| Google Search | Minimal indexing | Full content indexed, rich results |
-| Twitter/X | Generic preview | Branded preview with image |
-
-### Important Note
-You'll want to replace the OG image (`https://lovable.dev/opengraph-image-p98pqg.png`) with an actual screenshot or branded image of DreamWeave. You can upload one to `public/og-image.png` and we'll reference that.
-
+### No other files change -- this is all in `index.html`.
