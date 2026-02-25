@@ -196,6 +196,11 @@ const MoodTooltip = ({ active, payload, label }: any) => {
 
 const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
   const data = useMemo(() => buildMoodOverTimeData(dreams), [dreams]);
+  const lineColor = useMemo(() => {
+    if (data.length === 0) return "#f59e0b";
+    const avgScore = data.reduce((sum, d) => sum + d.score, 0) / data.length;
+    return avgScore > 0.25 ? "#10b981" : avgScore < -0.25 ? "#f43f5e" : "#f59e0b";
+  }, [data]);
   if (data.length < 2) {
     return (
       <div className="p-12 text-center">
@@ -207,13 +212,6 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
     <div>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-          <defs>
-            <linearGradient id="moodGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="50%" stopColor="#f59e0b" />
-              <stop offset="100%" stopColor="#f43f5e" />
-            </linearGradient>
-          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
           <YAxis
@@ -229,7 +227,7 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
           <Line
             type="monotone"
             dataKey="score"
-            stroke="url(#moodGradient)"
+            stroke={lineColor}
             strokeWidth={2}
             dot={({ cx, cy, payload }: any) => {
               const score = payload?.score ?? 0;
