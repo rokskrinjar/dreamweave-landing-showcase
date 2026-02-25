@@ -49,8 +49,8 @@ function buildStackedData(dreams: any[]) {
   };
 
   dreams.forEach((d) => {
-    if (!d.mood) return;
-    const sentiment: Sentiment = d.sentiment || "neutral";
+    if (!d.mood || !d.sentiment) return;
+    const sentiment: Sentiment = d.sentiment;
     const emotions = (d.mood as string).split(",").map((s: string) => s.trim().toLowerCase()).filter(Boolean);
     emotions.forEach((e) => {
       grouped[sentiment].set(e, (grouped[sentiment].get(e) || 0) + 1);
