@@ -80,6 +80,8 @@ serve(async (req) => {
 
 Be specific and personal. Don't give generic advice. Reference actual patterns you see in the analysis data.
 
+Provide 5-10 actionable suggestions spanning different life areas: mindset shifts, daily habits, sleep hygiene, emotional processing techniques, relationships/social, and physical wellbeing. Go beyond purely psychological advice.
+
 Call the dream_patterns function with your analysis.`;
 
     const userPrompt = `Here are the AI analyses of the user's dreams (primary source):\n\n${analysesText}${dreamsText ? `\n\nSupplementary raw dream content:\n\n${dreamsText}` : ""}\n\nFind recurring patterns across these analyses and provide actionable suggestions.`;
@@ -117,7 +119,7 @@ Call the dream_patterns function with your analysis.`;
                   suggestions: {
                     type: "array",
                     items: { type: "string" },
-                    description: "3-5 specific, actionable suggestions based on the patterns found"
+                    description: "5-10 specific, actionable suggestions spanning different life areas (mindset, daily habits, sleep hygiene, emotional processing, relationships, physical wellbeing)"
                   }
                 },
                 required: ["recurring_themes", "emotional_patterns", "suggestions"],
