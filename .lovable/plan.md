@@ -1,16 +1,12 @@
 
 
-## Update Plan Prices
+## Add Meta Pixel to the page
 
-Two files need changes:
+The Meta Pixel script needs to go in `index.html` inside the `<head>` tag. This is the single HTML entry point for the Vite/React app, so it will load on every page.
 
-### 1. `supabase/functions/create-checkout/index.ts`
-- Update `pro` priceId to `price_1T7v4iF0C59Hu24k0Kt0t06N`
-- Update `lifetime` priceId to `price_1T7v6qF0C59Hu24kQ01YOlxr`
+### Change
 
-### 2. `src/components/CTASection.tsx`
-- Change Pro price from `"€0.50"` to `"€4.99"`
-- Change Lifetime price from `"€1.00"` to `"€49.99"`
+**`index.html`** — Add the Meta Pixel snippet just before the closing `</head>` tag.
 
-No database or edge function logic changes needed — just two string updates in each file.
+That's it — one file, one addition.
 
