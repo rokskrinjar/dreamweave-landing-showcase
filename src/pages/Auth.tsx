@@ -41,6 +41,7 @@ const Auth = () => {
         });
         if (error) throw error;
         toast.success("Check your email to confirm your account!");
+        (window as any).fbq?.('track', 'CompleteRegistration');
       }
     } catch (error: any) {
       toast.error(error.message);
