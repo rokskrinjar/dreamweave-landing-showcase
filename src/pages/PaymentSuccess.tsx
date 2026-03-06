@@ -12,6 +12,7 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     refreshSubscription();
+    (window as any).fbq?.('track', 'Subscribe');
   }, [refreshSubscription]);
 
   return (
