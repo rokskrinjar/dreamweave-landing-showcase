@@ -1,16 +1,14 @@
 
 
-## Update Plan Prices
+## Add Meta Pixel Conversion Events
 
-Two files need changes:
+Two events, two files:
 
-### 1. `supabase/functions/create-checkout/index.ts`
-- Update `pro` priceId to `price_1T7v4iF0C59Hu24k0Kt0t06N`
-- Update `lifetime` priceId to `price_1T7v6qF0C59Hu24kQ01YOlxr`
+### 1. `src/pages/Auth.tsx` — `CompleteRegistration`
+Fire `fbq('track', 'CompleteRegistration')` after a successful `signUp` call (line 43, right after the success toast).
 
-### 2. `src/components/CTASection.tsx`
-- Change Pro price from `"€0.50"` to `"€4.99"`
-- Change Lifetime price from `"€1.00"` to `"€49.99"`
+### 2. `src/pages/PaymentSuccess.tsx` — `Subscribe`
+Fire `fbq('track', 'Subscribe')` inside the existing `useEffect` on mount, since this page only loads after a successful payment.
 
-No database or edge function logic changes needed — just two string updates in each file.
+Both calls use `window.fbq` with a TypeScript guard to avoid errors if the pixel hasn't loaded.
 
