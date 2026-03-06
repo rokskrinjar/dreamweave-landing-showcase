@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AuthGuard } from "@/components/AuthGuard";
+import { MetaPixelRouteTracker } from "@/components/MetaPixelRouteTracker";
 import Index from "./pages/Index";
 
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -29,6 +30,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <MetaPixelRouteTracker />
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<Index />} />

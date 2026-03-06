@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { trackMetaEvent } from "@/lib/metaPixel";
 
 const PaymentSuccess = () => {
   const { refreshSubscription } = useAuth();
@@ -12,7 +13,7 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     refreshSubscription();
-    (window as any).fbq?.('track', 'Subscribe');
+    trackMetaEvent('Subscribe');
   }, [refreshSubscription]);
 
   return (
