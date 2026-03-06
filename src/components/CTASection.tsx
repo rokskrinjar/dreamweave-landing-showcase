@@ -28,7 +28,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "€0.50",
+    price: "€4.99",
     period: "/month",
     plan: "pro" as const,
     description: "For serious dreamers who want the full picture.",
@@ -48,7 +48,7 @@ const tiers = [
   },
   {
     name: "Lifetime Dreamer",
-    price: "€1.00",
+    price: "€49.99",
     period: "one-time",
     plan: "lifetime" as const,
     description: "Pay once. Dream forever. No subscriptions, no renewals.",
