@@ -15,6 +15,7 @@ const PaymentSuccess = () => {
   useEffect(() => {
     refreshSubscription();
     trackMetaEvent('Subscribe');
+    trackGoogleConversion();
   }, [refreshSubscription]);
 
   return (

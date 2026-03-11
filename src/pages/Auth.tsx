@@ -44,6 +44,7 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Check your email to confirm your account!");
         trackMetaEvent('CompleteRegistration');
+        trackGoogleConversion();
       }
     } catch (error: any) {
       toast.error(error.message);

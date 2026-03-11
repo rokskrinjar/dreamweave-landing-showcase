@@ -32,6 +32,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <MetaPixelRouteTracker />
+          <GoogleAdsRouteTracker />
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<Index />} />
