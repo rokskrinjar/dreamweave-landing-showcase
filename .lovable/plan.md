@@ -1,16 +1,28 @@
 
 
-## Update Plan Prices
+## Google Ads (gtag.js) Integration
 
-Two files need changes:
+Google Ads Conversion ID: **AW-978271506**
 
-### 1. `supabase/functions/create-checkout/index.ts`
-- Update `pro` priceId to `price_1T7v4iF0C59Hu24k0Kt0t06N`
-- Update `lifetime` priceId to `price_1T7v6qF0C59Hu24kQ01YOlxr`
+### Changes
 
-### 2. `src/components/CTASection.tsx`
-- Change Pro price from `"€0.50"` to `"€4.99"`
-- Change Lifetime price from `"€1.00"` to `"€49.99"`
+1. **`index.html`** — Add the gtag.js snippet in `<head>` (after the Meta Pixel block, before `</head>`):
+   - Async script loading `googletagmanager.com/gtag/js?id=AW-978271506`
+   - `dataLayer` init + `gtag('config', 'AW-978271506')`
 
-No database or edge function logic changes needed — just two string updates in each file.
+2. **`src/lib/googleAds.ts`** — Create a centralized helper (mirrors `metaPixel.ts`):
+   - `trackGoogleConversion(conversionId, params?)` — calls `gtag('event', 'conversion', ...)`
+   - `trackGoogleEvent(eventName, params?)` — general event tracking
+   - Same debug mode pattern (`?google_debug=1`)
+
+3. **`src/components/GoogleAdsRouteTracker.tsx`** — SPA page_view tracking on route changes (mirrors `MetaPixelRouteTracker`):
+   - Fires `gtag('event', 'page_view')` on route changes, skips first render
+
+4. **`src/App.tsx`** — Mount `GoogleAdsRouteTracker` alongside `MetaPixelRouteTracker`
+
+5. **`src/pages/Auth.tsx`** — Fire a conversion event on successful signup (alongside existing Meta `CompleteRegistration`)
+
+6. **`src/pages/PaymentSuccess.tsx`** — Fire a conversion event on purchase (alongside existing Meta `Subscribe`)
+
+> **Note:** Once you set up specific conversion actions in Google Ads (e.g., sign-up, purchase), you'll get conversion labels (format: `AW-978271506/XXXXXXX`). Share those and I'll wire them into the corresponding events for precise conversion attribution.
 
