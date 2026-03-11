@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AuthGuard } from "@/components/AuthGuard";
 import { MetaPixelRouteTracker } from "@/components/MetaPixelRouteTracker";
+import { GoogleAdsRouteTracker } from "@/components/GoogleAdsRouteTracker";
 import Index from "./pages/Index";
 
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -31,6 +32,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <MetaPixelRouteTracker />
+          <GoogleAdsRouteTracker />
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<Index />} />

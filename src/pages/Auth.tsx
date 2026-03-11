@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Moon, ArrowLeft } from "lucide-react";
 import { trackMetaEvent } from "@/lib/metaPixel";
+import { trackGoogleConversion } from "@/lib/googleAds";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -43,6 +44,7 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Check your email to confirm your account!");
         trackMetaEvent('CompleteRegistration');
+        trackGoogleConversion();
       }
     } catch (error: any) {
       toast.error(error.message);
