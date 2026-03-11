@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { trackMetaEvent } from "@/lib/metaPixel";
+import { trackGoogleConversion } from "@/lib/googleAds";
 
 const PaymentSuccess = () => {
   const { refreshSubscription } = useAuth();
