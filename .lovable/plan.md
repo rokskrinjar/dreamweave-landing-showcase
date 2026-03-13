@@ -1,13 +1,16 @@
 
 
-## Update Google Ads Conversion ID
+## Update Plan Prices
 
-New ID: **AW-18013166255** (was AW-978271506)
+Two files need changes:
 
-Two files need updating:
+### 1. `supabase/functions/create-checkout/index.ts`
+- Update `pro` priceId to `price_1T7v4iF0C59Hu24k0Kt0t06N`
+- Update `lifetime` priceId to `price_1T7v6qF0C59Hu24kQ01YOlxr`
 
-1. **`index.html`** — Update the gtag.js script `id` parameter and `gtag('config', ...)` call
-2. **`src/lib/googleAds.ts`** — Update the `CONVERSION_ID` constant
+### 2. `src/components/CTASection.tsx`
+- Change Pro price from `"€0.50"` to `"€4.99"`
+- Change Lifetime price from `"€1.00"` to `"€49.99"`
 
-That's it — everything else (route tracker, conversion helpers, debug mode) stays the same.
+No database or edge function logic changes needed — just two string updates in each file.
 
