@@ -129,7 +129,7 @@ export const CaseStudy = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={analyzedDream1}
+                        src="/images/analyzed-dream-1.png"
                         alt="Dream analysis showing summary and key symbols"
                         className="w-full h-auto"
                       />
