@@ -167,7 +167,7 @@ export const CaseStudy = () => {
                     </div>
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={patterns2}
+                        src="/images/patterns-2.png"
                         alt="Actionable suggestions based on dream patterns"
                         className="w-full h-auto"
                       />
