@@ -233,7 +233,7 @@ const DreamDetail = () => {
           <div className="space-y-6">
             <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <Brain className="w-5 h-5 text-primary" />
-              AI Analysis
+              Dream Analysis
             </h2>
 
             {analysis.summary && (
