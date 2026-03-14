@@ -160,7 +160,7 @@ export const CaseStudy = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={patterns1}
+                        src="/images/patterns-1.png"
                         alt="Recurring dream patterns and themes analysis"
                         className="w-full h-auto"
                       />
