@@ -3,11 +3,6 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, Moon, Sparkles, Brain, TrendingUp, Calendar, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import rachelPortrait from "@/assets/rachel-portrait.png";
-import rachelsDreams from "@/assets/rachels-dreams.png";
-import analyzedDream1 from "@/assets/analyzed-dream-1.png";
-import analyzedDream2 from "@/assets/analyzed-dream-2.png";
-import patterns1 from "@/assets/patterns-1.png";
-import patterns2 from "@/assets/patterns-2.png";
 
 const slideLabels = ["Meet Rachel", "Her Dreams", "Dream Analysis", "Patterns"];
 
@@ -111,7 +106,7 @@ export const CaseStudy = () => {
                   </div>
                   <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                     <img
-                      src={rachelsDreams}
+                      src="/images/rachels-dreams.png"
                       alt="Rachel's dream journal showing multiple entries with mood tags"
                       className="w-full h-auto"
                     />
@@ -134,14 +129,14 @@ export const CaseStudy = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={analyzedDream1}
+                        src="/images/analyzed-dream-1.png"
                         alt="Dream analysis showing summary and key symbols"
                         className="w-full h-auto"
                       />
                     </div>
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={analyzedDream2}
+                        src="/images/analyzed-dream-2.png"
                         alt="Dream analysis showing themes and emotions detected"
                         className="w-full h-auto"
                       />
@@ -165,14 +160,14 @@ export const CaseStudy = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={patterns1}
+                        src="/images/patterns-1.png"
                         alt="Recurring dream patterns and themes analysis"
                         className="w-full h-auto"
                       />
                     </div>
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={patterns2}
+                        src="/images/patterns-2.png"
                         alt="Actionable suggestions based on dream patterns"
                         className="w-full h-auto"
                       />
