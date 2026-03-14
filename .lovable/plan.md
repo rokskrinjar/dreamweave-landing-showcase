@@ -1,16 +1,15 @@
 
 
-## Update Plan Prices
+## Improve Case Study Image Resolution
 
-Two files need changes:
+The images in the case study section were likely compressed or downsized when copied from your uploads into `src/assets/`. The fix is straightforward:
 
-### 1. `supabase/functions/create-checkout/index.ts`
-- Update `pro` priceId to `price_1T7v4iF0C59Hu24k0Kt0t06N`
-- Update `lifetime` priceId to `price_1T7v6qF0C59Hu24kQ01YOlxr`
+### Plan
+1. **Re-import original uploads** — Copy your original uploaded screenshots (`rachels_dreams.png`, `anaylzed_dream_1.png`, `anaylzed_dream_2.png`, `patterns_1.png`, `patterns_2.png`) back into `src/assets/` at their full original resolution, replacing the current compressed versions.
 
-### 2. `src/components/CTASection.tsx`
-- Change Pro price from `"€0.50"` to `"€4.99"`
-- Change Lifetime price from `"€1.00"` to `"€49.99"`
+2. **Move images to `public/` folder** — Static assets in `public/` are served as-is without any Vite processing/compression, which preserves full quality. Reference them via absolute paths (`/images/rachels-dreams.png`) instead of imports.
 
-No database or edge function logic changes needed — just two string updates in each file.
+3. **Add image rendering hints** — Add `loading="eager"` and CSS `image-rendering: auto` to ensure browsers render them crisply, plus use `srcSet` if we have 2x versions available.
+
+This is primarily an asset quality issue — the code structure is fine, we just need the full-resolution source files served without compression.
 
