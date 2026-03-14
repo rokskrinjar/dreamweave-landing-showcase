@@ -106,7 +106,7 @@ export const CaseStudy = () => {
                   </div>
                   <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                     <img
-                      src={rachelsDreams}
+                      src="/images/rachels-dreams.png"
                       alt="Rachel's dream journal showing multiple entries with mood tags"
                       className="w-full h-auto"
                     />
