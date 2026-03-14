@@ -8,7 +8,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
   const navItems = [
-    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/dashboard", icon: LayoutDashboard, label: "My Dreams" },
     { to: "/dreams/new", icon: PenLine, label: "Record Dream" },
     { to: "/patterns", icon: BarChart3, label: "Patterns" },
     { to: "/contact", icon: MessageSquare, label: "Contact" },
