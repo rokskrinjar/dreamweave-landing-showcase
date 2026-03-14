@@ -1,20 +1,43 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, PenLine, BarChart3, MessageSquare, LogOut } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, Menu, MessageSquare, LogOut, Crown, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { navigateToExternal } from "@/lib/navigation";
 
 export const AppLayout = ({ children }: { children: React.ReactNode }) => {
-  const { signOut, user } = useAuth();
+  const { signOut, user, subscription } = useAuth();
   const location = useLocation();
 
   const navItems = [
     { to: "/dashboard", icon: LayoutDashboard, label: "My Dreams" },
     { to: "/dreams/new", icon: PenLine, label: "Record Dream" },
     { to: "/patterns", icon: BarChart3, label: "Patterns" },
-    { to: "/contact", icon: MessageSquare, label: "Contact" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const tierLabel =
+    subscription.tier === "lifetime"
+      ? "Lifetime Dreamer"
+      : subscription.tier === "pro"
+      ? "Pro"
+      : "Free";
+
+  const handleManage = async () => {
+    const { data, error } = await supabase.functions.invoke("customer-portal");
+    if (data?.url) navigateToExternal(data.url);
+    else toast.error(error?.message || "Could not open billing portal");
+  };
 
   return (
     <div className="min-h-screen bg-secondary">
@@ -44,12 +67,38 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground hidden md:block">{user?.email}</span>
-            <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground">
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
+          {/* User menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-muted-foreground gap-2">
+                <span className="hidden md:inline text-sm">{user?.email}</span>
+                <Menu className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="font-normal">
+                <p className="text-sm font-medium truncate">{user?.email}</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                  <Crown className="w-3 h-3" /> {tierLabel}
+                </p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {subscription.tier === "pro" && (
+                <DropdownMenuItem onClick={handleManage} className="gap-2 cursor-pointer">
+                  <Settings className="w-4 h-4" /> Manage Subscription
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem asChild>
+                <Link to="/contact" className="gap-2 cursor-pointer flex items-center">
+                  <MessageSquare className="w-4 h-4" /> Contact
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={signOut} className="gap-2 cursor-pointer text-destructive">
+                <LogOut className="w-4 h-4" /> Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
