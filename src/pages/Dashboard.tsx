@@ -133,26 +133,7 @@ const Dashboard = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </p>
-          ) : (
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Crown className="w-3 h-3" />
-                {subscription.tier === "lifetime" ? "Lifetime Dreamer" : "Pro"}
-              </span>
-              {subscription.tier === "pro" && (
-                <button
-                  onClick={async () => {
-                    const { data, error } = await supabase.functions.invoke("customer-portal");
-                    if (data?.url) navigateToExternal(data.url);
-                    else toast.error(error?.message || "Could not open billing portal");
-                  }}
-                  className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
-                >
-                  <Settings className="w-3 h-3" /> Manage
-                </button>
-              )}
-            </div>
-          )}
+          ) : null}
         </div>
         <div className="flex items-center gap-3">
           {subscription.tier !== "free" && (
