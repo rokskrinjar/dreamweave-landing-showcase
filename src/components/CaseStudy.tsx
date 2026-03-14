@@ -3,11 +3,6 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, Moon, Sparkles, Brain, TrendingUp, Calendar, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import rachelPortrait from "@/assets/rachel-portrait.png";
-import rachelsDreams from "@/assets/rachels-dreams.png";
-import analyzedDream1 from "@/assets/analyzed-dream-1.png";
-import analyzedDream2 from "@/assets/analyzed-dream-2.png";
-import patterns1 from "@/assets/patterns-1.png";
-import patterns2 from "@/assets/patterns-2.png";
 
 const slideLabels = ["Meet Rachel", "Her Dreams", "Dream Analysis", "Patterns"];
 
