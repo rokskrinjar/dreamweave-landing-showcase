@@ -136,7 +136,7 @@ export const CaseStudy = () => {
                     </div>
                     <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                       <img
-                        src={analyzedDream2}
+                        src="/images/analyzed-dream-2.png"
                         alt="Dream analysis showing themes and emotions detected"
                         className="w-full h-auto"
                       />
