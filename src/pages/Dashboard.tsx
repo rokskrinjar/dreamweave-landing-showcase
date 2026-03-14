@@ -261,42 +261,35 @@ const Dashboard = () => {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-semibold text-foreground truncate">{dream.title}</h3>
-                    {/* Analysis status badge */}
-                    {dream.hasAnalysis ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 shrink-0">
-                        <Sparkles className="w-3 h-3" />
-                        Analyzed
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 shrink-0">
-                        Not analyzed
-                      </span>
-                    )}
-                  </div>
+                  <h3 className="text-lg font-semibold text-foreground truncate mb-1">{dream.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-2">{dream.content}</p>
                 </div>
-                <div className="flex flex-col items-end gap-2 shrink-0">
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(dream.recorded_at).toLocaleDateString()}
-                  </span>
-                  {dream.mood && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${moodColors[dream.mood] || "bg-muted text-muted-foreground"}`}>
-                      {dream.mood}
-                    </span>
-                  )}
-                </div>
+                <span className="text-xs text-muted-foreground shrink-0">
+                  {new Date(dream.recorded_at).toLocaleDateString()}
+                </span>
               </div>
-              {dream.tags && dream.tags.length > 0 && (
-                <div className="flex gap-2 mt-3 flex-wrap">
-                  {dream.tags.map((tag) => (
-                    <span key={tag} className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                {dream.hasAnalysis ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                    <Sparkles className="w-3 h-3" />
+                    Analyzed
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                    Not analyzed
+                  </span>
+                )}
+                {dream.mood && (
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${moodColors[dream.mood] || "bg-muted text-muted-foreground"}`}>
+                    {dream.mood}
+                  </span>
+                )}
+                {dream.tags && dream.tags.length > 0 && dream.tags.map((tag) => (
+                  <span key={tag} className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
               {/* Lock overlay for unanalyzed cards when free user at limit */}
               {atLimit && !dream.hasAnalysis && (
                 <div className="absolute inset-0 rounded-2xl bg-background/60 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
