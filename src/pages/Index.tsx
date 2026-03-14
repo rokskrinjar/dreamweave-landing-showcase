@@ -35,6 +35,7 @@ const Index = () => {
       <Hero />
       <Features />
       <HowItWorks />
+      <CaseStudy />
       <Testimonials />
       <CTASection />
       <Footer />
