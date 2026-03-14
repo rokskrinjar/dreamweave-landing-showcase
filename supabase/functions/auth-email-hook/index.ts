@@ -284,6 +284,42 @@ async function handleWebhook(req: Request): Promise<Response> {
 
   console.log('Auth email enqueued', { emailType, email: payload.data.email, run_id })
 
+  // Send admin notification on new signups
+  if (emailType === 'signup') {
+    const adminMessageId = crypto.randomUUID()
+    const adminHtml = `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+        <h2 style="color: hsl(222, 47%, 11%);">🌙 New DreamWeave User</h2>
+        <p style="color: hsl(220, 9%, 46%); font-size: 15px;">A new user just signed up:</p>
+        <p style="font-size: 15px;"><strong>Email:</strong> ${payload.data.email}</p>
+        <p style="font-size: 15px;"><strong>Time:</strong> ${new Date().toUTCString()}</p>
+      </div>
+    `
+    await supabase.from('email_send_log').insert({
+      message_id: adminMessageId,
+      template_name: 'admin_new_user_notification',
+      recipient_email: 'rok.skrinjar@gmail.com',
+      status: 'pending',
+    })
+    await supabase.rpc('enqueue_email', {
+      queue_name: 'auth_emails',
+      payload: {
+        run_id,
+        message_id: adminMessageId,
+        to: 'rok.skrinjar@gmail.com',
+        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+        sender_domain: SENDER_DOMAIN,
+        subject: `New signup: ${payload.data.email}`,
+        html: adminHtml,
+        text: `New DreamWeave signup: ${payload.data.email} at ${new Date().toUTCString()}`,
+        purpose: 'transactional',
+        label: 'admin_new_user_notification',
+        queued_at: new Date().toISOString(),
+      },
+    })
+    console.log('Admin notification enqueued for new signup', { email: payload.data.email })
+  }
+
   return new Response(
     JSON.stringify({ success: true, queued: true }),
     { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

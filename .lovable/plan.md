@@ -1,22 +1,16 @@
 
 
-## Notify Admin on New User Registration
+## Update Plan Prices
 
-When a new user signs up, send a notification email to `rok.skrinjar@gmail.com` with the new user's email and signup timestamp.
+Two files need changes:
 
-### Approach
+### 1. `supabase/functions/create-checkout/index.ts`
+- Update `pro` priceId to `price_1T7v4iF0C59Hu24k0Kt0t06N`
+- Update `lifetime` priceId to `price_1T7v6qF0C59Hu24kQ01YOlxr`
 
-Modify the existing `auth-email-hook` Edge Function. When it processes a `signup` event, it will enqueue an additional notification email to the admin address. This reuses the existing email queue infrastructure — no new functions or tables needed.
+### 2. `src/components/CTASection.tsx`
+- Change Pro price from `"€0.50"` to `"€4.99"`
+- Change Lifetime price from `"€1.00"` to `"€49.99"`
 
-### Changes
-
-1. **`supabase/functions/auth-email-hook/index.ts`**
-   - After enqueuing the user's confirmation email for `signup` events, enqueue a second email to `rok.skrinjar@gmail.com`
-   - The admin email will be a simple HTML notification containing: new user's email, signup timestamp
-   - Uses the same `enqueue_email` RPC and `auth_emails` queue
-   - Logged in `email_send_log` with `template_name: 'admin_new_user_notification'`
-
-2. **Redeploy** the `auth-email-hook` Edge Function
-
-No new templates, tables, or functions required. The admin email will be a simple inline HTML (no React Email template needed for an internal notification).
+No database or edge function logic changes needed — just two string updates in each file.
 
