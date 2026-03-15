@@ -96,6 +96,13 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
                   <Settings className="w-4 h-4" /> Manage Subscription
                 </DropdownMenuItem>
               )}
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link to="/admin" className="gap-2 cursor-pointer flex items-center">
+                    <ShieldCheck className="w-4 h-4" /> Admin Dashboard
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link to="/contact" className="gap-2 cursor-pointer flex items-center">
                   <MessageSquare className="w-4 h-4" /> Contact
