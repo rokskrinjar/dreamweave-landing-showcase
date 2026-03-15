@@ -140,7 +140,7 @@ const Dashboard = () => {
             <Button
               variant="outline"
               className="gap-2 font-semibold"
-              onClick={() => exportDreamsToExcel(dreams)}
+              onClick={() => { exportDreamsToExcel(dreams); }}
             >
               <Download className="w-4 h-4" />
               Export
