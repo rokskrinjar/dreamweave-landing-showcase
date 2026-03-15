@@ -21,6 +21,7 @@ const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/dreams/:id" element={<AuthGuard><DreamDetail /></AuthGuard>} />
               <Route path="/patterns" element={<AuthGuard><Patterns /></AuthGuard>} />
               <Route path="/payment-success" element={<AuthGuard><PaymentSuccess /></AuthGuard>} />
+              <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
