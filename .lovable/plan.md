@@ -1,16 +1,17 @@
 
 
-## Update Plan Prices
+## Protect Profile Sensitive Fields (Safe, Non-Breaking)
 
-Two files need changes:
+### Risk Assessment: NONE
+- **Frontend**: Zero client-side code updates the `profiles` table at all
+- **Edge Functions**: All profile updates use `supabaseAdmin` (service role), which bypasses the trigger
+- **DB Functions**: `increment_dream_count` is `SECURITY DEFINER`, also bypasses the trigger
 
-### 1. `supabase/functions/create-checkout/index.ts`
-- Update `pro` priceId to `price_1T7v4iF0C59Hu24k0Kt0t06N`
-- Update `lifetime` priceId to `price_1T7v6qF0C59Hu24kQ01YOlxr`
+### Change
+One database migration adding:
 
-### 2. `src/components/CTASection.tsx`
-- Change Pro price from `"€0.50"` to `"€4.99"`
-- Change Lifetime price from `"€1.00"` to `"€49.99"`
+1. **Function** `protect_profile_fields()` — a `BEFORE UPDATE` trigger function that, when the caller is `authenticated` (not `service_role`), silently reverts changes to `subscription_tier`, `stripe_customer_id`, `dreams_this_month`, and `is_demo`
+2. **Trigger** `protect_profile_sensitive_fields` on `profiles` table
 
-No database or edge function logic changes needed — just two string updates in each file.
+No frontend changes. No edge function changes. Nothing breaks.
 
