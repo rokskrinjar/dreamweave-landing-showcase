@@ -47,6 +47,7 @@ const App = () => (
               <Route path="/dreams/:id" element={<AuthGuard><DreamDetail /></AuthGuard>} />
               <Route path="/patterns" element={<AuthGuard><Patterns /></AuthGuard>} />
               <Route path="/payment-success" element={<AuthGuard><PaymentSuccess /></AuthGuard>} />
+              <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
