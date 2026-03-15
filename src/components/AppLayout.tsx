@@ -18,6 +18,13 @@ import { useState, useEffect } from "react";
 export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { signOut, user, subscription } = useAuth();
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' as const })
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
 
   const navItems = [
     { to: "/dashboard", icon: LayoutDashboard, label: "My Dreams" },
