@@ -21,6 +21,7 @@ const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient();
 
