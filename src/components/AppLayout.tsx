@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, PenLine, BarChart3, Menu, MessageSquare, LogOut, Crown, Settings } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, Menu, MessageSquare, LogOut, Crown, Settings, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,10 +13,18 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { navigateToExternal } from "@/lib/navigation";
+import { useState, useEffect } from "react";
 
 export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { signOut, user, subscription } = useAuth();
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' as const })
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
 
   const navItems = [
     { to: "/dashboard", icon: LayoutDashboard, label: "My Dreams" },
@@ -86,6 +94,13 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
               {subscription.tier === "pro" && (
                 <DropdownMenuItem onClick={handleManage} className="gap-2 cursor-pointer">
                   <Settings className="w-4 h-4" /> Manage Subscription
+                </DropdownMenuItem>
+              )}
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link to="/admin" className="gap-2 cursor-pointer flex items-center">
+                    <ShieldCheck className="w-4 h-4" /> Admin Dashboard
+                  </Link>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem asChild>
