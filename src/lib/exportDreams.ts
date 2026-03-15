@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 interface DreamExport {
   title: string;
@@ -9,18 +9,38 @@ interface DreamExport {
   sentiment?: string | null;
 }
 
-export function exportDreamsToExcel(dreams: DreamExport[]) {
-  const rows = dreams.map((d) => ({
-    Title: d.title,
-    Date: new Date(d.recorded_at).toLocaleDateString(),
-    Mood: d.mood || "",
-    Sentiment: d.sentiment || "",
-    Tags: (d.tags || []).join(", "),
-    Content: d.content,
-  }));
+export async function exportDreamsToExcel(dreams: DreamExport[]) {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Dreams");
 
-  const ws = XLSX.utils.json_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Dreams");
-  XLSX.writeFile(wb, "my-dreams.xlsx");
+  worksheet.columns = [
+    { header: "Title", key: "title", width: 30 },
+    { header: "Date", key: "date", width: 15 },
+    { header: "Mood", key: "mood", width: 12 },
+    { header: "Sentiment", key: "sentiment", width: 12 },
+    { header: "Tags", key: "tags", width: 25 },
+    { header: "Content", key: "content", width: 60 },
+  ];
+
+  for (const d of dreams) {
+    worksheet.addRow({
+      title: d.title,
+      date: new Date(d.recorded_at).toLocaleDateString(),
+      mood: d.mood || "",
+      sentiment: d.sentiment || "",
+      tags: (d.tags || []).join(", "),
+      content: d.content,
+    });
+  }
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "my-dreams.xlsx";
+  a.click();
+  URL.revokeObjectURL(url);
 }
