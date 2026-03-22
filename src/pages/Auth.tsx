@@ -75,10 +75,10 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-3 text-white font-bold text-2xl mb-4">
-            <div className="w-10 h-10 gradient-indigo rounded-xl flex items-center justify-center text-xl">
+            <div className="w-10 h-10 gradient-navy rounded-xl flex items-center justify-center text-xl">
               🌙
             </div>
-            DreamWeave.me
+            DreamWeave
           </a>
           <p className="text-white/70 text-sm">
             {showForgotPassword ? "Reset your password" : isLogin ? "Welcome back, dreamer" : "Start your dream journey"}
