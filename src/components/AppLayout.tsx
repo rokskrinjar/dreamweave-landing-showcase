@@ -145,10 +145,11 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
           </Link>
 
           {/* Center floating Record button */}
-          <Link to="/dreams/new" className="-mt-5">
+          <Link to="/dreams/new" className="-mt-5 flex flex-col items-center">
             <div className="w-14 h-14 rounded-full gradient-navy flex items-center justify-center shadow-lg shadow-primary/30">
               <PenLine className="w-6 h-6 text-white" />
             </div>
+            <span className="text-xs font-medium text-muted-foreground mt-1">Record</span>
           </Link>
 
           {/* Patterns */}
