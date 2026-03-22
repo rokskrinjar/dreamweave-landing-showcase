@@ -50,7 +50,7 @@ export const CaseStudy = () => {
               onClick={() => emblaApi?.scrollTo(i)}
               className={`text-xs font-medium px-4 py-2 rounded-full transition-all ${
                 selectedIndex === i
-                  ? "gradient-indigo text-primary-foreground shadow-md"
+                  ? "gradient-navy text-white shadow-md"
                   : "bg-muted text-muted-foreground hover:bg-accent"
               }`}
             >
