@@ -65,8 +65,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 to={item.to}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(item.to)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                    ? "bg-white/15 text-white"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <item.icon className="w-4 h-4" />
