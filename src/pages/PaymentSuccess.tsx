@@ -33,7 +33,7 @@ const PaymentSuccess = () => {
             : "Unlimited AI analyses and pattern recognition are now yours. Time to uncover what your dreams really mean."}
         </p>
         <Link to="/dashboard">
-          <Button className="gradient-indigo text-white font-semibold gap-2">
+          <Button className="gradient-navy text-white font-semibold gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
             Go to Dashboard
             <ArrowRight className="w-4 h-4" />
           </Button>

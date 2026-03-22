@@ -47,7 +47,7 @@ export const Testimonials = () => {
                 "{testimonial.text}"
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#1a1a2e] text-white rounded-full flex items-center justify-center font-semibold text-lg">
+                <div className="w-12 h-12 gradient-navy text-white rounded-full flex items-center justify-center font-semibold text-lg">
                   {testimonial.initial}
                 </div>
                 <div>

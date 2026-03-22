@@ -130,7 +130,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
               key={item.to}
               to={item.to}
               className={`flex flex-col items-center gap-1 px-3 py-1 text-xs font-medium ${
-                isActive(item.to) ? "text-primary" : "text-muted-foreground"
+                isActive(item.to) ? "text-white" : "text-white/60"
               }`}
             >
               <item.icon className="w-5 h-5" />

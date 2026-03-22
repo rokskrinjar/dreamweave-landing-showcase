@@ -94,7 +94,7 @@ export const Navbar = () => {
               </button>
             ))}
             <Link to={user ? "/dashboard" : "/auth"} className="block">
-              <Button className="w-full gradient-indigo text-white font-semibold">
+              <Button className="w-full gradient-navy text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                 {user ? "Dashboard" : "Start Dreaming"}
               </Button>
             </Link>

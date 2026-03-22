@@ -159,7 +159,7 @@ const Auth = () => {
                     Forgot password?
                   </button>
                 )}
-                <Button type="submit" className="w-full gradient-indigo text-white py-6 font-semibold" disabled={loading}>
+                <Button type="submit" className="w-full gradient-navy text-white py-6 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200" disabled={loading}>
                   {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
                 </Button>
                 <p className="text-center text-sm text-muted-foreground">

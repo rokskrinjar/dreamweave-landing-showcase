@@ -96,7 +96,7 @@ export const CaseStudy = () => {
               <div className="min-w-0 shrink-0 grow-0 basis-full px-2">
                 <div className="bg-card border border-border rounded-2xl p-6 md:p-10 shadow-lg">
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-10 h-10 gradient-indigo rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 gradient-navy rounded-full flex items-center justify-center">
                       <Calendar className="w-5 h-5 text-primary-foreground" />
                     </div>
                     <div>

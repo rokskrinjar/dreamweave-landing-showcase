@@ -407,7 +407,7 @@ const Patterns = () => {
               <Button
                 onClick={handleGeneratePatterns}
                 disabled={analyzing}
-                className="gradient-indigo text-white font-semibold gap-2"
+                className="gradient-navy text-white font-semibold gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
               >
                 <TrendingUp className="w-4 h-4" />
                 {analyzing ? "Analyzing..." : patternData ? "Refresh Insights" : "Generate Insights"}

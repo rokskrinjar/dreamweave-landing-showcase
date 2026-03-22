@@ -5,10 +5,10 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-3 text-white mb-4">
-              <div className="w-10 h-10 gradient-indigo rounded-xl flex items-center justify-center text-xl">
+              <div className="w-10 h-10 gradient-navy rounded-xl flex items-center justify-center text-xl">
                 🌙
               </div>
-              <span className="font-bold text-xl">DreamWeave.me</span>
+              <span className="font-bold text-xl">DreamWeave</span>
             </div>
             <p className="text-sm leading-relaxed text-slate-400">
               Decode your dreams. Discover yourself. AI-powered dream analysis that actually makes sense.
