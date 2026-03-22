@@ -54,7 +54,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <header className="cta-dark-gradient border-b border-white/10 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg text-white">
-            <div className="w-8 h-8 gradient-navy rounded-lg flex items-center justify-center text-sm">🌙</div>
+            <img src={dreamweaveLogo} alt="DreamWeave" className="w-8 h-8 rounded-lg" />
             DreamWeave
           </Link>
 

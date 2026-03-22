@@ -231,8 +231,8 @@ const Dashboard = () => {
         </div>
       ) : filteredDreams.length === 0 ? (
         <div className="text-center py-20">
-          <div className="w-20 h-20 gradient-indigo rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-            🌙
+          <div className="w-20 h-20 gradient-navy rounded-full flex items-center justify-center mx-auto mb-4">
+            <img src={dreamweaveLogo} alt="DreamWeave" className="w-12 h-12 rounded-xl" />
           </div>
           <h3 className="text-xl font-bold text-foreground mb-2">
             {dreams.length === 0 ? "No dreams yet" : "No matches found"}

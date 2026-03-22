@@ -61,7 +61,7 @@ const Contact = () => {
               Back
             </Link>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 gradient-navy rounded-xl flex items-center justify-center text-xl">🌙</div>
+              <img src={dreamweaveLogo} alt="DreamWeave" className="w-10 h-10 rounded-xl" />
               <h1 className="text-2xl font-bold text-foreground">Contact Us</h1>
             </div>
             <p className="text-muted-foreground">Have a question, bug report, or feedback? We'd love to hear from you.</p>
