@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Moon, ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play, Sparkles } from "lucide-react";
+import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 
 export const Hero = () => {
   return (
@@ -17,20 +18,20 @@ export const Hero = () => {
           {/* Hero Content */}
           <div className="text-center md:text-left">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8 text-sm text-white/90">
-              <Moon className="w-4 h-4" />
-              <span>Trusted by 2,000+ dreamers worldwide</span>
+              <Sparkles className="w-4 h-4" />
+              <span>Trusted by thousands of dreamers exploring their subconscious</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
-              That dream meant
+              Your dreams are
+              <br />
+              trying to tell you
               <br />
               <span className="text-gradient-highlight">something.</span>
-              <br />
-              Find out what.
             </h1>
 
             <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed max-w-lg">
-              You woke up from a vivid dream. Your heart's still racing. You know it meant something — but what? DreamWeave uses AI to decode your dreams and reveal patterns you'd never see on your own.
+              Most people forget 95% of their dreams within minutes of waking up. DreamWeave helps you capture them, understand their symbols, and discover patterns in your subconscious — with AI helping you uncover insights you might miss.
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -49,7 +50,7 @@ export const Hero = () => {
             </div>
 
             <p className="text-white/50 text-sm mt-6">
-              Free plan includes 3 AI analyses per month. No credit card required.
+              Free plan includes several AI analyses per month. No credit card required.
             </p>
           </div>
 
@@ -59,10 +60,8 @@ export const Hero = () => {
               <div className="w-full h-full bg-gradient-to-b from-slate-50 to-slate-100 rounded-[30px] p-5">
                 {/* Screen Header */}
                 <div className="flex items-center gap-2 mb-5">
-                  <div className="w-6 h-6 gradient-indigo rounded-md flex items-center justify-center text-xs">
-                    🌙
-                  </div>
-                  <span className="font-semibold text-sm text-foreground">DreamWeave.me</span>
+                  <img src={dreamweaveLogo} alt="DreamWeave" className="w-6 h-6 rounded-md" />
+                  <span className="font-semibold text-sm text-foreground">DreamWeave</span>
                 </div>
 
                 {/* Dream Cards */}

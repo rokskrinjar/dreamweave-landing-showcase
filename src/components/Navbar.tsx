@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Menu, X } from "lucide-react";
+import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -32,17 +33,15 @@ export const Navbar = () => {
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled
         ? "bg-white/95 backdrop-blur-md border-b border-border"
-        : "hero-gradient"
+        : "bg-[#1a1a2e]"
     }`}>
       <div className="max-w-7xl mx-auto px-8 py-4">
         <div className="flex justify-between items-center">
           <a href="/" className={`flex items-center gap-3 font-bold text-2xl transition-colors ${
             isScrolled ? "text-foreground" : "text-white"
           }`}>
-            <div className="w-10 h-10 gradient-indigo rounded-xl flex items-center justify-center text-xl">
-              🌙
-            </div>
-            DreamWeave.me
+            <img src={dreamweaveLogo} alt="DreamWeave logo" className="w-10 h-10 rounded-xl" />
+            DreamWeave
           </a>
 
           <ul className="hidden md:flex items-center gap-8">

@@ -1,21 +1,21 @@
-import { Star } from "lucide-react";
+import { Star, Quote } from "lucide-react";
 
 export const Testimonials = () => {
   const testimonials = [
     {
-      text: "I've had this nightmare about falling for YEARS. After 2 weeks of logging, DreamWeave showed me it always happens before big presentations at work. Now I prep differently and the nightmare's basically gone.",
+      text: "I started noticing patterns in my dreams after just a week. It helped me realize how much stress I was carrying without even knowing it.",
       author: "Maria C.",
       role: "Marketing Director",
       initial: "M",
     },
     {
-      text: "My therapist actually asked me about DreamWeave after I started bringing more specific dream insights to our sessions. It's not a replacement for therapy, but it's an incredible supplement.",
+      text: "My therapist actually asked me about DreamWeave after I started bringing more specific dream insights to our sessions. It's an incredible supplement to self-reflection.",
       author: "David R.",
       role: "Software Engineer",
       initial: "D",
     },
     {
-      text: "Honestly thought dream analysis was woo-woo stuff. But the AI picked up on a grief pattern I didn't even realize I was processing. That hit different.",
+      text: "I thought dream journaling was just a trend. But seeing recurring symbols laid out over weeks — it genuinely changed how I understand my own emotions.",
       author: "Sarah W.",
       role: "Teacher",
       initial: "S",
@@ -36,7 +36,8 @@ export const Testimonials = () => {
 
         <div className="grid md:grid-cols-3 gap-8 mt-12">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-card p-8 rounded-3xl shadow-lg border border-border hover:shadow-xl transition-shadow">
+            <div key={index} className="bg-card p-8 rounded-3xl shadow-lg border border-border hover:shadow-xl transition-shadow relative">
+              <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/15" />
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
@@ -46,7 +47,7 @@ export const Testimonials = () => {
                 "{testimonial.text}"
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 gradient-indigo text-white rounded-full flex items-center justify-center font-semibold text-lg">
+                <div className="w-12 h-12 bg-[#1a1a2e] text-white rounded-full flex items-center justify-center font-semibold text-lg">
                   {testimonial.initial}
                 </div>
                 <div>

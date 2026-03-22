@@ -1,33 +1,33 @@
-import { PenLine, Brain, TrendingUp, Lightbulb } from "lucide-react";
+import { BookOpen, Search, TrendingUp, Lightbulb } from "lucide-react";
 
 export const Features = () => {
   const features = [
     {
-      icon: PenLine,
-      title: "Capture Before It Fades",
+      icon: BookOpen,
+      title: "Remember Your Dreams",
       description:
-        "You just woke up. That dream is slipping away. Open the app, type it out in 60 seconds, and it's saved forever. Tag your mood, add details later — the important thing is you don't lose it.",
+        "Most dreams fade within minutes. Capture them instantly so they don't disappear.",
       gradient: "gradient-purple",
     },
     {
-      icon: Brain,
-      title: "AI That Actually Gets It",
+      icon: Search,
+      title: "Understand the Symbols",
       description:
-        "Not generic horoscope nonsense. Our AI draws from Jungian, Freudian, and cognitive psychology to give you real insights about what your subconscious is processing. It's like a therapist who never sleeps.",
+        "Dreams speak in emotions and symbols. DreamWeave helps you reflect on what they might represent.",
       gradient: "gradient-blue",
     },
     {
       icon: TrendingUp,
-      title: "See the Patterns You Miss",
+      title: "See the Patterns",
       description:
-        "After a week of logging, the magic starts. Recurring symbols. Emotional cycles. Stress triggers showing up as nightmares. The AI connects dots you'd never notice on your own.",
+        "Over time recurring themes begin to appear — people, places, emotions, situations. AI helps highlight patterns you might not notice on your own.",
       gradient: "gradient-green",
     },
     {
       icon: Lightbulb,
-      title: "Suggestions That Hit Home",
+      title: "Gain Personal Insight",
       description:
-        "Every analysis ends with actionable takeaways. 'You've dreamed about water 4 times this week — here's what that likely means for your waking life.' Specific. Personal. Useful.",
+        "Every dream becomes a small piece of a bigger picture about your thoughts, emotions, and experiences.",
       gradient: "gradient-orange",
     },
   ];
