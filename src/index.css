@@ -63,6 +63,9 @@ All colors MUST be HSL.
     --indigo-gradient-from: 243 75% 59%;
     --indigo-gradient-to: 243 80% 62%;
     
+    --navy-gradient-from: 222 47% 11%;
+    --navy-gradient-to: 224 76% 30%;
+    
     --cta-dark-from: 222 47% 11%;
     --cta-dark-to: 222 84% 5%;
 
