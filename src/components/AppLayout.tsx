@@ -28,8 +28,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   }, [user]);
 
   const navItems = [
-    { to: "/dashboard", icon: LayoutDashboard, label: "My Dreams" },
-    { to: "/dreams/new", icon: PenLine, label: "Record Dream" },
+    { to: "/dashboard", icon: LayoutDashboard, label: "Dreams" },
     { to: "/patterns", icon: BarChart3, label: "Patterns" },
   ];
 
@@ -51,9 +50,9 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen bg-secondary">
       {/* Top nav */}
-      <header className="cta-dark-gradient border-b border-white/10 sticky top-0 z-40">
+      <header className="bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-white">
+          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-foreground">
             <img src={dreamweaveLogo} alt="DreamWeave" className="w-8 h-8 rounded-lg" />
             DreamWeave
           </Link>
@@ -66,8 +65,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 to={item.to}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(item.to)
-                    ? "bg-white/15 text-white"
-                    : "text-white/70 hover:text-white hover:bg-white/10"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
               >
                 <item.icon className="w-4 h-4" />
@@ -76,45 +75,53 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
             ))}
           </nav>
 
-          {/* User menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 gap-2">
-                <span className="hidden md:inline text-sm">{user?.email}</span>
-                <Menu className="w-5 h-5" />
+          {/* Right side: Record button + menu */}
+          <div className="flex items-center gap-2">
+            <Link to="/dreams/new" className="hidden md:inline-flex">
+              <Button className="gradient-navy text-white font-semibold gap-2">
+                <PenLine className="w-4 h-4" />
+                Record Dream
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="font-normal">
-                <p className="text-sm font-medium truncate">{user?.email}</p>
-                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                  <Crown className="w-3 h-3" /> {tierLabel}
-                </p>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {subscription.tier === "pro" && (
-                <DropdownMenuItem onClick={handleManage} className="gap-2 cursor-pointer">
-                  <Settings className="w-4 h-4" /> Manage Subscription
-                </DropdownMenuItem>
-              )}
-              {isAdmin && (
+            </Link>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-foreground hover:bg-muted">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <p className="text-sm font-medium truncate">{user?.email}</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                    <Crown className="w-3 h-3" /> {tierLabel}
+                  </p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {subscription.tier === "pro" && (
+                  <DropdownMenuItem onClick={handleManage} className="gap-2 cursor-pointer">
+                    <Settings className="w-4 h-4" /> Manage Subscription
+                  </DropdownMenuItem>
+                )}
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="gap-2 cursor-pointer flex items-center">
+                      <ShieldCheck className="w-4 h-4" /> Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
-                  <Link to="/admin" className="gap-2 cursor-pointer flex items-center">
-                    <ShieldCheck className="w-4 h-4" /> Admin Dashboard
+                  <Link to="/contact" className="gap-2 cursor-pointer flex items-center">
+                    <MessageSquare className="w-4 h-4" /> Contact
                   </Link>
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem asChild>
-                <Link to="/contact" className="gap-2 cursor-pointer flex items-center">
-                  <MessageSquare className="w-4 h-4" /> Contact
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="gap-2 cursor-pointer text-destructive">
-                <LogOut className="w-4 h-4" /> Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="gap-2 cursor-pointer text-destructive">
+                  <LogOut className="w-4 h-4" /> Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
@@ -124,20 +131,36 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 cta-dark-gradient border-t border-white/10 z-40">
-        <div className="flex justify-around py-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex flex-col items-center gap-1 px-3 py-1 text-xs font-medium ${
-                isActive(item.to) ? "text-white" : "text-white/60"
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.label}
-            </Link>
-          ))}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-border z-40">
+        <div className="flex items-end justify-around py-2 relative">
+          {/* Dreams */}
+          <Link
+            to="/dashboard"
+            className={`flex flex-col items-center gap-1 px-3 py-1 text-xs font-medium ${
+              isActive("/dashboard") ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            Dreams
+          </Link>
+
+          {/* Center floating Record button */}
+          <Link to="/dreams/new" className="-mt-5">
+            <div className="w-14 h-14 rounded-full gradient-navy flex items-center justify-center shadow-lg shadow-primary/30">
+              <PenLine className="w-6 h-6 text-white" />
+            </div>
+          </Link>
+
+          {/* Patterns */}
+          <Link
+            to="/patterns"
+            className={`flex flex-col items-center gap-1 px-3 py-1 text-xs font-medium ${
+              isActive("/patterns") ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <BarChart3 className="w-5 h-5" />
+            Patterns
+          </Link>
         </div>
       </nav>
     </div>

@@ -58,7 +58,7 @@ const ResetPassword = () => {
             required
             minLength={6}
           />
-          <Button type="submit" className="w-full gradient-indigo text-white py-6 font-semibold" disabled={loading}>
+          <Button type="submit" className="w-full gradient-navy text-white py-6 font-semibold" disabled={loading}>
             {loading ? "Updating..." : "Update Password"}
           </Button>
         </form>
