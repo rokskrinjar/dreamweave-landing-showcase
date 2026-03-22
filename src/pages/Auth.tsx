@@ -78,7 +78,6 @@ const Auth = () => {
           <a href="/" className="inline-flex items-center gap-3 text-white font-bold text-2xl mb-4">
             <img src={dreamweaveLogo} alt="DreamWeave" className="w-10 h-10 rounded-xl" />
             DreamWeave
-            DreamWeave
           </a>
           <p className="text-white/70 text-sm">
             {showForgotPassword ? "Reset your password" : isLogin ? "Welcome back, dreamer" : "Start your dream journey"}
