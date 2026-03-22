@@ -61,7 +61,7 @@ export const Navbar = () => {
             ))}
             <li>
               <Link to={user ? "/dashboard" : "/auth"}>
-                <Button className="gradient-indigo text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                <Button className="gradient-navy text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                   {user ? "Dashboard" : "Start Dreaming"}
                 </Button>
               </Link>
