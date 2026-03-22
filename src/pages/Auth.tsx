@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Moon, ArrowLeft } from "lucide-react";
+import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import { trackMetaEvent } from "@/lib/metaPixel";
 import { trackGoogleConversion } from "@/lib/googleAds";
 
