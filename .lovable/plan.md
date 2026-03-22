@@ -1,14 +1,34 @@
 
 
-## Fix Auth/Login Page
+## Redesign App Top Bar and Navigation
 
-### Issues
-1. **Duplicate text**: Line 80-81 shows "DreamWeave" twice — remove the duplicate
-2. **Background color**: Change from `hero-gradient` (purple) to `cta-dark-gradient` (dark navy)
+### What changes
 
-### Changes in `src/pages/Auth.tsx`
-- Line 75: Change `hero-gradient` to `cta-dark-gradient`
-- Lines 80-81: Remove the duplicate "DreamWeave" text, keep only one instance
+Based on the screenshots, the in-app layout needs these updates:
 
-One file modified. No functionality changes.
+**1. Top bar — white background (desktop & mobile)**
+- Change header from `cta-dark-gradient border-white/10` to `bg-white/95 backdrop-blur-md border-border`
+- Logo text: dark (`text-foreground`)
+- Nav links: dark text with active state styling
+
+**2. Desktop nav — only Dreams & Patterns**
+- Remove "Record Dream" from `navItems` array
+- Keep only Dreams and Patterns as center nav links
+- Replace the email/hamburger area on the right with:
+  - "Record Dream" button (dark navy `gradient-navy`, with PenLine icon)
+  - Hamburger menu icon (dark) for user dropdown
+
+**3. Mobile bottom nav — redesign**
+- Left: Dreams icon+label
+- Center: Floating circular "Record" button (`gradient-navy`, raised with shadow)
+- Right: Patterns icon+label
+- Bottom bar background: white instead of dark
+- Text colors: dark with active state in primary blue
+
+**4. Dashboard.tsx cleanup**
+- Fix remaining `gradient-indigo` references → `gradient-navy`
+
+### Files modified
+- `src/components/AppLayout.tsx` — all changes above
+- `src/pages/Dashboard.tsx` — fix `gradient-indigo` remnants
 
