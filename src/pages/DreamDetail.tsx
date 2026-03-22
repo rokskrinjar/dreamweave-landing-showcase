@@ -315,7 +315,7 @@ const DreamDetail = () => {
                   <Button
                     onClick={() => handleCheckout("pro")}
                     disabled={loadingPlan === "pro"}
-                    className="gradient-indigo text-white font-semibold whitespace-nowrap gap-2 px-8 py-6"
+                    className="gradient-navy text-white font-semibold whitespace-nowrap gap-2 px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                   >
                     {loadingPlan === "pro" ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
