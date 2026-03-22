@@ -383,7 +383,7 @@ const Patterns = () => {
           </p>
           <Button
             onClick={() => { window.location.href = "/#pricing"; }}
-            className="gradient-indigo text-white font-semibold px-8 py-6"
+            className="gradient-navy text-white font-semibold px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
           >
             <Sparkles className="w-5 h-5 mr-2" /> Upgrade Now
           </Button>
