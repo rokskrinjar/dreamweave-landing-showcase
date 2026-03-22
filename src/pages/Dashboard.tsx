@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2, Zap, Download } from "lucide-react";
 import { exportDreamsToExcel } from "@/lib/exportDreams";
+import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
