@@ -245,7 +245,7 @@ const Dashboard = () => {
           </p>
           {dreams.length === 0 && (
             <Link to="/dreams/new">
-              <Button className="gradient-indigo text-white font-semibold gap-2">
+              <Button className="gradient-navy text-white font-semibold gap-2">
                 <PenLine className="w-4 h-4" />
                 Record Your First Dream
               </Button>
