@@ -78,7 +78,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-muted-foreground gap-2">
+              <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 gap-2">
                 <span className="hidden md:inline text-sm">{user?.email}</span>
                 <Menu className="w-5 h-5" />
               </Button>
