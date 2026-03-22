@@ -4,7 +4,7 @@ export const Footer = () => {
   return (
     <footer className="bg-slate-900 text-slate-300 py-12">
       <div className="max-w-7xl mx-auto px-8">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-3 text-white mb-4">
               <img src={dreamweaveLogo} alt="DreamWeave" className="w-10 h-10 rounded-xl" />
