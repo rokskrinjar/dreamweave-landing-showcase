@@ -5,18 +5,18 @@ export const HowItWorks = () => {
     {
       number: "1",
       icon: Clock,
-      title: "Wake Up. Type It Out.",
+      title: "Wake Up. Capture the Dream.",
       time: "30 seconds",
       description:
-        "Grab your phone, open DreamWeave, and dump everything you remember. Don't overthink it — raw is better. Add a mood tag and you're done.",
+        "Open DreamWeave and write down what you remember. No overthinking — raw thoughts are enough.",
     },
     {
       number: "2",
       icon: Sparkles,
-      title: "AI Decodes Your Dream",
+      title: "AI Highlights the Meaning",
       time: "Instant",
       description:
-        "Our AI reads your entry and breaks it down: key symbols, emotional undercurrents, psychological themes. You'll see your dream in a completely new light.",
+        "DreamWeave identifies emotional themes, symbols, and patterns — helping you see your dream in a new light.",
     },
     {
       number: "3",
@@ -24,7 +24,7 @@ export const HowItWorks = () => {
       title: "Patterns Emerge Over Time",
       time: "After 7+ dreams",
       description:
-        "This is where it gets powerful. The AI spots recurring themes across your dreams — anxiety cycles, unresolved emotions, subconscious desires — and gives you clear, actionable suggestions.",
+        "After several dreams, recurring themes appear — emotions, places, people, and situations. This is where real insights begin.",
     },
   ];
 
@@ -43,7 +43,7 @@ export const HowItWorks = () => {
         <div className="grid md:grid-cols-3 gap-8 mt-12">
           {steps.map((step, index) => (
             <div key={index} className="relative text-center group">
-              <div className="w-20 h-20 gradient-indigo text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
+              <div className="w-20 h-20 bg-[#1a1a2e] text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
                 <step.icon className="w-9 h-9" />
               </div>
               <div className="inline-block bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full mb-4">
