@@ -1,3 +1,5 @@
+import dreamweaveLogo from "@/assets/dreamweave-logo.png";
+
 export const Footer = () => {
   return (
     <footer className="bg-slate-900 text-slate-300 py-12">
@@ -5,9 +7,7 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-3 text-white mb-4">
-              <div className="w-10 h-10 gradient-navy rounded-xl flex items-center justify-center text-xl">
-                🌙
-              </div>
+              <img src={dreamweaveLogo} alt="DreamWeave" className="w-10 h-10 rounded-xl" />
               <span className="font-bold text-xl">DreamWeave</span>
             </div>
             <p className="text-sm leading-relaxed text-slate-400">
