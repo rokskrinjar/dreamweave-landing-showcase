@@ -147,12 +147,6 @@ const Dashboard = () => {
               Export
             </Button>
           )}
-          <Link to="/dreams/new">
-            <Button className="gradient-navy text-white font-semibold gap-2">
-              <PenLine className="w-4 h-4" />
-              Record a Dream
-            </Button>
-          </Link>
         </div>
       </div>
 
