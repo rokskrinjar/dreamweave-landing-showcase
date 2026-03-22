@@ -187,7 +187,7 @@ const Dashboard = () => {
             <Button
               onClick={() => handleCheckout("pro")}
               disabled={loadingPlan === "pro"}
-              className="gradient-indigo text-white font-semibold whitespace-nowrap gap-2"
+              className="gradient-navy text-white font-semibold whitespace-nowrap gap-2"
             >
               {loadingPlan === "pro" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
