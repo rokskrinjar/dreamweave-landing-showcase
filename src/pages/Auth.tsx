@@ -102,7 +102,7 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <Button type="submit" className="w-full gradient-indigo text-white" disabled={loading}>
+              <Button type="submit" className="w-full gradient-navy text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200" disabled={loading}>
                 {loading ? "Sending..." : "Send Reset Link"}
               </Button>
             </form>
