@@ -123,7 +123,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 cta-dark-gradient border-t border-white/10 z-40">
         <div className="flex justify-around py-2">
           {navItems.map((item) => (
             <Link
