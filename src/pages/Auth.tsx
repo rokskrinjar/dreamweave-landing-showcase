@@ -75,10 +75,10 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-3 text-white font-bold text-2xl mb-4">
-            <div className="w-10 h-10 gradient-indigo rounded-xl flex items-center justify-center text-xl">
+            <div className="w-10 h-10 gradient-navy rounded-xl flex items-center justify-center text-xl">
               🌙
             </div>
-            DreamWeave.me
+            DreamWeave
           </a>
           <p className="text-white/70 text-sm">
             {showForgotPassword ? "Reset your password" : isLogin ? "Welcome back, dreamer" : "Start your dream journey"}
@@ -102,7 +102,7 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <Button type="submit" className="w-full gradient-indigo text-white" disabled={loading}>
+              <Button type="submit" className="w-full gradient-navy text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200" disabled={loading}>
                 {loading ? "Sending..." : "Send Reset Link"}
               </Button>
             </form>
@@ -159,7 +159,7 @@ const Auth = () => {
                     Forgot password?
                   </button>
                 )}
-                <Button type="submit" className="w-full gradient-indigo text-white py-6 font-semibold" disabled={loading}>
+                <Button type="submit" className="w-full gradient-navy text-white py-6 font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200" disabled={loading}>
                   {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
                 </Button>
                 <p className="text-center text-sm text-muted-foreground">

@@ -315,7 +315,7 @@ const DreamDetail = () => {
                   <Button
                     onClick={() => handleCheckout("pro")}
                     disabled={loadingPlan === "pro"}
-                    className="gradient-indigo text-white font-semibold whitespace-nowrap gap-2 px-8 py-6"
+                    className="gradient-navy text-white font-semibold whitespace-nowrap gap-2 px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                   >
                     {loadingPlan === "pro" ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -349,7 +349,7 @@ const DreamDetail = () => {
               </>
             ) : (
               <>
-                <div className="w-16 h-16 gradient-indigo rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 gradient-navy rounded-full flex items-center justify-center mx-auto mb-4">
                   <Brain className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-2">Ready to analyze this dream?</h3>
@@ -359,7 +359,7 @@ const DreamDetail = () => {
                 <Button
                   onClick={handleAnalyze}
                   disabled={analyzing}
-                  className="gradient-indigo text-white font-semibold gap-2 px-8 py-6"
+                  className="gradient-navy text-white font-semibold gap-2 px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                 >
                   <Sparkles className="w-5 h-5" />
                   {analyzing ? "Analyzing..." : "Analyze This Dream"}

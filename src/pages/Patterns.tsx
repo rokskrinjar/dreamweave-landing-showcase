@@ -383,7 +383,7 @@ const Patterns = () => {
           </p>
           <Button
             onClick={() => { window.location.href = "/#pricing"; }}
-            className="gradient-indigo text-white font-semibold px-8 py-6"
+            className="gradient-navy text-white font-semibold px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
           >
             <Sparkles className="w-5 h-5 mr-2" /> Upgrade Now
           </Button>
@@ -407,7 +407,7 @@ const Patterns = () => {
               <Button
                 onClick={handleGeneratePatterns}
                 disabled={analyzing}
-                className="gradient-indigo text-white font-semibold gap-2"
+                className="gradient-navy text-white font-semibold gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
               >
                 <TrendingUp className="w-4 h-4" />
                 {analyzing ? "Analyzing..." : patternData ? "Refresh Insights" : "Generate Insights"}

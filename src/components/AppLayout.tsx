@@ -50,10 +50,10 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen bg-secondary">
       {/* Top nav */}
-      <header className="bg-card border-b border-border sticky top-0 z-40">
+      <header className="cta-dark-gradient border-b border-white/10 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-foreground">
-            <div className="w-8 h-8 gradient-indigo rounded-lg flex items-center justify-center text-sm">🌙</div>
+          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-white">
+            <div className="w-8 h-8 gradient-navy rounded-lg flex items-center justify-center text-sm">🌙</div>
             DreamWeave
           </Link>
 
@@ -65,8 +65,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 to={item.to}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(item.to)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                    ? "bg-white/15 text-white"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <item.icon className="w-4 h-4" />
@@ -78,7 +78,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-muted-foreground gap-2">
+              <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 gap-2">
                 <span className="hidden md:inline text-sm">{user?.email}</span>
                 <Menu className="w-5 h-5" />
               </Button>
@@ -123,14 +123,14 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 cta-dark-gradient border-t border-white/10 z-40">
         <div className="flex justify-around py-2">
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               className={`flex flex-col items-center gap-1 px-3 py-1 text-xs font-medium ${
-                isActive(item.to) ? "text-primary" : "text-muted-foreground"
+                isActive(item.to) ? "text-white" : "text-white/60"
               }`}
             >
               <item.icon className="w-5 h-5" />
