@@ -72,12 +72,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen hero-gradient flex items-center justify-center px-4">
+    <div className="min-h-screen cta-dark-gradient flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-3 text-white font-bold text-2xl mb-4">
             <img src={dreamweaveLogo} alt="DreamWeave" className="w-10 h-10 rounded-xl" />
-            DreamWeave
             DreamWeave
           </a>
           <p className="text-white/70 text-sm">
