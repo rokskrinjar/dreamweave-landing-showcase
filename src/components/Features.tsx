@@ -37,7 +37,7 @@ export const Features = () => {
       <div className="max-w-7xl mx-auto px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-            Your dreams are trying to tell you something
+            Understand what your mind is processing
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Most people forget 95% of their dreams within 5 minutes of waking up. The ones you remember? Those matter.
