@@ -1,25 +1,31 @@
 
 
-## Add "Why It Matters" Research Section
+## Create In-App Upgrade/Pricing Page
 
-### Placement
-Between `<Features />` and `<HowItWorks />` (before "See It In Action").
+### What Changes
+Replace the small dropdown upgrade popup in the dashboard with a link to a dedicated `/upgrade` page inside the authenticated app.
 
-### Implementation
+### New Page: `src/pages/Upgrade.tsx`
+- Wrapped in `<AppLayout>` for consistent authenticated navigation
+- **Header section** (light background, like the screenshot):
+  - Title: "Continue exploring your dreams"
+  - Subtitle: "Unlock unlimited dream analysis and discover deeper patterns across your dreams."
+  - Footer text: "Cancel anytime · No commitments"
+- **Pricing cards**: Reuse the same 3-tier layout from `CTASection.tsx` (Free, Pro, Lifetime) with identical styling, features, icons, and checkout logic
+- Light theme adaptation since it's inside the app (not the dark landing page)
 
-**1. Create `src/components/WhyItMatters.tsx`**
-- A new section with a centered elevated card on a light background
-- Pill label "BACKED BY RESEARCH" with subtle purple accent
-- Headline, paragraph, sub-heading, and 5 pill items with icons
-- Icons: Brain (recall), Heart (emotional awareness), Lightbulb (creativity), Eye (self-reflection), Moon (lucid dreaming)
-- Card: `bg-white rounded-3xl shadow-lg border border-border p-10-12`
-- Pills: `bg-secondary rounded-full px-4 py-2` with purple icon accents
-- Section bg: `bg-secondary` to match Features section flow
+### Modified Files
 
-**2. Update `src/pages/Index.tsx`**
-- Import and add `<WhyItMatters />` between `<Features />` and `<HowItWorks />`
+1. **`src/pages/Dashboard.tsx`**
+   - Replace the `<DropdownMenu>` upgrade trigger with a simple `<Link to="/upgrade">` styled the same way
+   - Also update the upgrade banner buttons to link to `/upgrade` instead of triggering checkout directly
+
+2. **`src/App.tsx`**
+   - Add lazy import for `Upgrade` page
+   - Add route: `/upgrade` wrapped in `<AuthGuard>`
 
 ### Files
-- **New**: `src/components/WhyItMatters.tsx`
-- **Edit**: `src/pages/Index.tsx` (add import + component)
+- **New**: `src/pages/Upgrade.tsx`
+- **Edit**: `src/pages/Dashboard.tsx` (replace dropdown with link)
+- **Edit**: `src/App.tsx` (add route)
 
