@@ -1,19 +1,17 @@
 
 
-## Swap Icons on Pricing Cards
+## Reset Rachel Morgan's Password
 
-### Changes (both `src/components/CTASection.tsx` and `src/pages/Upgrade.tsx`):
+### Approach
+Create a temporary edge function `reset-demo-password` that uses the Supabase Admin API (`auth.admin.updateUserById`) to set a new password for Rachel Morgan's account.
 
-1. **Free plan** — remove icon: set `icon: null` (or remove the icon property) so no icon square renders
-2. **Dreamer plan** — change `icon: Zap` to `icon: Sparkles` (the sparkles/stars icon from the reference image)
+### Steps
+1. Look up Rachel Morgan's user ID from the `profiles` table
+2. Create edge function `supabase/functions/reset-demo-password/index.ts` that accepts a user ID and new password, then calls `supabaseAdmin.auth.admin.updateUserById()`
+3. Invoke the function with Rachel's user ID and password `rachel2024demo`
+4. Delete the edge function after use
 
-### Details
-- Free plan currently has `icon: Star` — remove it
-- Dreamer plan currently has `icon: Zap` (thunder) — replace with `Sparkles`
-- Need to update the icon rendering JSX to handle `null` icon (skip rendering the icon container when no icon)
-- `Sparkles` is already imported in both files; can remove `Zap` and `Star` from imports if unused elsewhere
-
-### Files
-- `src/components/CTASection.tsx`
-- `src/pages/Upgrade.tsx`
+### Result
+- **Email:** rachel.morgan40@gmail.com
+- **New Password:** rachel2024demo
 
