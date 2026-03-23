@@ -142,41 +142,12 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={() => handleCheckout("pro")}
-              disabled={loadingPlan === "pro"}
-              className="gradient-navy text-white font-semibold whitespace-nowrap gap-2"
-            >
-              {loadingPlan === "pro" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <>
-                  <Crown className="w-4 h-4" />
-                  Go Pro — €0.50/mo
-                </>
-              )}
+          <Link to="/upgrade">
+            <Button className="gradient-navy text-white font-semibold whitespace-nowrap gap-2">
+              <Crown className="w-4 h-4" />
+              View Plans
             </Button>
-            <div className="relative">
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-lime-400 to-emerald-500 text-emerald-950 text-[11px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap z-10">
-                Best Value
-              </span>
-              <Button
-                onClick={() => handleCheckout("lifetime")}
-                disabled={loadingPlan === "lifetime"}
-                className="bg-gradient-to-r from-lime-400 via-lime-400 to-emerald-500 hover:from-lime-500 hover:to-emerald-600 text-emerald-950 font-semibold whitespace-nowrap gap-2 shadow-lg shadow-emerald-500/20"
-              >
-                {loadingPlan === "lifetime" ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <Crown className="w-4 h-4" />
-                    Lifetime — €1.00
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+          </Link>
         </div>
       )}
 
