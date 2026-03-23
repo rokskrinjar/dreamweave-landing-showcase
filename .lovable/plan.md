@@ -1,13 +1,19 @@
 
 
-## Remove Free Plan Badge & Add Sparkles Icon to Dreamer Badge
+## Swap Icons on Pricing Cards
 
-### Changes (in both `src/components/CTASection.tsx` and `src/pages/Upgrade.tsx`):
+### Changes (both `src/components/CTASection.tsx` and `src/pages/Upgrade.tsx`):
 
-1. **Free plan** — set `badge: null` (already null, confirmed)
-2. **Dreamer plan** — add `Sparkles` icon (from Lucide) inside the badge pill, before "Most Popular" text
-3. **Import** `Sparkles` from lucide-react in both files
-4. **Badge rendering** — for the Dreamer tier, render `<Sparkles className="w-3 h-3 mr-1" />` inline before the badge text
+1. **Free plan** — remove icon: set `icon: null` (or remove the icon property) so no icon square renders
+2. **Dreamer plan** — change `icon: Zap` to `icon: Sparkles` (the sparkles/stars icon from the reference image)
 
-Both files share the same tier array and badge rendering pattern, so the same change applies to each.
+### Details
+- Free plan currently has `icon: Star` — remove it
+- Dreamer plan currently has `icon: Zap` (thunder) — replace with `Sparkles`
+- Need to update the icon rendering JSX to handle `null` icon (skip rendering the icon container when no icon)
+- `Sparkles` is already imported in both files; can remove `Zap` and `Star` from imports if unused elsewhere
+
+### Files
+- `src/components/CTASection.tsx`
+- `src/pages/Upgrade.tsx`
 
