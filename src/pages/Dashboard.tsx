@@ -28,23 +28,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [profile, setProfile] = useState<{ subscription_tier: string; dreams_this_month: number } | null>(null);
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const upgradeBannerRef = useRef<HTMLDivElement>(null);
-
-  const handleCheckout = async (plan: string) => {
-    setLoadingPlan(plan);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan },
-      });
-      if (error) throw error;
-      if (data?.url) navigateToExternal(data.url);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to start checkout");
-    } finally {
-      setLoadingPlan(null);
-    }
-  };
 
   useEffect(() => {
     if (!user) return;
