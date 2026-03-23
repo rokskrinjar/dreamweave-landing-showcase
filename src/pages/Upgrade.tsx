@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Star, Loader2 } from "lucide-react";
+import { Check, Crown, Zap, Star, Loader2, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -128,8 +128,9 @@ const Upgrade = () => {
                 <div
                   className={`absolute -top-4 left-1/2 -translate-x-1/2 ${
                     tier.featured ? "gradient-purple" : "gradient-orange"
-                  } text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg`}
+                  } text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center`}
                 >
+                  {tier.featured && <Sparkles className="w-3 h-3 mr-1" />}
                   {tier.badge}
                 </div>
               )}
