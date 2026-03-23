@@ -1,17 +1,32 @@
 
 
-## Reset Rachel Morgan's Password
+## Update Case Study Screenshots and Reorder Sections
 
-### Approach
-Create a temporary edge function `reset-demo-password` that uses the Supabase Admin API (`auth.admin.updateUserById`) to set a new password for Rachel Morgan's account.
+### 1. Replace Case Study Images
 
-### Steps
-1. Look up Rachel Morgan's user ID from the `profiles` table
-2. Create edge function `supabase/functions/reset-demo-password/index.ts` that accepts a user ID and new password, then calls `supabaseAdmin.auth.admin.updateUserById()`
-3. Invoke the function with Rachel's user ID and password `rachel2024demo`
-4. Delete the edge function after use
+Copy the 5 uploaded screenshots to `public/images/`, replacing the current case study photos:
 
-### Result
-- **Email:** rachel.morgan40@gmail.com
-- **New Password:** rachel2024demo
+| Uploaded file | Destination | Used in slide |
+|---|---|---|
+| `Screenshot_2026-03-23_160530.png` | `public/images/rachels-dreams.png` | Slide 2 — Her Dreams |
+| `Screenshot_2026-03-23_160720.png` | `public/images/analyzed-dream-1.png` | Slide 3 — Dream Analysis (left) |
+| `Screenshot_2026-03-23_160745.png` | `public/images/analyzed-dream-2.png` | Slide 3 — Dream Analysis (right) |
+| `Screenshot_2026-03-23_160902.png` | `public/images/patterns-1.png` | Slide 4 — Patterns (left) |
+| `Screenshot_2026-03-23_160942.png` | `public/images/patterns-2.png` | Slide 4 — Patterns (right) |
+
+No code changes needed in `CaseStudy.tsx` since the file paths stay the same.
+
+### 2. Reorder Landing Page Sections
+
+In `src/pages/Index.tsx`, move `<WhyItMatters />` from its current position (between HowItWorks and CaseStudy) to after CaseStudy and before Testimonials:
+
+**Current order:**
+Hero → Features → HowItWorks → **WhyItMatters** → CaseStudy → Testimonials → CTA
+
+**New order:**
+Hero → Features → HowItWorks → CaseStudy → **WhyItMatters** → Testimonials → CTA
+
+### Files
+- `public/images/` — 5 image replacements
+- `src/pages/Index.tsx` — swap WhyItMatters and CaseStudy order
 
