@@ -23,11 +23,11 @@ export const Hero = () => {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
-              Your dreams are
+              Understand what
               <br />
-              trying to tell you
+              your mind is
               <br />
-              <span className="text-gradient-highlight">something.</span>
+              <span className="text-gradient-highlight">processing.</span>
             </h1>
 
             <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed max-w-lg">
