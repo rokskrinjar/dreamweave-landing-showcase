@@ -1,34 +1,25 @@
 
 
-## Redesign App Top Bar and Navigation
+## Add "Why It Matters" Research Section
 
-### What changes
+### Placement
+Between `<Features />` and `<HowItWorks />` (before "See It In Action").
 
-Based on the screenshots, the in-app layout needs these updates:
+### Implementation
 
-**1. Top bar — white background (desktop & mobile)**
-- Change header from `cta-dark-gradient border-white/10` to `bg-white/95 backdrop-blur-md border-border`
-- Logo text: dark (`text-foreground`)
-- Nav links: dark text with active state styling
+**1. Create `src/components/WhyItMatters.tsx`**
+- A new section with a centered elevated card on a light background
+- Pill label "BACKED BY RESEARCH" with subtle purple accent
+- Headline, paragraph, sub-heading, and 5 pill items with icons
+- Icons: Brain (recall), Heart (emotional awareness), Lightbulb (creativity), Eye (self-reflection), Moon (lucid dreaming)
+- Card: `bg-white rounded-3xl shadow-lg border border-border p-10-12`
+- Pills: `bg-secondary rounded-full px-4 py-2` with purple icon accents
+- Section bg: `bg-secondary` to match Features section flow
 
-**2. Desktop nav — only Dreams & Patterns**
-- Remove "Record Dream" from `navItems` array
-- Keep only Dreams and Patterns as center nav links
-- Replace the email/hamburger area on the right with:
-  - "Record Dream" button (dark navy `gradient-navy`, with PenLine icon)
-  - Hamburger menu icon (dark) for user dropdown
+**2. Update `src/pages/Index.tsx`**
+- Import and add `<WhyItMatters />` between `<Features />` and `<HowItWorks />`
 
-**3. Mobile bottom nav — redesign**
-- Left: Dreams icon+label
-- Center: Floating circular "Record" button (`gradient-navy`, raised with shadow)
-- Right: Patterns icon+label
-- Bottom bar background: white instead of dark
-- Text colors: dark with active state in primary blue
-
-**4. Dashboard.tsx cleanup**
-- Fix remaining `gradient-indigo` references → `gradient-navy`
-
-### Files modified
-- `src/components/AppLayout.tsx` — all changes above
-- `src/pages/Dashboard.tsx` — fix `gradient-indigo` remnants
+### Files
+- **New**: `src/components/WhyItMatters.tsx`
+- **Edit**: `src/pages/Index.tsx` (add import + component)
 
