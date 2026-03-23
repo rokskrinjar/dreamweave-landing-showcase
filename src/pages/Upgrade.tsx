@@ -128,8 +128,9 @@ const Upgrade = () => {
                 <div
                   className={`absolute -top-4 left-1/2 -translate-x-1/2 ${
                     tier.featured ? "gradient-purple" : "gradient-orange"
-                  } text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg`}
+                  } text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center`}
                 >
+                  {tier.featured && <Sparkles className="w-3 h-3 mr-1" />}
                   {tier.badge}
                 </div>
               )}
