@@ -94,22 +94,10 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Your Dreams</h1>
-          {isFree ? (
+            {isFree ? (
             <p className="text-sm text-muted-foreground mt-1">
               {profile ? remaining : "..."} free analyses remaining this month ·{" "}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button type="button" className="text-primary hover:underline">Upgrade</button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => handleCheckout("pro")} disabled={loadingPlan === "pro"} className="gap-2 cursor-pointer">
-                    <Zap className="w-4 h-4" /> Pro — €0.50/mo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleCheckout("lifetime")} disabled={loadingPlan === "lifetime"} className="gap-2 cursor-pointer">
-                    <Crown className="w-4 h-4" /> Lifetime — €1.00
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Link to="/upgrade" className="text-primary hover:underline">Upgrade</Link>
             </p>
           ) : null}
         </div>
