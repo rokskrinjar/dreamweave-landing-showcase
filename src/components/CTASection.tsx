@@ -27,7 +27,7 @@ const tiers = [
     gradient: "gradient-blue",
   },
   {
-    name: "Pro",
+    name: "Dreamer",
     price: "€4.99",
     period: "/month",
     plan: "pro" as const,
