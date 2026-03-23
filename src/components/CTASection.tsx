@@ -32,7 +32,7 @@ const tiers = [
     period: "/month",
     plan: "pro" as const,
     description: "For serious dreamers who want the full picture.",
-    icon: Zap,
+    icon: Sparkles,
     features: [
       "Unlimited AI dream analyses",
       "Long-term pattern recognition",
