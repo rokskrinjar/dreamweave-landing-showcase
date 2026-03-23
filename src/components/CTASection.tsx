@@ -133,9 +133,11 @@ export const CTASection = () => {
                 </div>
               )}
 
-              <div className={`w-12 h-12 ${tier.gradient} rounded-xl flex items-center justify-center mb-4 shadow-md`}>
-                <tier.icon className="w-6 h-6 text-white" />
-              </div>
+              {tier.icon && (
+                <div className={`w-12 h-12 ${tier.gradient} rounded-xl flex items-center justify-center mb-4 shadow-md`}>
+                  <tier.icon className="w-6 h-6 text-white" />
+                </div>
+              )}
 
               <h3 className="text-xl font-bold text-white mb-1">{tier.name}</h3>
               <p className="text-slate-400 text-sm mb-4">{tier.description}</p>

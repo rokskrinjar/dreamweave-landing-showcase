@@ -135,11 +135,13 @@ const Upgrade = () => {
                 </div>
               )}
 
-              <div
-                className={`w-12 h-12 ${tier.gradient} rounded-xl flex items-center justify-center mb-4 shadow-md`}
-              >
-                <tier.icon className="w-6 h-6 text-white" />
-              </div>
+              {tier.icon && (
+                <div
+                  className={`w-12 h-12 ${tier.gradient} rounded-xl flex items-center justify-center mb-4 shadow-md`}
+                >
+                  <tier.icon className="w-6 h-6 text-white" />
+                </div>
+              )}
 
               <h3 className="text-xl font-bold text-foreground mb-1">{tier.name}</h3>
               <p className="text-muted-foreground text-sm mb-4">{tier.description}</p>
