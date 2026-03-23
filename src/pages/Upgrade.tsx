@@ -15,7 +15,7 @@ const tiers = [
     period: "forever",
     plan: "free" as const,
     description: "Dip your toes in. See what your dreams are telling you.",
-    icon: Star,
+    icon: null,
     features: [
       "3 AI dream analyses per month",
       "Unlimited dream journaling",
