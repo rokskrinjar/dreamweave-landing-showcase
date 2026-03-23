@@ -22,6 +22,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Upgrade = lazy(() => import("./pages/Upgrade"));
 
 const queryClient = new QueryClient();
 
