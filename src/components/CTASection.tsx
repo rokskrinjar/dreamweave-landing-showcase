@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Star, Loader2, Sparkles } from "lucide-react";
+import { Check, Crown, Loader2, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
