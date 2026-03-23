@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Zap, Star, Loader2, Sparkles } from "lucide-react";
+import { Check, Crown, Loader2, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +15,7 @@ const tiers = [
     period: "forever",
     plan: "free" as const,
     description: "Dip your toes in. See what your dreams are telling you.",
-    icon: Star,
+    icon: null,
     features: [
       "3 AI dream analyses per month",
       "Unlimited dream journaling",
@@ -33,7 +33,7 @@ const tiers = [
     period: "/month",
     plan: "pro" as const,
     description: "For serious dreamers who want the full picture.",
-    icon: Zap,
+    icon: Sparkles,
     features: [
       "Unlimited AI dream analyses",
       "Long-term pattern recognition",
@@ -135,11 +135,13 @@ const Upgrade = () => {
                 </div>
               )}
 
-              <div
-                className={`w-12 h-12 ${tier.gradient} rounded-xl flex items-center justify-center mb-4 shadow-md`}
-              >
-                <tier.icon className="w-6 h-6 text-white" />
-              </div>
+              {tier.icon && (
+                <div
+                  className={`w-12 h-12 ${tier.gradient} rounded-xl flex items-center justify-center mb-4 shadow-md`}
+                >
+                  <tier.icon className="w-6 h-6 text-white" />
+                </div>
+              )}
 
               <h3 className="text-xl font-bold text-foreground mb-1">{tier.name}</h3>
               <p className="text-muted-foreground text-sm mb-4">{tier.description}</p>
