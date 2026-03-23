@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
+import { WhyItMatters } from "@/components/WhyItMatters";
 import { HowItWorks } from "@/components/HowItWorks";
 import { CaseStudy } from "@/components/CaseStudy";
 import { Testimonials } from "@/components/Testimonials";
@@ -34,6 +35,7 @@ const Index = () => {
       <Navbar />
       <Hero />
       <Features />
+      <WhyItMatters />
       <HowItWorks />
       <CaseStudy />
       <Testimonials />
