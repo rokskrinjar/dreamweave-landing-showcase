@@ -4,18 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search, Crown, Settings, Lock, Loader2, Zap, Download } from "lucide-react";
+import { PenLine, Sparkles, Search, Crown, Lock, Loader2, Download } from "lucide-react";
 import { exportDreamsToExcel } from "@/lib/exportDreams";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { navigateToExternal } from "@/lib/navigation";
 
 interface Dream {
   id: string;
@@ -35,23 +28,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [profile, setProfile] = useState<{ subscription_tier: string; dreams_this_month: number } | null>(null);
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const upgradeBannerRef = useRef<HTMLDivElement>(null);
-
-  const handleCheckout = async (plan: string) => {
-    setLoadingPlan(plan);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan },
-      });
-      if (error) throw error;
-      if (data?.url) navigateToExternal(data.url);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to start checkout");
-    } finally {
-      setLoadingPlan(null);
-    }
-  };
 
   useEffect(() => {
     if (!user) return;
@@ -117,22 +94,10 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Your Dreams</h1>
-          {isFree ? (
+            {isFree ? (
             <p className="text-sm text-muted-foreground mt-1">
               {profile ? remaining : "..."} free analyses remaining this month ·{" "}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button type="button" className="text-primary hover:underline">Upgrade</button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => handleCheckout("pro")} disabled={loadingPlan === "pro"} className="gap-2 cursor-pointer">
-                    <Zap className="w-4 h-4" /> Pro — €0.50/mo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleCheckout("lifetime")} disabled={loadingPlan === "lifetime"} className="gap-2 cursor-pointer">
-                    <Crown className="w-4 h-4" /> Lifetime — €1.00
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Link to="/upgrade" className="text-primary hover:underline">Upgrade</Link>
             </p>
           ) : null}
         </div>
@@ -177,41 +142,12 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={() => handleCheckout("pro")}
-              disabled={loadingPlan === "pro"}
-              className="gradient-navy text-white font-semibold whitespace-nowrap gap-2"
-            >
-              {loadingPlan === "pro" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <>
-                  <Crown className="w-4 h-4" />
-                  Go Pro — €0.50/mo
-                </>
-              )}
+          <Link to="/upgrade">
+            <Button className="gradient-navy text-white font-semibold whitespace-nowrap gap-2">
+              <Crown className="w-4 h-4" />
+              View Plans
             </Button>
-            <div className="relative">
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-lime-400 to-emerald-500 text-emerald-950 text-[11px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap z-10">
-                Best Value
-              </span>
-              <Button
-                onClick={() => handleCheckout("lifetime")}
-                disabled={loadingPlan === "lifetime"}
-                className="bg-gradient-to-r from-lime-400 via-lime-400 to-emerald-500 hover:from-lime-500 hover:to-emerald-600 text-emerald-950 font-semibold whitespace-nowrap gap-2 shadow-lg shadow-emerald-500/20"
-              >
-                {loadingPlan === "lifetime" ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <Crown className="w-4 h-4" />
-                    Lifetime — €1.00
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+          </Link>
         </div>
       )}
 
