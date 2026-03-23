@@ -1,12 +1,13 @@
 
 
-## Rename "Pro" to "Dreamer"
+## Remove Free Plan Badge & Add Sparkles Icon to Dreamer Badge
 
-Change the display name from "Pro" to "Dreamer" in both places where the tiers are defined. The internal `plan: "pro"` identifier stays unchanged so Stripe checkout, subscription checks, and all backend logic continue working.
+### Changes (in both `src/components/CTASection.tsx` and `src/pages/Upgrade.tsx`):
 
-### Files to Edit
-1. **`src/pages/Upgrade.tsx`** — change `name: "Pro"` to `name: "Dreamer"`
-2. **`src/components/CTASection.tsx`** — change `name: "Pro"` to `name: "Dreamer"`
+1. **Free plan** — set `badge: null` (already null, confirmed)
+2. **Dreamer plan** — add `Sparkles` icon (from Lucide) inside the badge pill, before "Most Popular" text
+3. **Import** `Sparkles` from lucide-react in both files
+4. **Badge rendering** — for the Dreamer tier, render `<Sparkles className="w-3 h-3 mr-1" />` inline before the badge text
 
-No backend, database, or Stripe changes needed.
+Both files share the same tier array and badge rendering pattern, so the same change applies to each.
 
