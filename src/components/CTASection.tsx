@@ -182,7 +182,7 @@ export const CTASection = () => {
         </div>
 
         <p className="text-center text-slate-500 text-sm mt-10">
-          All plans include a 7-day money-back guarantee. Cancel anytime.
+          Cancel anytime · No commitments
         </p>
       </div>
     </section>
