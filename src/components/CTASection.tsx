@@ -182,6 +182,12 @@ export const CTASection = () => {
                   {feature}
                 </li>
               ))}
+              {isYearly && (
+                <li className="flex items-start gap-3 text-sm text-slate-300">
+                  <Check className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                  All future features included
+                </li>
+              )}
             </ul>
 
             {isCurrentPlan("pro") ? (
