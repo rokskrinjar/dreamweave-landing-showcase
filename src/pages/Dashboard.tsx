@@ -28,6 +28,7 @@ const Dashboard = () => {
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [profile, setProfile] = useState<{ subscription_tier: string; dreams_this_month: number } | null>(null);
   const upgradeBannerRef = useRef<HTMLDivElement>(null);
 
