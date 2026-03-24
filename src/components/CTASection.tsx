@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Loader2, Sparkles } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,70 +7,35 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { navigateToExternal } from "@/lib/navigation";
 
-const tiers = [
-  {
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    plan: "free" as const,
-    description: "Dip your toes in. See what your dreams are telling you.",
-    icon: null,
-    features: [
-      "3 AI dream analyses per month",
-      "Unlimited dream journaling",
-      "Mood tagging",
-      "Basic dream history",
-    ],
-    cta: "Start Free",
-    featured: false,
-    badge: null,
-    gradient: "gradient-blue",
-  },
-  {
-    name: "Dreamer",
-    price: "€4.99",
-    period: "/month",
-    plan: "pro" as const,
-    description: "For serious dreamers who want the full picture.",
-    icon: Sparkles,
-    features: [
-      "Unlimited AI dream analyses",
-      "Long-term pattern recognition",
-      "Personalized suggestions",
-      "Mood trend charts",
-      "Export your data anytime",
-      "Priority analysis speed",
-    ],
-    cta: "Go Pro",
-    featured: true,
-    badge: "Most Popular",
-    gradient: "gradient-purple",
-  },
-  {
-    name: "Lifetime Dreamer",
-    price: "€49.99",
-    period: "one-time",
-    plan: "lifetime" as const,
-    description: "Pay once. Dream forever. No subscriptions, no renewals.",
-    icon: Crown,
-    features: [
-      "Everything in Pro — forever",
-      "Early Adopter badge",
-      "Priority support",
-      "All future features included",
-      "Lock in before the price goes up",
-    ],
-    cta: "Get Lifetime Access",
-    featured: false,
-    badge: "Best Value",
-    gradient: "gradient-orange",
-  },
+const freeTier = {
+  name: "Free",
+  price: "$0",
+  period: "forever",
+  plan: "free" as const,
+  description: "Dip your toes in. See what your dreams are telling you.",
+  features: [
+    "3 AI dream analyses per month",
+    "Unlimited dream journaling",
+    "Mood tagging",
+    "Basic dream history",
+  ],
+  cta: "Start Free",
+};
+
+const dreamerFeatures = [
+  "Unlimited AI dream analyses",
+  "Long-term pattern recognition",
+  "Personalized suggestions",
+  "Mood trend charts",
+  "Export your data anytime",
+  "Priority analysis speed",
 ];
 
 export const CTASection = () => {
   const { user, subscription } = useAuth();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [isYearly, setIsYearly] = useState(true);
 
   const handleCheckout = async (plan: string) => {
     if (!user) {
@@ -104,10 +69,14 @@ export const CTASection = () => {
     return subscription.tier === plan;
   };
 
+  const dreamerPlan = isYearly ? "pro_yearly" : "pro";
+  const dreamerPrice = isYearly ? "€39.99" : "€4.99";
+  const dreamerPeriod = isYearly ? "/year" : "/month";
+
   return (
     <section id="pricing" className="py-24 cta-dark-gradient">
-      <div className="max-w-7xl mx-auto px-8">
-        <div className="text-center mb-16">
+      <div className="max-w-5xl mx-auto px-8">
+        <div className="text-center mb-10">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Simple pricing. No surprises.
           </h2>
@@ -116,72 +85,126 @@ export const CTASection = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {tiers.map((tier) => (
-            <div
-              key={tier.name}
-              className={`relative rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
-                tier.featured
-                  ? "bg-white/15 backdrop-blur-lg border-2 border-white/30 shadow-2xl scale-105"
-                  : "bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10"
-              }`}
-            >
-              {tier.badge && (
-                <div className={`absolute -top-4 left-1/2 -translate-x-1/2 ${tier.featured ? 'gradient-purple' : 'gradient-orange'} text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center`}>
-                  {tier.featured && <Sparkles className="w-3 h-3 mr-1" />}
-                  {tier.badge}
-                </div>
-              )}
+        {/* Billing Toggle */}
+        <div className="flex items-center justify-center gap-3 mb-10">
+          <span
+            className={`text-sm font-medium cursor-pointer transition-colors ${!isYearly ? "text-white" : "text-slate-400"}`}
+            onClick={() => setIsYearly(false)}
+          >
+            Monthly
+          </span>
+          <button
+            onClick={() => setIsYearly(!isYearly)}
+            className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${isYearly ? "bg-purple-500" : "bg-white/20"}`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${isYearly ? "translate-x-7" : "translate-x-0"}`}
+            />
+          </button>
+          <span
+            className={`text-sm font-medium cursor-pointer transition-colors ${isYearly ? "text-white" : "text-slate-400"}`}
+            onClick={() => setIsYearly(true)}
+          >
+            Yearly
+          </span>
+          {isYearly && (
+            <span className="text-xs font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+              Save 33%
+            </span>
+          )}
+        </div>
 
-              {tier.icon && (
-                <div className={`w-12 h-12 ${tier.gradient} rounded-xl flex items-center justify-center mb-4 shadow-md`}>
-                  <tier.icon className="w-6 h-6 text-white" />
-                </div>
-              )}
+        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          {/* Free Tier */}
+          <div className="relative rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10">
+            <h3 className="text-xl font-bold text-white mb-1">{freeTier.name}</h3>
+            <p className="text-slate-400 text-sm mb-4">{freeTier.description}</p>
 
-              <h3 className="text-xl font-bold text-white mb-1">{tier.name}</h3>
-              <p className="text-slate-400 text-sm mb-4">{tier.description}</p>
+            <div className="mb-6">
+              <span className="text-4xl font-bold text-white">{freeTier.price}</span>
+              <span className="text-slate-400 ml-1 text-sm">{freeTier.period}</span>
+            </div>
 
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-white">{tier.price}</span>
-                <span className="text-slate-400 ml-1 text-sm">{tier.period}</span>
-              </div>
+            <ul className="space-y-3 mb-8 flex-1">
+              {freeTier.features.map((feature) => (
+                <li key={feature} className="flex items-start gap-3 text-sm text-slate-300">
+                  <Check className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
 
-              <ul className="space-y-3 mb-8 flex-1">
-                {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+            {isCurrentPlan("free") ? (
+              <Button
+                disabled
+                className="w-full py-6 font-semibold text-base bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 cursor-default"
+              >
+                ✓ Current Plan
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleCheckout("free")}
+                className="w-full py-6 font-semibold text-base transition-all hover:-translate-y-0.5 bg-white/10 text-white hover:bg-white/20 border border-white/20"
+              >
+                {freeTier.cta}
+              </Button>
+            )}
+          </div>
 
-              {isCurrentPlan(tier.plan) ? (
-                <Button
-                  disabled
-                  className="w-full py-6 font-semibold text-base bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 cursor-default"
-                >
-                  ✓ Current Plan
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleCheckout(tier.plan)}
-                  disabled={loadingPlan === tier.plan}
-                  className={`w-full py-6 font-semibold text-base transition-all hover:-translate-y-0.5 ${
-                    tier.featured
-                      ? "bg-white text-primary hover:bg-white/90 shadow-lg"
-                      : "bg-white/10 text-white hover:bg-white/20 border border-white/20"
-                  }`}
-                >
-                  {loadingPlan === tier.plan ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    tier.cta
-                  )}
-                </Button>
+          {/* Dreamer Tier */}
+          <div className="relative rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 bg-white/15 backdrop-blur-lg border-2 border-white/30 shadow-2xl scale-105">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 gradient-purple text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center">
+              <Sparkles className="w-3 h-3 mr-1" />
+              Most Popular
+            </div>
+
+            <div className="w-12 h-12 gradient-purple rounded-xl flex items-center justify-center mb-4 shadow-md">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+
+            <h3 className="text-xl font-bold text-white mb-1">Dreamer</h3>
+            <p className="text-slate-400 text-sm mb-4">For serious dreamers who want the full picture.</p>
+
+            <div className="mb-6 flex items-baseline gap-2">
+              <span className="text-4xl font-bold text-white">{dreamerPrice}</span>
+              <span className="text-slate-400 text-sm">{dreamerPeriod}</span>
+              {isYearly && (
+                <span className="text-xs font-semibold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full">
+                  33% off
+                </span>
               )}
             </div>
-          ))}
+
+            <ul className="space-y-3 mb-8 flex-1">
+              {dreamerFeatures.map((feature) => (
+                <li key={feature} className="flex items-start gap-3 text-sm text-slate-300">
+                  <Check className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            {isCurrentPlan("pro") ? (
+              <Button
+                disabled
+                className="w-full py-6 font-semibold text-base bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 cursor-default"
+              >
+                ✓ Current Plan
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleCheckout(dreamerPlan)}
+                disabled={loadingPlan === dreamerPlan}
+                className="w-full py-6 font-semibold text-base transition-all hover:-translate-y-0.5 bg-white text-primary hover:bg-white/90 shadow-lg"
+              >
+                {loadingPlan === dreamerPlan ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Go Pro"
+                )}
+              </Button>
+            )}
+          </div>
         </div>
 
         <p className="text-center text-slate-500 text-sm mt-10">
