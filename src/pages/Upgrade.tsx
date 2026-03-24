@@ -118,10 +118,10 @@ const Upgrade = () => {
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className={`relative rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-2 ${
+              className={`relative rounded-3xl p-8 flex flex-col transition-all duration-300 ${
                 tier.featured
                   ? "bg-primary/10 border-2 border-primary/30 shadow-2xl scale-105"
-                  : "bg-card border border-border hover:shadow-lg"
+                  : "bg-card border border-border"
               }`}
             >
               {tier.badge && (
