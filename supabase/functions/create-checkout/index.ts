@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 import { z } from "https://esm.sh/zod@3.23.8";
 
 const checkoutSchema = z.object({
-  plan: z.enum(["pro", "lifetime"]),
+  plan: z.enum(["pro", "pro_yearly"]),
 });
 
 const corsHeaders = {
