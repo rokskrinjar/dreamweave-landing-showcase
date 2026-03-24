@@ -171,10 +171,10 @@ const Upgrade = () => {
                 <Button
                   onClick={() => handleCheckout(tier.plan)}
                   disabled={loadingPlan === tier.plan}
-                  className={`w-full py-6 font-semibold text-base transition-all hover:-translate-y-0.5 ${
+                  className={`w-full py-6 font-semibold text-base transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${
                     tier.featured
-                      ? "gradient-purple text-white shadow-lg"
-                      : "bg-muted text-foreground hover:bg-muted/80 border border-border"
+                      ? "gradient-purple text-white shadow-md hover:shadow-primary/30"
+                      : "bg-muted text-foreground hover:bg-muted/80 border border-border hover:border-primary/30"
                   }`}
                 >
                   {loadingPlan === tier.plan ? (
