@@ -144,7 +144,7 @@ const DreamCalendar = ({ dreams, moodColors }: DreamCalendarProps) => {
       {/* Selected day detail */}
       {selectedDate && (
         <div className="mt-6">
-          <h3 className="text-base font-semibold text-muted-foreground mb-3">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-3">
             {format(selectedDate, "EEEE, MMMM d, yyyy")}
           </h3>
           {selectedDreams.length === 0 ? (
