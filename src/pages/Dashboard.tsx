@@ -114,6 +114,18 @@ const Dashboard = () => {
               Export
             </Button>
           )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`h-9 w-9 ${viewMode === "calendar" ? "bg-muted" : ""}`}
+            onClick={() => setViewMode((v) => (v === "list" ? "calendar" : "list"))}
+          >
+            {viewMode === "list" ? (
+              <CalendarDays className="w-4 h-4" />
+            ) : (
+              <List className="w-4 h-4" />
+            )}
+          </Button>
         </div>
       </div>
 
