@@ -1,32 +1,20 @@
 
 
-## Update Case Study Screenshots and Reorder Sections
+## Clean Up "Why It Matters" Section
 
-### 1. Replace Case Study Images
+Refine the visual presentation of the WhyItMatters component while keeping all content identical. Changes inspired by the reference image's cleaner, more spacious feel.
 
-Copy the 5 uploaded screenshots to `public/images/`, replacing the current case study photos:
+### Changes in `src/components/WhyItMatters.tsx`:
 
-| Uploaded file | Destination | Used in slide |
-|---|---|---|
-| `Screenshot_2026-03-23_160530.png` | `public/images/rachels-dreams.png` | Slide 2 — Her Dreams |
-| `Screenshot_2026-03-23_160720.png` | `public/images/analyzed-dream-1.png` | Slide 3 — Dream Analysis (left) |
-| `Screenshot_2026-03-23_160745.png` | `public/images/analyzed-dream-2.png` | Slide 3 — Dream Analysis (right) |
-| `Screenshot_2026-03-23_160902.png` | `public/images/patterns-1.png` | Slide 4 — Patterns (left) |
-| `Screenshot_2026-03-23_160942.png` | `public/images/patterns-2.png` | Slide 4 — Patterns (right) |
+1. **More generous spacing** — increase vertical padding inside the card (`p-12 md:p-16`), add more breathing room between elements
+2. **Softer card styling** — use a subtler shadow (`shadow-md` instead of `shadow-lg`), lighter border (`border-border/60`)
+3. **Badge refinement** — slightly larger badge with border styling for a crisper pill look (`border border-primary/20`)
+4. **Better typography hierarchy** — bump paragraph line-height and letter-spacing for the body text, make the "This practice can help with:" label slightly larger with more margin above
+5. **Benefit pills** — add a subtle border (`border border-border`), slightly more padding, and a hover transition for polish. Use `bg-background` instead of `bg-secondary` so they stand out from the card background more cleanly
+6. **Centered benefit layout** — keep flex-wrap centered but add slightly more gap between pills (`gap-3.5`)
 
-No code changes needed in `CaseStudy.tsx` since the file paths stay the same.
+All text, icons, and content remain exactly the same. Only spacing, shadows, borders, and subtle styling adjustments.
 
-### 2. Reorder Landing Page Sections
-
-In `src/pages/Index.tsx`, move `<WhyItMatters />` from its current position (between HowItWorks and CaseStudy) to after CaseStudy and before Testimonials:
-
-**Current order:**
-Hero → Features → HowItWorks → **WhyItMatters** → CaseStudy → Testimonials → CTA
-
-**New order:**
-Hero → Features → HowItWorks → CaseStudy → **WhyItMatters** → Testimonials → CTA
-
-### Files
-- `public/images/` — 5 image replacements
-- `src/pages/Index.tsx` — swap WhyItMatters and CaseStudy order
+### File
+- `src/components/WhyItMatters.tsx`
 
