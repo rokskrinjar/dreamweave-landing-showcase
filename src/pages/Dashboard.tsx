@@ -9,6 +9,7 @@ import { exportDreamsToExcel } from "@/lib/exportDreams";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import DreamCalendar from "@/components/DreamCalendar";
 
 interface Dream {
   id: string;
