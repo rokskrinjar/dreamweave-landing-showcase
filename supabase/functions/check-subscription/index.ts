@@ -141,32 +141,7 @@ serve(async (req) => {
       });
     }
 
-    // Check for lifetime one-time payment
-    const sessions = await stripe.checkout.sessions.list({
-      customer: customerId,
-      limit: 100,
-    });
-
-    const lifetimePurchase = sessions.data.find(
-      (s) => s.payment_status === "paid" && s.mode === "payment"
-    );
-
-    if (lifetimePurchase) {
-      logStep("Lifetime purchase found");
-      await supabaseAdmin.from("profiles").update({
-        subscription_tier: "lifetime",
-        stripe_customer_id: customerId,
-      }).eq("user_id", userId);
-
-      return new Response(JSON.stringify({
-        subscribed: true,
-        tier: "lifetime",
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    logStep("No active subscription or lifetime purchase");
+    logStep("No active subscription found");
 
     // Check if profile has a manually-set lifetime tier before resetting
     const { data: profileCheck } = await supabaseAdmin.from("profiles")
