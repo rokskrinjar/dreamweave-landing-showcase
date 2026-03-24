@@ -1,20 +1,50 @@
 
 
-## Clean Up "Why It Matters" Section
+## Replace Lifetime Plan with Yearly Option + Monthly/Yearly Toggle
 
-Refine the visual presentation of the WhyItMatters component while keeping all content identical. Changes inspired by the reference image's cleaner, more spacious feel.
+### Overview
+Remove the Lifetime tier entirely. Add a Monthly/Yearly toggle switch (like standard SaaS pricing pages). When "Yearly" is selected, show the Dreamer card with €39.99/year pricing and a "Save 33%" badge. The layout becomes 2 cards (Free + Dreamer) with the billing toggle above them.
 
-### Changes in `src/components/WhyItMatters.tsx`:
+### 1. Update Edge Function — `supabase/functions/create-checkout/index.ts`
 
-1. **More generous spacing** — increase vertical padding inside the card (`p-12 md:p-16`), add more breathing room between elements
-2. **Softer card styling** — use a subtler shadow (`shadow-md` instead of `shadow-lg`), lighter border (`border-border/60`)
-3. **Badge refinement** — slightly larger badge with border styling for a crisper pill look (`border border-primary/20`)
-4. **Better typography hierarchy** — bump paragraph line-height and letter-spacing for the body text, make the "This practice can help with:" label slightly larger with more margin above
-5. **Benefit pills** — add a subtle border (`border border-border`), slightly more padding, and a hover transition for polish. Use `bg-background` instead of `bg-secondary` so they stand out from the card background more cleanly
-6. **Centered benefit layout** — keep flex-wrap centered but add slightly more gap between pills (`gap-3.5`)
+- Change the Zod schema from `z.enum(["pro", "lifetime"])` to `z.enum(["pro", "pro_yearly"])`
+- Replace the `lifetime` entry in `PRICE_CONFIG` with:
+  - `pro_yearly: { priceId: "price_1TEcWuF0C59Hu24kcQW3cztt", mode: "subscription" }`
+- Remove the old lifetime price ID
 
-All text, icons, and content remain exactly the same. Only spacing, shadows, borders, and subtle styling adjustments.
+### 2. Update `check-subscription/index.ts`
 
-### File
-- `src/components/WhyItMatters.tsx`
+- Remove the lifetime one-time payment check (lines 144-167) since lifetime no longer exists
+- Keep the manually-set tier preservation logic for any legacy lifetime users
+- Both monthly and yearly subscriptions will resolve as `tier: "pro"` since they are both active subscriptions
+
+### 3. Update `src/pages/Upgrade.tsx` (in-app pricing)
+
+- Remove the Lifetime tier from the `tiers` array
+- Keep only Free and Dreamer tiers as static data
+- Add `isYearly` state with a toggle switch between "Monthly" and "Yearly"
+- When yearly is selected, update the Dreamer card to show:
+  - Price: "€39.99" with period "/year"
+  - A small "Save 33%" pill next to or below the price
+  - Same features list
+- Pass `plan: isYearly ? "pro_yearly" : "pro"` to `handleCheckout`
+- Change grid from `md:grid-cols-3` to `md:grid-cols-2` with `max-w-3xl`
+- Add toggle switch centered above the cards (styled like the reference image)
+- Default the toggle to "Yearly" to nudge users toward the better deal
+
+### 4. Update `src/components/CTASection.tsx` (landing page pricing)
+
+- Same changes as Upgrade.tsx: remove Lifetime, add toggle, 2-column layout
+- Toggle styled for dark background (white/light text)
+- Default to "Yearly" selected
+
+### 5. Toggle Component Design
+
+A centered row: **Monthly** — toggle switch — **Yearly** with a small "Save 33%" badge next to "Yearly". The active option is visually highlighted. Uses a simple div with onClick or the existing Switch component from shadcn.
+
+### Files Modified
+- `supabase/functions/create-checkout/index.ts`
+- `supabase/functions/check-subscription/index.ts`
+- `src/pages/Upgrade.tsx`
+- `src/components/CTASection.tsx`
 
