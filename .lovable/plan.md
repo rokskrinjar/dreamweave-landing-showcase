@@ -1,40 +1,27 @@
 
 
-## Restore Rachel Intro + Video Below
+## Wrap Step Indicators + Video in a Unified Frame
 
 ### What changes
 
-**File: `src/components/CaseStudy.tsx`**
+In `src/components/CaseStudy.tsx`, wrap the step indicators and video together inside a single card container so they look connected and professional.
 
-Rebuild the component to have two parts:
+**The frame:**
+- A single `bg-card border border-border rounded-2xl shadow-lg` container (matching the Rachel intro card style above it)
+- Inside: step indicators at the top with padding, a subtle `border-b border-border` divider, then the video below with no extra border/shadow (since the card provides it)
+- The video gets `rounded-b-2xl` (bottom corners only) so it sits flush inside the card
+- Step indicators get slightly more padding and spacing inside the card
 
-1. **Top section — Rachel's story intro** (restored):
-   - Section header: "See It in Action" + subtitle about Rachel
-   - Rachel's portrait image (`rachel-portrait.png`) with a short bio/intro card
-   - 4 step indicators with icons showing her journey (Moon → BookOpen → Brain → TrendingUp) with labels like "Logged her dream", "AI analyzed it", "Discovered patterns", "Gained insight"
-   - These are displayed as a horizontal row of small icon+label items (no carousel, just static display)
-
-2. **Bottom section — Video** (replacing the old carousel screenshots):
-   - The `<video>` element with both `.mov` and `.mp4` sources, same styling as current
-   - Copy the uploaded MP4 to `public/videos/tutorial.mp4`
-
-### Layout
 ```text
-┌──────────────────────────────────┐
-│     See It in Action (heading)   │
-│     Rachel's journey subtitle    │
-│                                  │
-│  [Rachel portrait]  [Bio text]   │
-│                                  │
-│  🌙 Log  📖 Analyze  🧠 Pattern │
-│                                  │
-│  ┌────────────────────────────┐  │
-│  │      VIDEO PLAYER          │  │
-│  └────────────────────────────┘  │
-└──────────────────────────────────┘
+┌─────────────────────────────────┐
+│  🌙 Log  📖 Analyze  🧠 Pattern │  ← inside card, padded
+│─────────────────────────────────│  ← subtle divider
+│                                 │
+│         VIDEO PLAYER            │  ← flush inside card
+│                                 │
+└─────────────────────────────────┘
 ```
 
-### Files
-- `public/videos/tutorial.mp4` (new — copy uploaded MP4)
-- `src/components/CaseStudy.tsx` (rewritten with Rachel intro + video)
+### File
+- `src/components/CaseStudy.tsx` — wrap lines 52-75 in a unified card container
 
