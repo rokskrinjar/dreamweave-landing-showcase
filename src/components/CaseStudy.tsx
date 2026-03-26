@@ -49,24 +49,25 @@ export const CaseStudy = () => {
           </div>
         </div>
 
-        {/* Step indicators */}
-        <div className="flex justify-center gap-4 md:gap-8 mb-10 flex-wrap">
-          {steps.map((step, i) => (
-            <div key={i} className="flex flex-col items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                <step.icon className="w-5 h-5 text-muted-foreground" />
+        {/* Unified frame: steps + video */}
+        <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
+          {/* Step indicators */}
+          <div className="flex justify-center gap-4 md:gap-8 py-6 px-6 border-b border-border flex-wrap">
+            {steps.map((step, i) => (
+              <div key={i} className="flex flex-col items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                  <step.icon className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <span className="text-xs font-medium text-muted-foreground">{step.label}</span>
               </div>
-              <span className="text-xs font-medium text-muted-foreground">{step.label}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        {/* Video */}
-        <div className="max-w-4xl mx-auto">
+          {/* Video */}
           <video
             controls
             preload="metadata"
-            className="w-full rounded-2xl shadow-lg border border-border"
+            className="w-full"
           >
             <source src="/videos/tutorial.mov" type="video/quicktime" />
             <source src="/videos/tutorial.mp4" type="video/mp4" />
