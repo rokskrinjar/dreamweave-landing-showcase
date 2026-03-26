@@ -1,27 +1,21 @@
 
 
-## Wrap Step Indicators + Video in a Unified Frame
+## Remove Black Bars from Tutorial Video
 
-### What changes
+### What's happening
+The video file has black bars (letterboxing) baked into the recording itself. CSS alone cannot remove them — the actual video file needs to be re-encoded with the black regions cropped out.
 
-In `src/components/CaseStudy.tsx`, wrap the step indicators and video together inside a single card container so they look connected and professional.
+### Plan
 
-**The frame:**
-- A single `bg-card border border-border rounded-2xl shadow-lg` container (matching the Rachel intro card style above it)
-- Inside: step indicators at the top with padding, a subtle `border-b border-border` divider, then the video below with no extra border/shadow (since the card provides it)
-- The video gets `rounded-b-2xl` (bottom corners only) so it sits flush inside the card
-- Step indicators get slightly more padding and spacing inside the card
+1. **Detect the crop region** — Use `ffmpeg`'s `cropdetect` filter on the MP4 to find the exact pixel boundaries of the actual content (excluding black bars).
 
-```text
-┌─────────────────────────────────┐
-│  🌙 Log  📖 Analyze  🧠 Pattern │  ← inside card, padded
-│─────────────────────────────────│  ← subtle divider
-│                                 │
-│         VIDEO PLAYER            │  ← flush inside card
-│                                 │
-└─────────────────────────────────┘
-```
+2. **Re-encode the video** — Use `ffmpeg` to crop the video, removing the black bars while keeping all visible content at full quality. Output both `.mp4` and `.mov` versions.
 
-### File
-- `src/components/CaseStudy.tsx` — wrap lines 52-75 in a unified card container
+3. **Replace the files** — Overwrite `public/videos/tutorial.mp4` and `public/videos/tutorial.mov` with the cropped versions.
+
+No code changes needed in `CaseStudy.tsx` — the video element already uses `w-full` which will adapt to whatever aspect ratio the video has.
+
+### Files
+- `public/videos/tutorial.mp4` (re-encoded, cropped)
+- `public/videos/tutorial.mov` (re-encoded, cropped)
 
