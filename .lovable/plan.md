@@ -1,36 +1,40 @@
 
 
-## Replace "See It in Action" Carousel with Video
+## Restore Rachel Intro + Video Below
 
-### Overview
-Remove the 4-slide Embla carousel entirely. Replace it with a single embedded `<video>` element that plays the user-provided tutorial video. The section header ("See It in Action" + subtitle) stays.
+### What changes
 
-### Video Quality
-The video will be stored in the `public/` folder (not imported via `src/`) so Vite does **not** compress or re-encode it. This preserves the original resolution and quality — same approach already used for Rachel's screenshots.
+**File: `src/components/CaseStudy.tsx`**
 
-### Plan
+Rebuild the component to have two parts:
 
-1. **User provides the video file** — I'll place it at `public/videos/tutorial.mp4` (or whatever format they provide).
+1. **Top section — Rachel's story intro** (restored):
+   - Section header: "See It in Action" + subtitle about Rachel
+   - Rachel's portrait image (`rachel-portrait.png`) with a short bio/intro card
+   - 4 step indicators with icons showing her journey (Moon → BookOpen → Brain → TrendingUp) with labels like "Logged her dream", "AI analyzed it", "Discovered patterns", "Gained insight"
+   - These are displayed as a horizontal row of small icon+label items (no carousel, just static display)
 
-2. **Rewrite `src/components/CaseStudy.tsx`**:
-   - Remove all Embla carousel logic, slide components, step indicators, dot indicators, and navigation arrows
-   - Remove the `rachelPortrait` image import and unused icon imports
-   - Keep the section wrapper, header ("See It in Action"), and subtitle
-   - Add a `<video>` element with:
-     - `controls` for play/pause/scrub
-     - `preload="metadata"` for fast initial load
-     - `rounded-2xl shadow-lg border border-border` styling to match the card aesthetic
-     - `max-w-4xl mx-auto` to keep it centered and reasonably sized
-     - Optional poster frame if the user provides one
-   - The video source references `/videos/tutorial.mp4` (public folder, no build processing)
+2. **Bottom section — Video** (replacing the old carousel screenshots):
+   - The `<video>` element with both `.mov` and `.mp4` sources, same styling as current
+   - Copy the uploaded MP4 to `public/videos/tutorial.mp4`
 
-### Result
-A clean, full-width video player replaces the carousel. No resolution loss since the file is served as-is from `public/`.
-
-### Next Step
-I need the video file from you — just upload it and I'll put it in place.
+### Layout
+```text
+┌──────────────────────────────────┐
+│     See It in Action (heading)   │
+│     Rachel's journey subtitle    │
+│                                  │
+│  [Rachel portrait]  [Bio text]   │
+│                                  │
+│  🌙 Log  📖 Analyze  🧠 Pattern │
+│                                  │
+│  ┌────────────────────────────┐  │
+│  │      VIDEO PLAYER          │  │
+│  └────────────────────────────┘  │
+└──────────────────────────────────┘
+```
 
 ### Files
-- `public/videos/tutorial.mp4` (new — user-provided)
-- `src/components/CaseStudy.tsx` (rewritten)
+- `public/videos/tutorial.mp4` (new — copy uploaded MP4)
+- `src/components/CaseStudy.tsx` (rewritten with Rachel intro + video)
 
