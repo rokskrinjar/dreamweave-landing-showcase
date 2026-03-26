@@ -63,11 +63,22 @@ export const CaseStudy = () => {
             ))}
           </div>
 
-          {/* Video */}
+          {/* Desktop video — original uncropped */}
           <video
             controls
             preload="metadata"
-            className="w-full"
+            className="hidden md:block w-full"
+          >
+            <source src="/videos/tutorial-desktop.mov" type="video/quicktime" />
+            <source src="/videos/tutorial-desktop.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+
+          {/* Mobile video — cropped, no black bars */}
+          <video
+            controls
+            preload="metadata"
+            className="block md:hidden w-full"
           >
             <source src="/videos/tutorial.mov" type="video/quicktime" />
             <source src="/videos/tutorial.mp4" type="video/mp4" />
