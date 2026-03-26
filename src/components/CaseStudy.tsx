@@ -17,6 +17,7 @@ export const CaseStudy = () => {
             preload="metadata"
             className="w-full rounded-2xl shadow-lg border border-border"
           >
+            <source src="/videos/tutorial.mov" type="video/quicktime" />
             <source src="/videos/tutorial.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
