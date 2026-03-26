@@ -1,21 +1,21 @@
 
 
-## Remove Black Bars from Tutorial Video
+## Serve Different Video Versions by Device
 
-### What's happening
-The video file has black bars (letterboxing) baked into the recording itself. CSS alone cannot remove them — the actual video file needs to be re-encoded with the black regions cropped out.
+### What changes
 
-### Plan
+In `src/components/CaseStudy.tsx`, use two `<video>` elements — one with the original uncropped video (better for desktop) and one with the cropped version (better for mobile). Show/hide them using Tailwind responsive classes.
 
-1. **Detect the crop region** — Use `ffmpeg`'s `cropdetect` filter on the MP4 to find the exact pixel boundaries of the actual content (excluding black bars).
+### Steps
 
-2. **Re-encode the video** — Use `ffmpeg` to crop the video, removing the black bars while keeping all visible content at full quality. Output both `.mp4` and `.mov` versions.
+1. **Add original video files back** — Copy the original uncropped video to `public/videos/tutorial-desktop.mp4` and `public/videos/tutorial-desktop.mov`
+2. **Rename current cropped files** — Keep `tutorial.mp4`/`.mov` as the mobile (cropped) versions
+3. **Update `CaseStudy.tsx`** — Render two `<video>` elements:
+   - Desktop video: `hidden md:block` — shows original with black bars (looks better on wide screens)
+   - Mobile video: `block md:hidden` — shows cropped version (fills narrow screens nicely)
 
-3. **Replace the files** — Overwrite `public/videos/tutorial.mp4` and `public/videos/tutorial.mov` with the cropped versions.
-
-No code changes needed in `CaseStudy.tsx` — the video element already uses `w-full` which will adapt to whatever aspect ratio the video has.
-
-### Files
-- `public/videos/tutorial.mp4` (re-encoded, cropped)
-- `public/videos/tutorial.mov` (re-encoded, cropped)
+### File changes
+- `public/videos/tutorial-desktop.mp4` (new — original uncropped)
+- `public/videos/tutorial-desktop.mov` (new — original uncropped)
+- `src/components/CaseStudy.tsx` — add responsive dual-video rendering
 
