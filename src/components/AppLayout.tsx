@@ -94,7 +94,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 <DropdownMenuLabel className="font-normal">
                   <p className="text-sm font-medium truncate">{user?.email}</p>
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                    <Crown className="w-3 h-3" /> {tierLabel}
+                    <Sparkles className="w-3 h-3" /> {tierLabel}
                   </p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
