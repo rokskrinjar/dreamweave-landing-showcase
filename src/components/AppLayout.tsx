@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, PenLine, BarChart3, Menu, MessageSquare, LogOut, Crown, Settings, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, Menu, MessageSquare, LogOut, Sparkles, Settings, ShieldCheck } from "lucide-react";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import { Button } from "@/components/ui/button";
 import {
