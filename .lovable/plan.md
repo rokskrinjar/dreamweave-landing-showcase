@@ -1,22 +1,15 @@
 
 
-## Replace Free Analyses Text with Progress Bar
+## Flip Progress Bar Logic + Lighter Color
 
 ### Change
 
 **File: `src/pages/Dashboard.tsx`**
 
-Replace lines 99-104 (the `<p>` tag with remaining count text) with a slim progress bar + label:
-
-- Add `import { Progress } from "@/components/ui/progress"` at top
-- Compute `used = profile ? profile.dreams_this_month : 0` and `total = 3`
-- Render a `<Progress>` bar (h-2, rounded, purple accent via `[&>div]:bg-primary`) with `value={(used / total) * 100}`
-- Below/beside the bar: `"{used} of {total} analyses used this month"`
-- When `atLimit` (`used === 3`), append an "Upgrade" link next to the label
-- Remove the old text paragraph
-
-The bar sits directly under "Your Dreams" heading, inside the existing `<div>`, keeping it compact and consistent.
+- Change label from "{used} of 3 analyses used this month" → "{remaining} of 3 analyses left this month"
+- Flip bar value: instead of `(used / 3) * 100`, use `(remaining / 3) * 100` — full when 3 left, empty when 0 left
+- Lighten the bar color: change `[&>div]:bg-primary` → `[&>div]:bg-primary/70` for a softer purple
 
 ### Files
-- `src/pages/Dashboard.tsx` — replace subtitle text with progress bar + label
+- `src/pages/Dashboard.tsx` — update progress bar value, label text, and color opacity
 
