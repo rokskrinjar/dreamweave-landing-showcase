@@ -1,15 +1,26 @@
 
 
-## Flip Progress Bar Logic + Lighter Color
+## Replace Crown Icon with Sparkles Across the App
 
-### Change
+### Problem
+The Crown icon feels too "money-focused." The user wants a Sparkles/stars icon instead — matching the vibe of the Dreamer plan.
 
-**File: `src/pages/Dashboard.tsx`**
+### Changes
 
-- Change label from "{used} of 3 analyses used this month" → "{remaining} of 3 analyses left this month"
-- Flip bar value: instead of `(used / 3) * 100`, use `(remaining / 3) * 100` — full when 3 left, empty when 0 left
-- Lighten the bar color: change `[&>div]:bg-primary` → `[&>div]:bg-primary/70` for a softer purple
+**3 files, simple find-and-replace of `Crown` → `Sparkles`:**
 
-### Files
-- `src/pages/Dashboard.tsx` — update progress bar value, label text, and color opacity
+1. **`src/pages/DreamDetail.tsx`**
+   - Remove `Crown` from import (already has `Sparkles`)
+   - Remove `Loader2` (part of the approved plan to simplify limit-reached block)
+   - Replace all `<Crown .../>` with `<Sparkles .../>`
+
+2. **`src/pages/Dashboard.tsx`**
+   - Remove `Crown` from import (already has `Sparkles`)
+   - Replace `<Crown className="w-4 h-4" />` → `<Sparkles className="w-4 h-4" />` in both "View Plans" buttons
+
+3. **`src/components/AppLayout.tsx`**
+   - Remove `Crown` from import, add `Sparkles` if not present
+   - Replace `<Crown className="w-3 h-3" />` → `<Sparkles className="w-3 h-3" />` next to tier label
+
+All instances use the same `Sparkles` icon from `lucide-react` that's already imported in most files.
 
