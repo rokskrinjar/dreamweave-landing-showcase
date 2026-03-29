@@ -5,8 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Sparkles, Brain, Heart, Eye, Lightbulb, Trash2, Crown, Loader2 } from "lucide-react";
-import { navigateToExternal } from "@/lib/navigation";
+import { ArrowLeft, Sparkles, Brain, Heart, Eye, Lightbulb, Trash2 } from "lucide-react";
 
 interface Dream {
   id: string;
