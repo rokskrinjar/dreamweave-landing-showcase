@@ -149,7 +149,7 @@ const Dashboard = () => {
               </div>
               <Link to="/upgrade">
                 <Button className="gradient-navy text-white font-semibold whitespace-nowrap gap-2">
-                  <Crown className="w-4 h-4" />
+                  <Sparkles className="w-4 h-4" />
                   View Plans
                 </Button>
               </Link>
