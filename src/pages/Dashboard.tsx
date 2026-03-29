@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search, Crown, Lock, Loader2, Download, CalendarDays, List } from "lucide-react";
+import { PenLine, Sparkles, Search, Lock, Loader2, Download, CalendarDays, List } from "lucide-react";
 import { exportDreamsToExcel } from "@/lib/exportDreams";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import { Input } from "@/components/ui/input";
