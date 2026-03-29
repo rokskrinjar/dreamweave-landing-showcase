@@ -35,22 +35,6 @@ const DreamDetail = () => {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-
-  const handleCheckout = async (plan: string) => {
-    setLoadingPlan(plan);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan },
-      });
-      if (error) throw error;
-      if (data?.url) navigateToExternal(data.url);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to start checkout");
-    } finally {
-      setLoadingPlan(null);
-    }
-  };
 
   useEffect(() => {
     if (!id || !user) return;
