@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, PenLine, BarChart3, Menu, MessageSquare, LogOut, Crown, Settings, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, Menu, MessageSquare, LogOut, Sparkles, Settings, ShieldCheck } from "lucide-react";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,7 +94,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 <DropdownMenuLabel className="font-normal">
                   <p className="text-sm font-medium truncate">{user?.email}</p>
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                    <Crown className="w-3 h-3" /> {tierLabel}
+                    <Sparkles className="w-3 h-3" /> {tierLabel}
                   </p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />

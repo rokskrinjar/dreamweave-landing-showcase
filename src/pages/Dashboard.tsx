@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { PenLine, Sparkles, Search, Crown, Lock, Loader2, Download, CalendarDays, List } from "lucide-react";
+import { PenLine, Sparkles, Search, Lock, Loader2, Download, CalendarDays, List } from "lucide-react";
 import { exportDreamsToExcel } from "@/lib/exportDreams";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import { Input } from "@/components/ui/input";
@@ -149,7 +149,7 @@ const Dashboard = () => {
               </div>
               <Link to="/upgrade">
                 <Button className="gradient-navy text-white font-semibold whitespace-nowrap gap-2">
-                  <Crown className="w-4 h-4" />
+                  <Sparkles className="w-4 h-4" />
                   View Plans
                 </Button>
               </Link>
@@ -188,7 +188,7 @@ const Dashboard = () => {
               </div>
               <Link to="/upgrade">
                 <Button className="gradient-navy text-white font-semibold whitespace-nowrap gap-2">
-                  <Crown className="w-4 h-4" />
+                  <Sparkles className="w-4 h-4" />
                   View Plans
                 </Button>
               </Link>
