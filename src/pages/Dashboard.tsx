@@ -100,11 +100,11 @@ const Dashboard = () => {
           {isFree && profile && (
             <div className="mt-2 max-w-xs">
               <Progress
-                value={(profile.dreams_this_month / 3) * 100}
-                className="h-1.5 [&>div]:bg-primary"
+                value={(remaining / 3) * 100}
+                className="h-1.5 [&>div]:bg-primary/70"
               />
               <div className="flex justify-between items-center mt-1.5 text-xs text-muted-foreground">
-                <span>{profile.dreams_this_month} of 3 analyses used this month</span>
+                <span>{remaining} of 3 analyses left this month</span>
                 {atLimit && (
                   <Link to="/upgrade" className="text-primary font-medium hover:underline ml-2">
                     Upgrade
