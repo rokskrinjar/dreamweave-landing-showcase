@@ -1,26 +1,22 @@
 
 
-## Replace Crown Icon with Sparkles Across the App
+## Replace Free Analyses Text with Progress Bar
 
-### Problem
-The Crown icon feels too "money-focused." The user wants a Sparkles/stars icon instead — matching the vibe of the Dreamer plan.
+### Change
 
-### Changes
+**File: `src/pages/Dashboard.tsx`**
 
-**3 files, simple find-and-replace of `Crown` → `Sparkles`:**
+Replace lines 99-104 (the `<p>` tag with remaining count text) with a slim progress bar + label:
 
-1. **`src/pages/DreamDetail.tsx`**
-   - Remove `Crown` from import (already has `Sparkles`)
-   - Remove `Loader2` (part of the approved plan to simplify limit-reached block)
-   - Replace all `<Crown .../>` with `<Sparkles .../>`
+- Add `import { Progress } from "@/components/ui/progress"` at top
+- Compute `used = profile ? profile.dreams_this_month : 0` and `total = 3`
+- Render a `<Progress>` bar (h-2, rounded, purple accent via `[&>div]:bg-primary`) with `value={(used / total) * 100}`
+- Below/beside the bar: `"{used} of {total} analyses used this month"`
+- When `atLimit` (`used === 3`), append an "Upgrade" link next to the label
+- Remove the old text paragraph
 
-2. **`src/pages/Dashboard.tsx`**
-   - Remove `Crown` from import (already has `Sparkles`)
-   - Replace `<Crown className="w-4 h-4" />` → `<Sparkles className="w-4 h-4" />` in both "View Plans" buttons
+The bar sits directly under "Your Dreams" heading, inside the existing `<div>`, keeping it compact and consistent.
 
-3. **`src/components/AppLayout.tsx`**
-   - Remove `Crown` from import, add `Sparkles` if not present
-   - Replace `<Crown className="w-3 h-3" />` → `<Sparkles className="w-3 h-3" />` next to tier label
-
-All instances use the same `Sparkles` icon from `lucide-react` that's already imported in most files.
+### Files
+- `src/pages/Dashboard.tsx` — replace subtitle text with progress bar + label
 
