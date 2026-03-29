@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { PenLine, Sparkles, Search, Lock, Loader2, Download, CalendarDays, List } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { exportDreamsToExcel } from "@/lib/exportDreams";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
 import { Input } from "@/components/ui/input";
@@ -96,12 +97,22 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Your Dreams</h1>
-            {isFree ? (
-            <p className="text-sm text-muted-foreground mt-1">
-              {profile ? remaining : "..."} free analyses remaining this month ·{" "}
-              <Link to="/upgrade" className="text-primary hover:underline">Upgrade</Link>
-            </p>
-          ) : null}
+          {isFree && profile && (
+            <div className="mt-2 max-w-xs">
+              <Progress
+                value={(profile.dreams_this_month / 3) * 100}
+                className="h-1.5 [&>div]:bg-primary"
+              />
+              <div className="flex justify-between items-center mt-1.5 text-xs text-muted-foreground">
+                <span>{profile.dreams_this_month} of 3 analyses used this month</span>
+                {atLimit && (
+                  <Link to="/upgrade" className="text-primary font-medium hover:underline ml-2">
+                    Upgrade
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-3">
           {subscription.tier !== "free" && (
