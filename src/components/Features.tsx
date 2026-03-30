@@ -1,7 +1,7 @@
 import { Brain, RefreshCw, Sprout } from "lucide-react";
 
 export const Features = () => {
-  const cards = [
+  const points = [
     {
       icon: Brain,
       bold: "Your dreams process what your waking life buries.",
@@ -22,30 +22,35 @@ export const Features = () => {
   return (
     <section className="py-24 bg-secondary">
       <div className="max-w-6xl mx-auto px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
-            Most people live their whole lives without ever listening to themselves.
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Dream journaling changes that.
-          </p>
-        </div>
+        <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
+          {/* Left column — headline */}
+          <div className="md:sticky md:top-24">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
+              Most people live their whole lives without ever listening to themselves.
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Dream journaling changes that.
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {cards.map((card, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-3xl border border-border p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-purple-50"
-            >
-              <card.icon className="w-8 h-8 text-primary mb-5" />
-              <p className="text-lg font-bold text-foreground mb-3 leading-snug">
-                {card.bold}
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {card.body}
-              </p>
-            </div>
-          ))}
+          {/* Right column — stacked points */}
+          <div className="flex flex-col gap-8">
+            {points.map((point, i) => (
+              <div key={i} className="flex gap-4 items-start">
+                <div className="flex-shrink-0 mt-1">
+                  <point.icon className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-base font-bold text-foreground mb-1 leading-snug">
+                    {point.bold}
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {point.body}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
