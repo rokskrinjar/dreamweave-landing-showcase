@@ -1,23 +1,28 @@
+import { Brain, RefreshCw, Sprout } from "lucide-react";
+
 export const Features = () => {
-  const blocks = [
+  const cards = [
     {
+      icon: Brain,
       bold: "Your dreams process what your waking life buries.",
-      body: "Every night your mind works through your stress, your relationships, your unspoken fears. Dreams are the result — raw, unfiltered, and more honest than anything you'd say out loud.",
+      body: "Every night your mind works through stress, fear, and emotion. Dreams are the result — raw and more honest than anything you'd say out loud.",
     },
     {
+      icon: RefreshCw,
       bold: "The patterns are already there. You just can't see them yet.",
-      body: "Recurring places. Familiar faces. The same feeling of being chased, or lost, or finally free. These aren't random. They're your subconscious showing you what it keeps coming back to.",
+      body: "Recurring places, familiar faces, the same feelings. These aren't random — they're your subconscious showing you what it keeps returning to.",
     },
     {
+      icon: Sprout,
       bold: "The longer you journal, the more yourself you become.",
-      body: "Self-awareness doesn't arrive all at once. It builds slowly, entry by entry, dream by dream. People who journal their dreams consistently report feeling more emotionally grounded, more creative, and more in tune with what they actually want from life.",
+      body: "Self-awareness builds slowly, dream by dream. People who journal consistently report feeling more grounded and more in tune with what they actually want.",
     },
   ];
 
   return (
     <section className="py-24 bg-[hsl(40,30%,97%)]">
-      <div className="max-w-3xl mx-auto px-8">
-        <div className="text-center mb-20">
+      <div className="max-w-6xl mx-auto px-8">
+        <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
             Most people live their whole lives without ever listening to themselves.
           </h2>
@@ -26,14 +31,18 @@ export const Features = () => {
           </p>
         </div>
 
-        <div className="space-y-16">
-          {blocks.map((block, i) => (
-            <div key={i}>
-              <p className="text-xl md:text-2xl font-bold text-foreground mb-3 leading-snug">
-                {block.bold}
+        <div className="grid md:grid-cols-3 gap-8">
+          {cards.map((card, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl border border-border p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-purple-50"
+            >
+              <card.icon className="w-8 h-8 text-primary mb-5" />
+              <p className="text-lg font-bold text-foreground mb-3 leading-snug">
+                {card.bold}
               </p>
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                {block.body}
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {card.body}
               </p>
             </div>
           ))}
