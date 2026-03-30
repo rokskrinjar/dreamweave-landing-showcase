@@ -36,7 +36,8 @@ const Index = () => {
       <Navbar />
       <Hero />
       <Features />
-      <HowItWorks />
+       <HowItWorks />
+       <LucidDreamingSection />
       <CaseStudy />
       <WhyItMatters />
       <Testimonials />
