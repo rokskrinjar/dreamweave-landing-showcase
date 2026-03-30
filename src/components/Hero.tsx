@@ -19,7 +19,7 @@ export const Hero = () => {
           <div className="text-center md:text-left">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8 text-sm text-white/90">
               <Sparkles className="w-4 h-4" />
-              <span>Trusted by thousands of dreamers exploring their subconscious</span>
+              <span>The average person has 4-6 dreams every single night</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
@@ -31,7 +31,7 @@ export const Hero = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed max-w-lg">
-              Most people forget 95% of their dreams within minutes of waking up. DreamWeave helps you capture them, understand their symbols, and discover patterns in your subconscious — with AI helping you uncover insights you might miss.
+              That's over 100,000 dreams in a lifetime — and most people remember almost none of them. But every dream you forget is a window into your emotions, your fears, your desires, and the parts of yourself your waking mind never gets quiet enough to hear. DreamWeave helps you catch them before they disappear — and over time, shows you what they've been trying to tell you all along.
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -50,7 +50,7 @@ export const Hero = () => {
             </div>
 
             <p className="text-white/50 text-sm mt-6">
-              Free plan includes several AI analyses per month. No credit card required.
+              Start journaling tonight. Your first insight is free.
             </p>
           </div>
 
