@@ -19,7 +19,7 @@ export const Hero = () => {
           <div className="text-center md:text-left">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8 text-sm text-white/90">
               <Sparkles className="w-4 h-4" />
-              <span>Trusted by thousands of dreamers exploring their subconscious</span>
+              <span>The average person has 4-6 dreams every single night</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
