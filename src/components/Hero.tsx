@@ -50,7 +50,7 @@ export const Hero = () => {
             </div>
 
             <p className="text-white/50 text-sm mt-6">
-              Free plan includes several AI analyses per month. No credit card required.
+              Start journaling tonight. Your first insight is free.
             </p>
           </div>
 
