@@ -20,7 +20,7 @@ export const Features = () => {
   ];
 
   return (
-    <section className="py-24 bg-[hsl(40,30%,97%)]">
+    <section className="py-24 bg-secondary">
       <div className="max-w-6xl mx-auto px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
