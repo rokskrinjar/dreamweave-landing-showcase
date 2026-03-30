@@ -20,7 +20,7 @@ export const Features = () => {
   ];
 
   return (
-    <section className="py-24 bg-[hsl(40,30%,97%)]">
+    <section className="py-24 bg-secondary">
       <div className="max-w-6xl mx-auto px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
@@ -35,7 +35,7 @@ export const Features = () => {
           {cards.map((card, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl border border-border p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-purple-50"
+              className="bg-white rounded-3xl border border-border p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:bg-purple-50"
             >
               <card.icon className="w-8 h-8 text-primary mb-5" />
               <p className="text-lg font-bold text-foreground mb-3 leading-snug">
