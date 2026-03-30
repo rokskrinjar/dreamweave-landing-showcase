@@ -31,7 +31,7 @@ export const Hero = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed max-w-lg">
-              Most people forget 95% of their dreams within minutes of waking up. DreamWeave helps you capture them, understand their symbols, and discover patterns in your subconscious — with AI helping you uncover insights you might miss.
+              That's over 100,000 dreams in a lifetime — and most people remember almost none of them. But every dream you forget is a window into your emotions, your fears, your desires, and the parts of yourself your waking mind never gets quiet enough to hear. DreamWeave helps you catch them before they disappear — and over time, shows you what they've been trying to tell you all along.
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">
