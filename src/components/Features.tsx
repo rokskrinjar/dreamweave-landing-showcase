@@ -26,7 +26,7 @@ export const Features = () => {
           {/* Left column — headline */}
           <div className="md:sticky md:top-24">
             <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
-              Most people live their whole lives without ever listening to themselves.
+              A third of your life happens while you sleep
             </h2>
             <p className="text-lg text-muted-foreground">
               Dream journaling changes that.
