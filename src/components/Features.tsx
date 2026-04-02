@@ -33,7 +33,7 @@ export const Features = () => {
 
           {/* Right column — notebook page */}
           <div
-            className="relative rounded-lg px-8 py-8 shadow-md"
+            className="relative rounded-lg px-8 py-8 shadow-md transition-transform duration-300 hover:rotate-0"
             style={{
               backgroundColor: '#faf6ef',
               backgroundImage: `

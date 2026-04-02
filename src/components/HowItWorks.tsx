@@ -42,7 +42,7 @@ export const HowItWorks = () => {
 
         <div className="grid md:grid-cols-3 gap-8 mt-12">
           {steps.map((step, index) => (
-            <div key={index} className="relative text-center group">
+            <div key={index} className="relative text-center group hover:-translate-y-1 transition-transform duration-300">
               <div className="w-20 h-20 gradient-navy text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 group-hover:shadow-primary/30 group-hover:shadow-xl transition-all duration-200">
                 <step.icon className="w-9 h-9" />
               </div>

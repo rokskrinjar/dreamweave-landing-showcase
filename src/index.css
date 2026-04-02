@@ -39,8 +39,8 @@ All colors MUST be HSL.
     --radius: 0.75rem;
 
     /* DreamWeave custom colors */
-    --hero-gradient-from: 250 66% 72%;
-    --hero-gradient-to: 280 61% 56%;
+    --hero-gradient-from: 220 60% 20%;
+    --hero-gradient-to: 240 50% 35%;
     
     --highlight-from: 45 97% 55%;
     --highlight-to: 38 92% 50%;
