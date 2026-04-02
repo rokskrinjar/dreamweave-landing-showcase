@@ -7,10 +7,10 @@ export const Hero = () => {
   return (
     <section className="hero-gradient min-h-screen flex items-center relative overflow-hidden">
       {/* Decorative background */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/2 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/2 w-80 h-80 bg-blue-300/10 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto px-8 py-20 relative z-10">

@@ -56,7 +56,7 @@ export const LucidDreamingSection = () => {
           Bonus Benefit
         </span>
 
-        <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-4">
+        <h2 className="text-5xl md:text-7xl font-bold leading-tight mb-4 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(167,139,250,0.4)]">
           Lucid Dreaming
         </h2>
 

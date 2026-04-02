@@ -35,7 +35,7 @@ export const WhyItMatters = () => {
             {benefits.map((b, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2 bg-background border border-border rounded-full px-5 py-3 text-sm font-medium text-foreground transition-colors hover:border-primary/30"
+                className="flex items-center gap-2 bg-background border border-border rounded-full px-5 py-3 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/30 hover:scale-[1.02]"
               >
                 <b.icon className="w-4 h-4 text-primary" />
                 {b.label}
