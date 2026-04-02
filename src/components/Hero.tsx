@@ -2,12 +2,45 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import dreamweaveLogo from "@/assets/dreamweave-logo.png";
+import { useMemo } from "react";
 
 export const Hero = () => {
+  const stars = useMemo(
+    () =>
+      Array.from({ length: 40 }, (_, i) => ({
+        id: i,
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        size: Math.random() * 2 + 1,
+        opacity: Math.random() * 0.3 + 0.1,
+        delay: `${Math.random() * 6}s`,
+        duration: `${Math.random() * 3 + 3}s`,
+      })),
+    []
+  );
+
   return (
     <section className="hero-gradient min-h-screen flex items-center relative overflow-hidden">
+      {/* Twinkling stars */}
+      <div className="absolute inset-0 pointer-events-none">
+        {stars.map((star) => (
+          <div
+            key={star.id}
+            className="absolute rounded-full bg-white"
+            style={{
+              top: star.top,
+              left: star.left,
+              width: star.size,
+              height: star.size,
+              opacity: star.opacity,
+              animation: `twinkle ${star.duration} ease-in-out ${star.delay} infinite`,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Decorative background */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-20">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl" />
         <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/2 w-80 h-80 bg-blue-300/10 rounded-full blur-3xl" />
@@ -110,6 +143,13 @@ export const Hero = () => {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.1; }
+          50% { opacity: 0.5; }
+        }
+      `}</style>
     </section>
   );
 };
