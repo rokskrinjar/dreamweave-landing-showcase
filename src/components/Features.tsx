@@ -24,8 +24,11 @@ export const Features = () => {
       <div className="max-w-6xl mx-auto px-8">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
           {/* Left column — headline */}
-          <div className="md:sticky md:top-24">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
+          <div className="md:sticky md:top-24 relative">
+            <span className="absolute -left-4 -top-10 text-[8rem] md:text-[10rem] font-bold text-primary/10 select-none pointer-events-none leading-none z-0">
+              1/3
+            </span>
+            <h2 className="relative z-10 text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
               A third of your life happens while you sleep
             </h2>
             <p className="text-lg text-muted-foreground">
