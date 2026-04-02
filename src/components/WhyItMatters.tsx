@@ -41,7 +41,6 @@ export const WhyItMatters = () => {
               </div>
             ))}
           </div>
-        </div>
       </div>
     </section>
   );
