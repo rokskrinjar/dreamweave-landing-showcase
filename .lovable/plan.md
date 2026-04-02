@@ -1,10 +1,25 @@
 
 
-## Update Features Section Background & Card Roundness
+## Redesign Features Section as Journal Page
 
-### Changes — single file: `src/components/Features.tsx`
+### File: `src/components/Features.tsx` — full restyle
 
-1. **Background**: Change `bg-[hsl(40,30%,97%)]` to `bg-secondary` (the same class used by WhyItMatters section)
+**Background:**
+- Section bg → warm cream `bg-[#f5f0e8]` with a CSS repeating linear gradient for faint horizontal ruled lines (light tan, ~1px every 2rem, very low opacity)
 
-2. **Card border radius**: Change `rounded-xl` to `rounded-3xl` on each card for a much more rounded, pill-like shape
+**Left column — headline:**
+- Add a small Moon icon (from lucide-react) above the headline as a decorative journal header element, muted color
+- Add `font-serif` to the headline for an editorial feel (Tailwind's built-in serif stack)
+- Keep subheadline as-is with muted color
+
+**Right column — journal margin notes:**
+- Replace icon-based layout with a left purple border accent on each point (`border-l-2 border-primary pl-5`)
+- Remove the icon circles; keep bold + body text unchanged
+- Increase gap between points from `gap-8` to `gap-10` for breathing room
+
+**Ruled lines implementation:**
+- Use inline `style` on the section with `backgroundImage: repeating-linear-gradient(...)` for subtle horizontal lines in a faint tan/brown at ~10% opacity
+
+### Files changed
+- `src/components/Features.tsx` — restyle as journal page
 
