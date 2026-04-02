@@ -26,9 +26,10 @@ export const Features = () => {
             <div className="relative">
               <div className="absolute -inset-4 bg-primary/5 rounded-full blur-2xl" />
               <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4 relative">
-              A third of your life happens while you sleep
-            </h2>
+                A third of your life happens while you sleep
+              </h2>
             </div>
+            <p className="text-lg text-muted-foreground">
               Dream journaling changes that.
             </p>
           </div>
