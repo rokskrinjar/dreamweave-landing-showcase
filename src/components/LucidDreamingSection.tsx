@@ -19,7 +19,7 @@ export const LucidDreamingSection = () => {
 
   const stars = useMemo(
     () =>
-      Array.from({ length: 25 }, (_, i) => ({
+      Array.from({ length: 40 }, (_, i) => ({
         id: i,
         top: `${Math.random() * 100}%`,
         left: `${Math.random() * 100}%`,
@@ -60,13 +60,17 @@ export const LucidDreamingSection = () => {
           Lucid Dreaming
         </h2>
 
-        <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-2xl mx-auto mb-12">
+        <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-2xl mx-auto mb-12 animate-float">
           Your dream journal is the key to waking up inside your dreams.
         </p>
 
         <div className="text-left max-w-2xl mx-auto mb-16 space-y-4">
           {bullets.map((bullet, i) => (
-            <div key={i} className="flex items-start gap-3">
+            <div
+              key={i}
+              className="flex items-start gap-3"
+              style={{ animation: `float ${4 + i}s ease-in-out infinite` }}
+            >
               <Sparkles className="w-4 h-4 text-purple-400 mt-1 shrink-0" />
               <p className="text-sm md:text-base text-white/80 leading-relaxed">
                 {bullet}

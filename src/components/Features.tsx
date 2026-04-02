@@ -22,10 +22,13 @@ export const Features = () => {
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
           {/* Left column — headline */}
           <div className="md:sticky md:top-24">
-            <Moon className="w-5 h-5 text-muted-foreground mb-4" />
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
-              A third of your life happens while you sleep
-            </h2>
+            <Moon className="w-5 h-5 text-muted-foreground mb-4 animate-float" />
+            <div className="relative">
+              <div className="absolute -inset-4 bg-primary/5 rounded-full blur-2xl" />
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4 relative">
+                A third of your life happens while you sleep
+              </h2>
+            </div>
             <p className="text-lg text-muted-foreground">
               Dream journaling changes that.
             </p>
