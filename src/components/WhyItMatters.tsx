@@ -11,8 +11,7 @@ const benefits = [
 export const WhyItMatters = () => {
   return (
     <section className="py-24 bg-secondary">
-      <div className="max-w-3xl mx-auto px-8">
-        <div className="bg-card rounded-3xl shadow-md border border-border/60 p-12 md:p-16">
+      <div className="max-w-5xl mx-auto px-8">
           <div className="flex justify-center mb-8">
             <span className="inline-block bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-full border border-primary/20">
               Backed by Research
@@ -42,7 +41,6 @@ export const WhyItMatters = () => {
               </div>
             ))}
           </div>
-        </div>
       </div>
     </section>
   );
