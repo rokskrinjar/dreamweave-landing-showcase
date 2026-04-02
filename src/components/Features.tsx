@@ -17,20 +17,13 @@ export const Features = () => {
   ];
 
   return (
-    <section
-      className="py-24 relative"
-      style={{
-        backgroundColor: '#f5f0e8',
-        backgroundImage: 'repeating-linear-gradient(transparent, transparent 31px, rgba(180,160,130,0.1) 31px, rgba(180,160,130,0.1) 32px)',
-        backgroundSize: '100% 32px',
-      }}
-    >
+    <section className="py-24 bg-secondary">
       <div className="max-w-6xl mx-auto px-8">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
           {/* Left column — headline */}
           <div className="md:sticky md:top-24">
             <Moon className="w-5 h-5 text-muted-foreground mb-4" />
-            <h2 className="text-3xl md:text-5xl font-bold font-serif text-foreground leading-tight mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground leading-tight mb-4">
               A third of your life happens while you sleep
             </h2>
             <p className="text-lg text-muted-foreground">
@@ -38,16 +31,21 @@ export const Features = () => {
             </p>
           </div>
 
-          {/* Right column — journal margin notes */}
+          {/* Right column — numbered journal notes */}
           <div className="flex flex-col gap-10">
             {points.map((point, i) => (
-              <div key={i} className="border-l-2 border-primary pl-5">
-                <p className="text-base font-bold text-foreground mb-1 leading-snug">
-                  {point.bold}
-                </p>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {point.body}
-                </p>
+              <div key={i} className="flex gap-4 items-start">
+                <span className="text-2xl font-serif italic text-primary/60 select-none mt-0.5 flex-shrink-0">
+                  {i + 1}.
+                </span>
+                <div>
+                  <p className="text-base font-bold text-foreground mb-1 leading-snug">
+                    {point.bold}
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {point.body}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
