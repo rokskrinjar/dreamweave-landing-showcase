@@ -372,23 +372,99 @@ const Patterns = () => {
     );
   }
 
+  // Mock data for blurred preview
+  const mockDreams = [
+    { id: "1", mood: "joy, excitement, wonder", sentiment: "positive", recorded_at: "2025-03-01", tags: ["flying"] },
+    { id: "2", mood: "calm, peace, serenity", sentiment: "positive", recorded_at: "2025-03-05", tags: ["water"] },
+    { id: "3", mood: "anxiety, tension", sentiment: "negative", recorded_at: "2025-03-08", tags: ["chase"] },
+    { id: "4", mood: "curiosity, confusion", sentiment: "neutral", recorded_at: "2025-03-12", tags: ["family"] },
+    { id: "5", mood: "fear, dread", sentiment: "negative", recorded_at: "2025-03-15", tags: ["lost"] },
+    { id: "6", mood: "happiness, gratitude", sentiment: "positive", recorded_at: "2025-03-18", tags: ["animals"] },
+    { id: "7", mood: "nostalgia, melancholy", sentiment: "neutral", recorded_at: "2025-03-22", tags: ["places"] },
+    { id: "8", mood: "awe, inspiration", sentiment: "positive", recorded_at: "2025-03-26", tags: ["flying"] },
+  ];
+
+  const mockThemes = ["Flying", "Water", "Chase", "Family", "Lost Places", "Animals"];
+
   if (isLocked) {
     return (
       <AppLayout>
-        <div className="text-center py-20">
-          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-10 h-10 text-muted-foreground" />
+        <div className="relative overflow-hidden rounded-2xl">
+          {/* Blurred preview background */}
+          <div className="blur-[8px] pointer-events-none select-none opacity-70">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">Dream Patterns</h1>
+                  <p className="text-muted-foreground mt-1">8 dreams analyzed · Insights from your subconscious</p>
+                </div>
+              </div>
+
+              {/* Mock charts */}
+              <div className="bg-card rounded-2xl p-6 border border-border mb-8">
+                <Tabs defaultValue="emotions">
+                  <TabsList className="mb-4">
+                    <TabsTrigger value="emotions" className="gap-1.5">
+                      <BarChart3 className="w-4 h-4" /> Emotion Breakdown
+                    </TabsTrigger>
+                    <TabsTrigger value="mood-time" className="gap-1.5">
+                      <TrendingUp className="w-4 h-4" /> Mood over Time
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="emotions">
+                    <EmotionBarChartInner dreams={mockDreams} />
+                  </TabsContent>
+                  <TabsContent value="mood-time">
+                    <MoodOverTimeChart dreams={mockDreams} />
+                  </TabsContent>
+                </Tabs>
+              </div>
+
+              {/* Mock recurring themes */}
+              <div className="bg-card rounded-2xl p-6 border border-border mb-6">
+                <h3 className="font-bold text-foreground mb-3">Recurring Themes</h3>
+                <div className="flex flex-wrap gap-2">
+                  {mockThemes.map((theme, i) => (
+                    <span key={i} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                      {theme}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mock emotional patterns */}
+              <div className="bg-card rounded-2xl p-6 border border-border">
+                <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Your dreams show a strong connection between feelings of wonder and themes of flight. When you dream of water, calmness and peace tend to follow. Anxiety appears most often in chase-related dreams, suggesting unresolved tension around feeling pursued or pressured in daily life.
+                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed mt-3">
+                  Over the past month, your emotional trend has shifted toward more positive sentiments, with curiosity emerging as a bridge between neutral and positive dream states.
+                </p>
+              </div>
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">Unlock Pattern Recognition</h2>
-          <p className="text-muted-foreground max-w-md mx-auto mb-6">
-            Upgrade to Pro or Lifetime to see recurring themes, mood trends, and AI-generated insights across all your dreams.
-          </p>
-          <Button
-            onClick={() => navigate("/upgrade")}
-            className="gradient-navy text-white font-semibold px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-          >
-            <Sparkles className="w-5 h-5 mr-2" /> Upgrade Now
-          </Button>
+
+          {/* Overlay card */}
+          <div className="absolute inset-0 flex items-center justify-center bg-background/5">
+            <div className="bg-white/80 dark:bg-card/90 backdrop-blur-sm rounded-2xl shadow-xl p-10 max-w-md w-full mx-4 text-center">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                <Lock className="w-6 h-6 text-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground mb-3">
+                Your subconscious has patterns. Are you ready to see them?
+              </h2>
+              <p className="text-muted-foreground text-sm mb-6">
+                Upgrade to Dreamer to unlock your emotion breakdown, mood timeline, recurring themes, and personal insights.
+              </p>
+              <Button
+                onClick={() => navigate("/upgrade")}
+                className="w-full gradient-navy text-white font-semibold py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+              >
+                Unlock My Patterns
+              </Button>
+            </div>
+          </div>
         </div>
       </AppLayout>
     );
