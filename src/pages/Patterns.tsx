@@ -276,6 +276,7 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
 
 const Patterns = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<{ subscription_tier: string } | null>(null);
   const [dreams, setDreams] = useState<any[]>([]);
   const [patternData, setPatternData] = useState<PatternData | null>(null);
