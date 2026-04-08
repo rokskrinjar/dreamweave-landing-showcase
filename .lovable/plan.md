@@ -1,32 +1,40 @@
 
 
-## Redesign Locked Patterns Page with Blurred Preview
+## Redesign Locked Patterns Page — No Blur, Placeholder Content
 
 ### File: `src/pages/Patterns.tsx`
 
-**Replace the `isLocked` block (lines 375-395)** with a new design that renders the full patterns page content behind a blur overlay.
+**Replace the entire `isLocked` block (lines 389-470)** with a clean, non-blurred layout that mirrors the real unlocked page structure.
 
-**Blurred preview background:**
-- Render a fake/mock version of the unlocked patterns page with hardcoded sample data — emotion breakdown chart (with green/red/amber bars), mood over time line chart, recurring theme pills (purple tags), and emotional patterns text card
-- Wrap all of this in a container with `filter: blur(8px)` and `pointer-events: none` so it's visible but unreadable, with colors bleeding through
-- Use the same chart components (`EmotionBarChartInner`, `MoodOverTimeChart`) fed with static mock data so the preview looks realistic
-- Add `overflow-hidden` on the wrapper to prevent blur bleed outside the section
+**Header (same as unlocked):**
+- Keep "Dream Patterns" title and subtitle (use static text like "Insights from your subconscious")
+- Replace "Refresh Insights" button with "Upgrade to Dreamer" button in same `gradient-navy` style → navigates to `/upgrade`
 
-**Overlay card:**
-- Position a centered overlay card on top using `absolute inset-0` with flex centering
-- Card style: `bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-10 max-w-md` — soft white semi-transparent
-- Contents:
-  1. Small purple `Lock` icon (lucide) centered at top
-  2. Bold headline: "Your subconscious has patterns. Are you ready to see them?"
-  3. Muted smaller text: "Upgrade to Dreamer to unlock your emotion breakdown, mood timeline, recurring themes, and personal insights."
-  4. Full-width CTA button with `gradient-navy text-white`: "Unlock My Patterns" → navigates to `/upgrade`
+**Charts card:**
+- Same card structure with Emotion Breakdown / Mood over Time tabs
+- Emotion Breakdown tab: render a simple placeholder bar chart using Recharts with 3 generic bars (soft green, amber, rose) with generic labels like "Positive", "Neutral", "Negative" and small static values — no real emotion keys, just clean colored bars
+- Mood over Time tab: render a simple smooth placeholder line chart with ~6 static data points forming a gentle wave, using a soft muted blue/gray stroke — no real sentiment coloring
+- Below the chart area inside the card: a small muted text line: *"Your emotional data will appear here after upgrading."*
 
-**Mock data for preview:**
-- 3 stacked bar entries (Positive/Neutral/Negative) with sample emotions like joy, calm, anxiety, fear, curiosity
-- ~8 mood-over-time data points with mixed scores
-- Theme pills: ["Flying", "Water", "Chase", "Family", "Lost Places", "Animals"]
-- Emotional patterns text: a couple of placeholder paragraphs
+**Upgrade prompt (new — between charts and themes):**
+- A centered line with a small purple `Sparkles` icon and a link-styled button: "Unlock your real patterns — Upgrade to Dreamer" → navigates to `/upgrade`
+
+**Recurring Themes card:**
+- Card with "Recurring Themes" title
+- 5 empty pill outlines: `border border-muted-foreground/20 rounded-full h-7 w-16/w-20/w-14` (varying widths, no text, gray outlines)
+
+**Emotional Patterns card:**
+- Card with "Emotional Patterns" title
+- Single muted italic line: *"A personal analysis of your emotional arc across all your dreams will appear here."*
+
+**Actionable Suggestions card:**
+- Card with "Actionable Suggestions" title
+- Single muted italic line: *"Personalized suggestions based on your recurring dream patterns will appear here."*
+
+**Cleanup:**
+- Remove `mockDreams`, `mockThemes` arrays (no longer needed)
+- Remove `Lock` from lucide imports if unused elsewhere
 
 ### Files changed
-- `src/pages/Patterns.tsx` — replace locked state UI with blurred preview + overlay card
+- `src/pages/Patterns.tsx` — replace locked state with placeholder content layout
 
