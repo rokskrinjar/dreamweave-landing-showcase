@@ -445,44 +445,24 @@ const Patterns = () => {
                 </ResponsiveContainer>
               </TabsContent>
             </Tabs>
+            <p className="text-muted-foreground text-sm mt-6 text-center">Your subconscious has patterns. Are you ready to see them?</p>
+            <div className="flex justify-center mt-3">
+              <Button onClick={() => navigate("/upgrade")} className="gradient-navy text-white px-8">Unlock My Patterns</Button>
+            </div>
             <p className="text-muted-foreground text-xs mt-4 text-center">Your emotional data will appear here after upgrading.</p>
           </div>
 
-          {/* Upgrade prompt */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <button
-              onClick={() => navigate("/upgrade")}
-              className="text-sm text-primary hover:underline font-medium"
-            >
-              Unlock your real patterns — Upgrade to Dreamer
-            </button>
-          </div>
-
-          {/* Recurring Themes */}
-          <div className="bg-card rounded-2xl p-6 border border-border mb-6">
-            <h3 className="font-bold text-foreground mb-3">Recurring Themes</h3>
-            <div className="flex flex-wrap gap-2">
-              {[20, 16, 24, 14, 18].map((w, i) => (
-                <div key={i} className="border border-muted-foreground/20 rounded-full h-7" style={{ width: `${w * 4}px` }} />
-              ))}
+          {/* What you'll discover */}
+          <div className="mt-10 mb-8 px-2">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <h3 className="font-bold text-foreground text-lg">What you'll discover:</h3>
             </div>
-          </div>
-
-          {/* Emotional Patterns */}
-          <div className="bg-card rounded-2xl p-6 border border-border mb-6">
-            <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
-            <p className="text-muted-foreground text-sm italic">
-              A personal analysis of your emotional arc across all your dreams will appear here.
-            </p>
-          </div>
-
-          {/* Actionable Suggestions */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
-            <h3 className="font-bold text-foreground mb-3">Actionable Suggestions</h3>
-            <p className="text-muted-foreground text-sm italic">
-              Personalized suggestions based on your recurring dream patterns will appear here.
-            </p>
+            <ul className="space-y-3 text-muted-foreground text-sm ml-7 list-disc">
+              <li>Recurring emotional themes across all your dreams</li>
+              <li>Your personal mood timeline and how it shifts over time</li>
+              <li>Deep psychological insights and actionable suggestions tailored to you</li>
+            </ul>
           </div>
         </div>
       </AppLayout>
