@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { BarChart3, Sparkles, TrendingUp, Clock, Hash } from "lucide-react";
+import { BarChart3, Sparkles, TrendingUp, Clock, Hash, Lock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BarChart,
@@ -375,13 +375,11 @@ const Patterns = () => {
 
   // Placeholder data for locked preview
   const placeholderBars = [
-    { category: "Joy", value: 6 },
-    { category: "Calm", value: 4 },
-    { category: "Curiosity", value: 3 },
-    { category: "Anxiety", value: 2 },
-    { category: "Fear", value: 1 },
+    { category: "Positive", value: 6 },
+    { category: "Neutral", value: 4 },
+    { category: "Negative", value: 2 },
   ];
-  const placeholderBarColors = ["#e2e8f0", "#dfe5ed", "#d8dee8", "#d1d7e3", "#cacfd9"];
+  const placeholderBarColors = ["#e2e8f0", "#d8dee8", "#cacfd9"];
 
   const placeholderMoodData = [
     { date: "Mar 1", score: 0.3 },
@@ -404,13 +402,6 @@ const Patterns = () => {
               <h1 className="text-3xl font-bold text-foreground">Dream Patterns</h1>
               <p className="text-muted-foreground mt-1">Insights from your subconscious</p>
             </div>
-            <Button
-              onClick={() => navigate("/upgrade")}
-              className="gradient-navy text-white font-semibold gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-            >
-              <TrendingUp className="w-4 h-4" />
-              Upgrade to Dreamer
-            </Button>
           </div>
 
           {/* Chart card with gradient fade */}
@@ -457,7 +448,7 @@ const Patterns = () => {
 
           {/* CTA section */}
           <div className="text-center py-8">
-            <Sparkles className="w-6 h-6 text-primary mx-auto mb-3" />
+            <Lock className="w-6 h-6 text-primary mx-auto mb-3" />
             <h2 className="text-xl font-semibold text-foreground mb-2">Your patterns are waiting</h2>
             <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
               Record dreams and upgrade to Dreamer to reveal your emotional landscape
