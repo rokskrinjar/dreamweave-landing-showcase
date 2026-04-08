@@ -375,11 +375,13 @@ const Patterns = () => {
 
   // Placeholder data for locked preview
   const placeholderBars = [
-    { category: "Positive", value: 5 },
-    { category: "Neutral", value: 3 },
-    { category: "Negative", value: 2 },
+    { category: "Joy", value: 6 },
+    { category: "Calm", value: 4 },
+    { category: "Curiosity", value: 3 },
+    { category: "Anxiety", value: 2 },
+    { category: "Fear", value: 1 },
   ];
-  const placeholderBarColors = ["#d1d5db", "#d1d5db", "#d1d5db"];
+  const placeholderBarColors = ["#e2e8f0", "#dfe5ed", "#d8dee8", "#d1d7e3", "#cacfd9"];
 
   const placeholderMoodData = [
     { date: "Mar 1", score: 0.3 },
@@ -388,6 +390,8 @@ const Patterns = () => {
     { date: "Mar 15", score: -0.4 },
     { date: "Mar 20", score: 0.2 },
     { date: "Mar 25", score: 0.5 },
+    { date: "Mar 28", score: 0.1 },
+    { date: "Mar 31", score: 0.4 },
   ];
 
   if (isLocked) {
@@ -409,9 +413,9 @@ const Patterns = () => {
             </Button>
           </div>
 
-          {/* Charts card with overlay */}
-          <div className="relative mb-8">
-            <div className="bg-card rounded-2xl p-6 border border-border">
+          {/* Chart card with gradient fade */}
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card mb-2">
+            <div className="p-6">
               <Tabs defaultValue="emotions">
                 <TabsList className="mb-4">
                   <TabsTrigger value="emotions" className="gap-1.5">
@@ -422,14 +426,14 @@ const Patterns = () => {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="emotions">
-                  <ResponsiveContainer width="100%" height={200}>
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={placeholderBars} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
                       <YAxis type="category" dataKey="category" width={80} tick={{ fontSize: 13, fill: "hsl(var(--foreground))", fontWeight: 600 } as any} tickLine={false} axisLine={false} />
-                      <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={28}>
+                      <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
                         {placeholderBars.map((_, i) => (
-                          <Cell key={i} fill={placeholderBarColors[i]} opacity={0.7} />
+                          <Cell key={i} fill={placeholderBarColors[i]} opacity={0.8} />
                         ))}
                       </Bar>
                     </BarChart>
@@ -441,33 +445,48 @@ const Patterns = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                       <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
                       <YAxis domain={[-1, 1]} ticks={[-1, 0, 1]} tickFormatter={(v: number) => v === 1 ? "Positive" : v === -1 ? "Negative" : "Neutral"} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={70} />
-                      <Line type="monotone" dataKey="score" stroke="#d1d5db" strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="score" stroke="#d8dee8" strokeWidth={2.5} dot={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </TabsContent>
               </Tabs>
             </div>
-            {/* Floating overlay card */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="bg-white dark:bg-card rounded-xl shadow-lg px-6 py-5 max-w-xs text-center pointer-events-auto border border-border/50">
-                <Lock className="w-5 h-5 text-primary mx-auto mb-2" />
-                <p className="text-sm text-foreground font-medium mb-3">Your subconscious has patterns. Are you ready to see them?</p>
-                <Button onClick={() => navigate("/upgrade")} className="gradient-navy text-white px-6 h-9 text-sm">Unlock My Patterns</Button>
-              </div>
-            </div>
+            {/* Gradient fade overlay */}
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none" />
           </div>
 
-          {/* What you'll discover */}
-          <div className="mt-10 mb-8 px-2">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <h3 className="font-bold text-foreground text-lg">What you'll discover:</h3>
+          {/* CTA section */}
+          <div className="text-center py-8">
+            <Sparkles className="w-6 h-6 text-primary mx-auto mb-3" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">Your patterns are waiting</h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+              Record dreams and upgrade to Dreamer to reveal your emotional landscape
+            </p>
+            <Button
+              onClick={() => navigate("/upgrade")}
+              className="gradient-navy text-white font-semibold w-full max-w-sm h-11 text-base hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+            >
+              Unlock My Patterns
+            </Button>
+          </div>
+
+          {/* Preview cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 mb-8">
+            <div className="rounded-xl border border-dashed border-muted-foreground/30 p-5 opacity-60">
+              <Hash className="w-5 h-5 text-muted-foreground mb-3" />
+              <h3 className="font-semibold text-foreground text-sm mb-1">Recurring Themes</h3>
+              <p className="text-xs text-muted-foreground">See which symbols and topics appear most in your dreams</p>
             </div>
-            <ul className="space-y-3 text-muted-foreground text-sm ml-7 list-disc">
-              <li>Recurring emotional themes across all your dreams</li>
-              <li>Your personal mood timeline and how it shifts over time</li>
-              <li>Deep psychological insights and actionable suggestions tailored to you</li>
-            </ul>
+            <div className="rounded-xl border border-dashed border-muted-foreground/30 p-5 opacity-60">
+              <TrendingUp className="w-5 h-5 text-muted-foreground mb-3" />
+              <h3 className="font-semibold text-foreground text-sm mb-1">Mood Timeline</h3>
+              <p className="text-xs text-muted-foreground">Track how your emotional patterns shift over weeks and months</p>
+            </div>
+            <div className="rounded-xl border border-dashed border-muted-foreground/30 p-5 opacity-60">
+              <Sparkles className="w-5 h-5 text-muted-foreground mb-3" />
+              <h3 className="font-semibold text-foreground text-sm mb-1">Personal Insights</h3>
+              <p className="text-xs text-muted-foreground">Get tailored psychological insights and actionable suggestions</p>
+            </div>
           </div>
         </div>
       </AppLayout>
