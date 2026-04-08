@@ -384,7 +384,7 @@ const Patterns = () => {
             Upgrade to Pro or Lifetime to see recurring themes, mood trends, and AI-generated insights across all your dreams.
           </p>
           <Button
-            onClick={() => { window.location.href = "/upgrade"; }}
+            onClick={() => navigate("/upgrade")}
             className="gradient-navy text-white font-semibold px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
           >
             <Sparkles className="w-5 h-5 mr-2" /> Upgrade Now
