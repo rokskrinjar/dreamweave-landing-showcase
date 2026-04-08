@@ -1,26 +1,40 @@
 
 
-## Locked Patterns Page — Gray Charts + Floating Overlay Card
+## Premium Locked Patterns Page Redesign
 
 ### File: `src/pages/Patterns.tsx`
 
-**1. Gray chart colors (lines 382, 429-433, 443)**
-- Change `placeholderBarColors` to all `"#d1d5db"` (light gray)
-- The line chart stroke is already using muted-foreground — change it to a flat `#d1d5db` with higher opacity for consistency
+Replace the entire `isLocked` block (lines 393-474) with a polished layout that mirrors the real unlocked page structure but with a premium locked feel.
 
-**2. Remove in-card CTA, add floating overlay (lines 412-453)**
-- Remove lines 448-452 (the text + button + subtitle inside the card below tabs)
-- Wrap the chart card in a `relative` container
-- Add an absolutely-positioned small overlay card centered on the chart area:
-  - `absolute inset-0 flex items-center justify-center` with `pointer-events-none` on the backdrop, `pointer-events-auto` on the card
-  - Small card: `bg-white dark:bg-card rounded-xl shadow-lg px-6 py-5 max-w-xs text-center`
-  - Purple `Lock` icon (small, ~w-5 h-5)
-  - Text: "Your subconscious has patterns. Are you ready to see them?"
-  - Compact `gradient-navy` button: "Unlock My Patterns" → `/upgrade`
-- Add `Lock` to lucide imports
+**Layout structure (top to bottom):**
 
-Everything else (header, "What you'll discover" section) stays unchanged.
+1. **Header** — Keep "Dream Patterns" title + subtitle. Keep "Upgrade to Dreamer" button as-is.
+
+2. **Chart card with gradient overlay** — Same tabbed chart card but instead of a floating white popup, apply a soft gradient fade-to-white from center outward over the chart area. Use slightly more realistic-looking placeholder data (5 emotion categories with soft muted colors like `#e2e8f0` varying slightly in shade so they look like real bars, not identical blocks). The overlay is a gradient div that fades from transparent at top to white at bottom, covering the lower 60% of the chart — making the chart feel like it's "fading away" into locked content.
+
+3. **Centered CTA section (no card, no popup)** — Directly below the chart card, a centered section with:
+   - A small `Sparkles` icon in purple
+   - Headline: **"Your patterns are waiting"** (text-xl font-semibold)
+   - Subtitle: "Record dreams and upgrade to Dreamer to reveal your emotional landscape" (muted, text-sm)
+   - A full-width (max-w-sm) dark navy CTA button: "Unlock My Patterns"
+
+4. **Preview cards row** — Three small preview cards side by side (grid cols-3 on desktop, stacked on mobile) showing what's included. Each card has:
+   - A small icon at top (muted color): `Hash` for Themes, `TrendingUp` for Timeline, `Sparkles` for Insights
+   - A short bold title: "Recurring Themes" / "Mood Timeline" / "Personal Insights"
+   - One line of muted text describing it
+   - Each card has `opacity-60` and a subtle dashed border to feel "coming soon"
+
+**Key differences from current:**
+- Remove the floating white popup card with Lock icon — feels clunky
+- Remove the "What you'll discover" bullet list — replaced by the preview cards which are more visual
+- Chart uses a gradient fade instead of a popup overlay — more elegant
+- CTA is prominent but clean, not floating on top of content
+- Preview cards give a visual taste of the full unlocked experience
+
+**Cleanup:**
+- Remove `Lock` from imports (no longer used)
+- Keep `Sparkles`, add `Hash` from lucide-react
 
 ### Files changed
-- `src/pages/Patterns.tsx`
+- `src/pages/Patterns.tsx` — complete redesign of the locked state block
 
