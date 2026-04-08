@@ -1,27 +1,26 @@
 
 
-## Update Locked Patterns Page
+## Locked Patterns Page — Gray Charts + Floating Overlay Card
 
 ### File: `src/pages/Patterns.tsx`
 
-**1. Add CTA inside chart card (lines 447-448)**
+**1. Gray chart colors (lines 382, 429-433, 443)**
+- Change `placeholderBarColors` to all `"#d1d5db"` (light gray)
+- The line chart stroke is already using muted-foreground — change it to a flat `#d1d5db` with higher opacity for consistency
 
-Replace the single muted line with:
-- Muted text: "Your subconscious has patterns. Are you ready to see them?"
-- Centered "Unlock My Patterns" button in `gradient-navy text-white` style → navigates to `/upgrade`
-- Keep the "Your emotional data will appear here after upgrading." line below the button
+**2. Remove in-card CTA, add floating overlay (lines 412-453)**
+- Remove lines 448-452 (the text + button + subtitle inside the card below tabs)
+- Wrap the chart card in a `relative` container
+- Add an absolutely-positioned small overlay card centered on the chart area:
+  - `absolute inset-0 flex items-center justify-center` with `pointer-events-none` on the backdrop, `pointer-events-auto` on the card
+  - Small card: `bg-white dark:bg-card rounded-xl shadow-lg px-6 py-5 max-w-xs text-center`
+  - Purple `Lock` icon (small, ~w-5 h-5)
+  - Text: "Your subconscious has patterns. Are you ready to see them?"
+  - Compact `gradient-navy` button: "Unlock My Patterns" → `/upgrade`
+- Add `Lock` to lucide imports
 
-**2. Replace three cards + upgrade prompt with clean text section (lines 451-486)**
-
-Remove the upgrade prompt link, Recurring Themes card, Emotional Patterns card, and Actionable Suggestions card entirely. Replace with:
-
-- `Sparkles` icon (small, purple) + bold headline: "What you'll discover:"
-- Three bullet points in muted text with generous spacing:
-  - "Recurring emotional themes across all your dreams"
-  - "Your personal mood timeline and how it shifts over time"
-  - "Deep psychological insights and actionable suggestions tailored to you"
-- No card wrapper, no borders — just clean open typography
+Everything else (header, "What you'll discover" section) stays unchanged.
 
 ### Files changed
-- `src/pages/Patterns.tsx` — update locked state layout
+- `src/pages/Patterns.tsx`
 
