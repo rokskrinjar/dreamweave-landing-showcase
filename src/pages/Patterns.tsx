@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { BarChart3, Sparkles, Lock, TrendingUp, Clock } from "lucide-react";
+import { BarChart3, Sparkles, TrendingUp, Clock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BarChart,
