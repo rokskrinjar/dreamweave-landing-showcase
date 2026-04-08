@@ -1,40 +1,27 @@
 
 
-## Premium Locked Patterns Page Redesign
+## Three Quick Fixes to Locked Patterns Page
 
 ### File: `src/pages/Patterns.tsx`
 
-Replace the entire `isLocked` block (lines 393-474) with a polished layout that mirrors the real unlocked page structure but with a premium locked feel.
+**1. Remove the "Upgrade to Dreamer" button from header (lines 407-413)**
+Delete the entire `<Button>` block in the top-right corner, keep just the title/subtitle.
 
-**Layout structure (top to bottom):**
+**2. Replace `Sparkles` with `Lock` icon in CTA section (line 460)**
+Change `<Sparkles className="w-6 h-6 text-primary mx-auto mb-3" />` → `<Lock className="w-6 h-6 text-primary mx-auto mb-3" />`
+Add `Lock` back to lucide imports.
 
-1. **Header** — Keep "Dream Patterns" title + subtitle. Keep "Upgrade to Dreamer" button as-is.
-
-2. **Chart card with gradient overlay** — Same tabbed chart card but instead of a floating white popup, apply a soft gradient fade-to-white from center outward over the chart area. Use slightly more realistic-looking placeholder data (5 emotion categories with soft muted colors like `#e2e8f0` varying slightly in shade so they look like real bars, not identical blocks). The overlay is a gradient div that fades from transparent at top to white at bottom, covering the lower 60% of the chart — making the chart feel like it's "fading away" into locked content.
-
-3. **Centered CTA section (no card, no popup)** — Directly below the chart card, a centered section with:
-   - A small `Sparkles` icon in purple
-   - Headline: **"Your patterns are waiting"** (text-xl font-semibold)
-   - Subtitle: "Record dreams and upgrade to Dreamer to reveal your emotional landscape" (muted, text-sm)
-   - A full-width (max-w-sm) dark navy CTA button: "Unlock My Patterns"
-
-4. **Preview cards row** — Three small preview cards side by side (grid cols-3 on desktop, stacked on mobile) showing what's included. Each card has:
-   - A small icon at top (muted color): `Hash` for Themes, `TrendingUp` for Timeline, `Sparkles` for Insights
-   - A short bold title: "Recurring Themes" / "Mood Timeline" / "Personal Insights"
-   - One line of muted text describing it
-   - Each card has `opacity-60` and a subtle dashed border to feel "coming soon"
-
-**Key differences from current:**
-- Remove the floating white popup card with Lock icon — feels clunky
-- Remove the "What you'll discover" bullet list — replaced by the preview cards which are more visual
-- Chart uses a gradient fade instead of a popup overlay — more elegant
-- CTA is prominent but clean, not floating on top of content
-- Preview cards give a visual taste of the full unlocked experience
-
-**Cleanup:**
-- Remove `Lock` from imports (no longer used)
-- Keep `Sparkles`, add `Hash` from lucide-react
+**3. Change Emotion Breakdown chart to 3 categories (lines 377-384)**
+Replace the 5-item `placeholderBars` with:
+```ts
+const placeholderBars = [
+  { category: "Positive", value: 6 },
+  { category: "Neutral", value: 4 },
+  { category: "Negative", value: 2 },
+];
+const placeholderBarColors = ["#e2e8f0", "#d8dee8", "#cacfd9"];
+```
 
 ### Files changed
-- `src/pages/Patterns.tsx` — complete redesign of the locked state block
+- `src/pages/Patterns.tsx`
 
