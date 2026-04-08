@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { BarChart3, Sparkles, TrendingUp, Clock } from "lucide-react";
+import { BarChart3, Sparkles, TrendingUp, Clock, Lock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BarChart,
@@ -379,7 +379,7 @@ const Patterns = () => {
     { category: "Neutral", value: 3 },
     { category: "Negative", value: 2 },
   ];
-  const placeholderBarColors = ["#10b981", "#f59e0b", "#f43f5e"];
+  const placeholderBarColors = ["#d1d5db", "#d1d5db", "#d1d5db"];
 
   const placeholderMoodData = [
     { date: "Mar 1", score: 0.3 },
@@ -409,47 +409,52 @@ const Patterns = () => {
             </Button>
           </div>
 
-          {/* Charts card */}
-          <div className="bg-card rounded-2xl p-6 border border-border mb-8">
-            <Tabs defaultValue="emotions">
-              <TabsList className="mb-4">
-                <TabsTrigger value="emotions" className="gap-1.5">
-                  <BarChart3 className="w-4 h-4" /> Emotion Breakdown
-                </TabsTrigger>
-                <TabsTrigger value="mood-time" className="gap-1.5">
-                  <TrendingUp className="w-4 h-4" /> Mood over Time
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="emotions">
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={placeholderBars} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
-                    <YAxis type="category" dataKey="category" width={80} tick={{ fontSize: 13, fill: "hsl(var(--foreground))", fontWeight: 600 } as any} tickLine={false} axisLine={false} />
-                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={28}>
-                      {placeholderBars.map((_, i) => (
-                        <Cell key={i} fill={placeholderBarColors[i]} opacity={0.5} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </TabsContent>
-              <TabsContent value="mood-time">
-                <ResponsiveContainer width="100%" height={280}>
-                  <LineChart data={placeholderMoodData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
-                    <YAxis domain={[-1, 1]} ticks={[-1, 0, 1]} tickFormatter={(v: number) => v === 1 ? "Positive" : v === -1 ? "Negative" : "Neutral"} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={70} />
-                    <Line type="monotone" dataKey="score" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeOpacity={0.4} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </TabsContent>
-            </Tabs>
-            <p className="text-muted-foreground text-sm mt-6 text-center">Your subconscious has patterns. Are you ready to see them?</p>
-            <div className="flex justify-center mt-3">
-              <Button onClick={() => navigate("/upgrade")} className="gradient-navy text-white px-8">Unlock My Patterns</Button>
+          {/* Charts card with overlay */}
+          <div className="relative mb-8">
+            <div className="bg-card rounded-2xl p-6 border border-border">
+              <Tabs defaultValue="emotions">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="emotions" className="gap-1.5">
+                    <BarChart3 className="w-4 h-4" /> Emotion Breakdown
+                  </TabsTrigger>
+                  <TabsTrigger value="mood-time" className="gap-1.5">
+                    <TrendingUp className="w-4 h-4" /> Mood over Time
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="emotions">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={placeholderBars} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
+                      <YAxis type="category" dataKey="category" width={80} tick={{ fontSize: 13, fill: "hsl(var(--foreground))", fontWeight: 600 } as any} tickLine={false} axisLine={false} />
+                      <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={28}>
+                        {placeholderBars.map((_, i) => (
+                          <Cell key={i} fill={placeholderBarColors[i]} opacity={0.7} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </TabsContent>
+                <TabsContent value="mood-time">
+                  <ResponsiveContainer width="100%" height={280}>
+                    <LineChart data={placeholderMoodData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
+                      <YAxis domain={[-1, 1]} ticks={[-1, 0, 1]} tickFormatter={(v: number) => v === 1 ? "Positive" : v === -1 ? "Negative" : "Neutral"} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={70} />
+                      <Line type="monotone" dataKey="score" stroke="#d1d5db" strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </TabsContent>
+              </Tabs>
             </div>
-            <p className="text-muted-foreground text-xs mt-4 text-center">Your emotional data will appear here after upgrading.</p>
+            {/* Floating overlay card */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="bg-white dark:bg-card rounded-xl shadow-lg px-6 py-5 max-w-xs text-center pointer-events-auto border border-border/50">
+                <Lock className="w-5 h-5 text-primary mx-auto mb-2" />
+                <p className="text-sm text-foreground font-medium mb-3">Your subconscious has patterns. Are you ready to see them?</p>
+                <Button onClick={() => navigate("/upgrade")} className="gradient-navy text-white px-6 h-9 text-sm">Unlock My Patterns</Button>
+              </div>
+            </div>
           </div>
 
           {/* What you'll discover */}
