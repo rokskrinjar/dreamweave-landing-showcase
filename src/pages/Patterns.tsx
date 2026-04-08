@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
@@ -275,6 +276,7 @@ const MoodOverTimeChart = ({ dreams }: { dreams: any[] }) => {
 
 const Patterns = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<{ subscription_tier: string } | null>(null);
   const [dreams, setDreams] = useState<any[]>([]);
   const [patternData, setPatternData] = useState<PatternData | null>(null);
@@ -382,7 +384,7 @@ const Patterns = () => {
             Upgrade to Pro or Lifetime to see recurring themes, mood trends, and AI-generated insights across all your dreams.
           </p>
           <Button
-            onClick={() => { window.location.href = "/#pricing"; }}
+            onClick={() => navigate("/upgrade")}
             className="gradient-navy text-white font-semibold px-8 py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
           >
             <Sparkles className="w-5 h-5 mr-2" /> Upgrade Now
