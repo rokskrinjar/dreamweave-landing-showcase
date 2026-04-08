@@ -5,11 +5,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { BarChart3, Sparkles, Lock, TrendingUp, Clock } from "lucide-react";
+import { BarChart3, Sparkles, TrendingUp, Clock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BarChart,
   Bar,
+  Cell,
   LineChart,
   Line,
   XAxis,
@@ -372,98 +373,116 @@ const Patterns = () => {
     );
   }
 
-  // Mock data for blurred preview
-  const mockDreams = [
-    { id: "1", mood: "joy, excitement, wonder", sentiment: "positive", recorded_at: "2025-03-01", tags: ["flying"] },
-    { id: "2", mood: "calm, peace, serenity", sentiment: "positive", recorded_at: "2025-03-05", tags: ["water"] },
-    { id: "3", mood: "anxiety, tension", sentiment: "negative", recorded_at: "2025-03-08", tags: ["chase"] },
-    { id: "4", mood: "curiosity, confusion", sentiment: "neutral", recorded_at: "2025-03-12", tags: ["family"] },
-    { id: "5", mood: "fear, dread", sentiment: "negative", recorded_at: "2025-03-15", tags: ["lost"] },
-    { id: "6", mood: "happiness, gratitude", sentiment: "positive", recorded_at: "2025-03-18", tags: ["animals"] },
-    { id: "7", mood: "nostalgia, melancholy", sentiment: "neutral", recorded_at: "2025-03-22", tags: ["places"] },
-    { id: "8", mood: "awe, inspiration", sentiment: "positive", recorded_at: "2025-03-26", tags: ["flying"] },
+  // Placeholder data for locked preview
+  const placeholderBars = [
+    { category: "Positive", value: 5 },
+    { category: "Neutral", value: 3 },
+    { category: "Negative", value: 2 },
   ];
+  const placeholderBarColors = ["#10b981", "#f59e0b", "#f43f5e"];
 
-  const mockThemes = ["Flying", "Water", "Chase", "Family", "Lost Places", "Animals"];
+  const placeholderMoodData = [
+    { date: "Mar 1", score: 0.3 },
+    { date: "Mar 5", score: 0.6 },
+    { date: "Mar 10", score: -0.1 },
+    { date: "Mar 15", score: -0.4 },
+    { date: "Mar 20", score: 0.2 },
+    { date: "Mar 25", score: 0.5 },
+  ];
 
   if (isLocked) {
     return (
       <AppLayout>
-        <div className="relative overflow-hidden rounded-2xl">
-          {/* Blurred preview background */}
-          <div className="blur-[8px] pointer-events-none select-none opacity-70">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h1 className="text-3xl font-bold text-foreground">Dream Patterns</h1>
-                  <p className="text-muted-foreground mt-1">8 dreams analyzed · Insights from your subconscious</p>
-                </div>
-              </div>
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Dream Patterns</h1>
+              <p className="text-muted-foreground mt-1">Insights from your subconscious</p>
+            </div>
+            <Button
+              onClick={() => navigate("/upgrade")}
+              className="gradient-navy text-white font-semibold gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+            >
+              <TrendingUp className="w-4 h-4" />
+              Upgrade to Dreamer
+            </Button>
+          </div>
 
-              {/* Mock charts */}
-              <div className="bg-card rounded-2xl p-6 border border-border mb-8">
-                <Tabs defaultValue="emotions">
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="emotions" className="gap-1.5">
-                      <BarChart3 className="w-4 h-4" /> Emotion Breakdown
-                    </TabsTrigger>
-                    <TabsTrigger value="mood-time" className="gap-1.5">
-                      <TrendingUp className="w-4 h-4" /> Mood over Time
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="emotions">
-                    <EmotionBarChartInner dreams={mockDreams} />
-                  </TabsContent>
-                  <TabsContent value="mood-time">
-                    <MoodOverTimeChart dreams={mockDreams} />
-                  </TabsContent>
-                </Tabs>
-              </div>
+          {/* Charts card */}
+          <div className="bg-card rounded-2xl p-6 border border-border mb-8">
+            <Tabs defaultValue="emotions">
+              <TabsList className="mb-4">
+                <TabsTrigger value="emotions" className="gap-1.5">
+                  <BarChart3 className="w-4 h-4" /> Emotion Breakdown
+                </TabsTrigger>
+                <TabsTrigger value="mood-time" className="gap-1.5">
+                  <TrendingUp className="w-4 h-4" /> Mood over Time
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="emotions">
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={placeholderBars} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
+                    <YAxis type="category" dataKey="category" width={80} tick={{ fontSize: 13, fill: "hsl(var(--foreground))", fontWeight: 600 } as any} tickLine={false} axisLine={false} />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={28}>
+                      {placeholderBars.map((_, i) => (
+                        <Cell key={i} fill={placeholderBarColors[i]} opacity={0.5} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </TabsContent>
+              <TabsContent value="mood-time">
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={placeholderMoodData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
+                    <YAxis domain={[-1, 1]} ticks={[-1, 0, 1]} tickFormatter={(v: number) => v === 1 ? "Positive" : v === -1 ? "Negative" : "Neutral"} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={70} />
+                    <Line type="monotone" dataKey="score" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeOpacity={0.4} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </TabsContent>
+            </Tabs>
+            <p className="text-muted-foreground text-xs mt-4 text-center">Your emotional data will appear here after upgrading.</p>
+          </div>
 
-              {/* Mock recurring themes */}
-              <div className="bg-card rounded-2xl p-6 border border-border mb-6">
-                <h3 className="font-bold text-foreground mb-3">Recurring Themes</h3>
-                <div className="flex flex-wrap gap-2">
-                  {mockThemes.map((theme, i) => (
-                    <span key={i} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                      {theme}
-                    </span>
-                  ))}
-                </div>
-              </div>
+          {/* Upgrade prompt */}
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <button
+              onClick={() => navigate("/upgrade")}
+              className="text-sm text-primary hover:underline font-medium"
+            >
+              Unlock your real patterns — Upgrade to Dreamer
+            </button>
+          </div>
 
-              {/* Mock emotional patterns */}
-              <div className="bg-card rounded-2xl p-6 border border-border">
-                <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Your dreams show a strong connection between feelings of wonder and themes of flight. When you dream of water, calmness and peace tend to follow. Anxiety appears most often in chase-related dreams, suggesting unresolved tension around feeling pursued or pressured in daily life.
-                </p>
-                <p className="text-muted-foreground text-sm leading-relaxed mt-3">
-                  Over the past month, your emotional trend has shifted toward more positive sentiments, with curiosity emerging as a bridge between neutral and positive dream states.
-                </p>
-              </div>
+          {/* Recurring Themes */}
+          <div className="bg-card rounded-2xl p-6 border border-border mb-6">
+            <h3 className="font-bold text-foreground mb-3">Recurring Themes</h3>
+            <div className="flex flex-wrap gap-2">
+              {[20, 16, 24, 14, 18].map((w, i) => (
+                <div key={i} className="border border-muted-foreground/20 rounded-full h-7" style={{ width: `${w * 4}px` }} />
+              ))}
             </div>
           </div>
 
-          {/* Overlay card */}
-          <div className="absolute inset-0 flex items-center justify-center bg-background/5">
-            <div className="bg-white/80 dark:bg-card/90 backdrop-blur-sm rounded-2xl shadow-xl p-10 max-w-md w-full mx-4 text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
-                <Lock className="w-6 h-6 text-primary" />
-              </div>
-              <h2 className="text-xl font-bold text-foreground mb-3">
-                Your subconscious has patterns. Are you ready to see them?
-              </h2>
-              <p className="text-muted-foreground text-sm mb-6">
-                Upgrade to Dreamer to unlock your emotion breakdown, mood timeline, recurring themes, and personal insights.
-              </p>
-              <Button
-                onClick={() => navigate("/upgrade")}
-                className="w-full gradient-navy text-white font-semibold py-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-              >
-                Unlock My Patterns
-              </Button>
-            </div>
+          {/* Emotional Patterns */}
+          <div className="bg-card rounded-2xl p-6 border border-border mb-6">
+            <h3 className="font-bold text-foreground mb-3">Emotional Patterns</h3>
+            <p className="text-muted-foreground text-sm italic">
+              A personal analysis of your emotional arc across all your dreams will appear here.
+            </p>
+          </div>
+
+          {/* Actionable Suggestions */}
+          <div className="bg-card rounded-2xl p-6 border border-border">
+            <h3 className="font-bold text-foreground mb-3">Actionable Suggestions</h3>
+            <p className="text-muted-foreground text-sm italic">
+              Personalized suggestions based on your recurring dream patterns will appear here.
+            </p>
           </div>
         </div>
       </AppLayout>
