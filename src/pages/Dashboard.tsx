@@ -84,6 +84,16 @@ const Dashboard = () => {
   const atLimit = isFree && remaining === 0;
   const unanalyzedCount = dreams.filter((d) => !d.hasAnalysis).length;
 
+  const displayMonth = viewMode === "calendar" ? calendarMonth : new Date();
+  const isCurrentMonth = isSameMonth(displayMonth, new Date());
+
+  const dreamsInMonth = useMemo(() =>
+    dreams.filter((d) => isSameMonth(new Date(d.recorded_at), displayMonth)).length,
+    [dreams, displayMonth]
+  );
+
+  const handleMonthChange = useCallback((m: Date) => setCalendarMonth(m), []);
+
   const moodColors: Record<string, string> = {
     peaceful: "bg-emerald-100 text-emerald-700",
     anxious: "bg-amber-100 text-amber-700",
@@ -144,8 +154,10 @@ const Dashboard = () => {
           className="rounded-xl px-4 py-3 text-white hover:scale-[1.03] transition-transform duration-200"
           style={{ backgroundColor: "hsl(265, 50%, 25%)" }}
         >
-          <p className="text-3xl font-black tracking-tight">{profile?.dreams_this_month ?? 0}</p>
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>Dreams This Month</p>
+          <p className="text-3xl font-black tracking-tight">{dreamsInMonth}</p>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
+            {isCurrentMonth ? "Dreams This Month" : `Dreams in ${format(displayMonth, "MMMM")}`}
+          </p>
         </div>
       </div>
 
@@ -175,7 +187,7 @@ const Dashboard = () => {
               </Link>
             </div>
           )}
-          <DreamCalendar dreams={dreams} moodColors={moodColors} />
+          <DreamCalendar dreams={dreams} moodColors={moodColors} onMonthChange={handleMonthChange} />
         </>
       ) : (
         <>
