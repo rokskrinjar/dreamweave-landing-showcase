@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { format, isSameMonth } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +30,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [profile, setProfile] = useState<{ subscription_tier: string; dreams_this_month: number } | null>(null);
   const upgradeBannerRef = useRef<HTMLDivElement>(null);
 
