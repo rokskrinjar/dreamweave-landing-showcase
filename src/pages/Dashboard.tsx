@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { format, isSameMonth } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +30,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [profile, setProfile] = useState<{ subscription_tier: string; dreams_this_month: number } | null>(null);
   const upgradeBannerRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +83,16 @@ const Dashboard = () => {
   const remaining = profile ? Math.max(0, 3 - profile.dreams_this_month) : 0;
   const atLimit = isFree && remaining === 0;
   const unanalyzedCount = dreams.filter((d) => !d.hasAnalysis).length;
+
+  const displayMonth = viewMode === "calendar" ? calendarMonth : new Date();
+  const isCurrentMonth = isSameMonth(displayMonth, new Date());
+
+  const dreamsInMonth = useMemo(() =>
+    dreams.filter((d) => isSameMonth(new Date(d.recorded_at), displayMonth)).length,
+    [dreams, displayMonth]
+  );
+
+  const handleMonthChange = useCallback((m: Date) => setCalendarMonth(m), []);
 
   const moodColors: Record<string, string> = {
     peaceful: "bg-emerald-100 text-emerald-700",
@@ -142,8 +154,10 @@ const Dashboard = () => {
           className="rounded-xl px-4 py-3 text-white hover:scale-[1.03] transition-transform duration-200"
           style={{ backgroundColor: "hsl(265, 50%, 25%)" }}
         >
-          <p className="text-3xl font-black tracking-tight">{profile?.dreams_this_month ?? 0}</p>
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>Dreams This Month</p>
+          <p className="text-3xl font-black tracking-tight">{dreamsInMonth}</p>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
+            {isCurrentMonth ? "Dreams This Month" : `Dreams in ${format(displayMonth, "MMMM")}`}
+          </p>
         </div>
       </div>
 
@@ -173,7 +187,7 @@ const Dashboard = () => {
               </Link>
             </div>
           )}
-          <DreamCalendar dreams={dreams} moodColors={moodColors} />
+          <DreamCalendar dreams={dreams} moodColors={moodColors} onMonthChange={handleMonthChange} />
         </>
       ) : (
         <>

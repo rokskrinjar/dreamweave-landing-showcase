@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   startOfMonth,
@@ -30,13 +30,19 @@ interface Dream {
 interface DreamCalendarProps {
   dreams: Dream[];
   moodColors: Record<string, string>;
+  onMonthChange?: (month: Date) => void;
 }
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-const DreamCalendar = ({ dreams, moodColors }: DreamCalendarProps) => {
+const DreamCalendar = ({ dreams, moodColors, onMonthChange }: DreamCalendarProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // Notify parent of month changes
+  useEffect(() => {
+    onMonthChange?.(currentMonth);
+  }, [currentMonth, onMonthChange]);
 
   const dreamsByDate = useMemo(() => {
     const map = new Map<string, Dream[]>();
