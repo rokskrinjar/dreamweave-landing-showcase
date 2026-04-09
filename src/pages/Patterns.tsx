@@ -404,6 +404,21 @@ const Patterns = () => {
             </div>
           </div>
 
+          {/* CTA section */}
+          <div className="text-center py-8">
+            <Lock className="w-6 h-6 text-primary mx-auto mb-3" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">Your patterns are waiting</h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+              Record dreams and upgrade to Dreamer to reveal your emotional landscape
+            </p>
+            <Button
+              onClick={() => navigate("/upgrade")}
+              className="gradient-navy text-white font-semibold w-full max-w-sm h-11 text-base hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+            >
+              Unlock My Patterns
+            </Button>
+          </div>
+
           {/* Chart card with gradient fade */}
           <div className="relative overflow-hidden rounded-2xl border border-border bg-card mb-2">
             <div className="p-6">
@@ -444,21 +459,6 @@ const Patterns = () => {
             </div>
             {/* Gradient fade overlay */}
             <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none" />
-          </div>
-
-          {/* CTA section */}
-          <div className="text-center py-8">
-            <Lock className="w-6 h-6 text-primary mx-auto mb-3" />
-            <h2 className="text-xl font-semibold text-foreground mb-2">Your patterns are waiting</h2>
-            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-              Record dreams and upgrade to Dreamer to reveal your emotional landscape
-            </p>
-            <Button
-              onClick={() => navigate("/upgrade")}
-              className="gradient-navy text-white font-semibold w-full max-w-sm h-11 text-base hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-            >
-              Unlock My Patterns
-            </Button>
           </div>
 
           {/* Preview cards */}
