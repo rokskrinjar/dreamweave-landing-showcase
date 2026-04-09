@@ -93,7 +93,7 @@ const Dashboard = () => {
 
   return (
     <AppLayout>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Your Dreams</h1>
             {isFree ? (
@@ -126,6 +126,24 @@ const Dashboard = () => {
               <List className="w-4 h-4" />
             )}
           </Button>
+        </div>
+      </div>
+
+      {/* Stats banner */}
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <div
+          className="rounded-xl px-4 py-3 text-white hover:scale-[1.03] transition-transform duration-200"
+          style={{ backgroundColor: "hsl(235, 30%, 18%)" }}
+        >
+          <p className="text-3xl font-black tracking-tight">{dreams.length}</p>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>Dreams Journaled — Lifetime</p>
+        </div>
+        <div
+          className="rounded-xl px-4 py-3 text-white hover:scale-[1.03] transition-transform duration-200"
+          style={{ backgroundColor: "hsl(265, 50%, 25%)" }}
+        >
+          <p className="text-3xl font-black tracking-tight">{profile?.dreams_this_month ?? 0}</p>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>Dreams This Month</p>
         </div>
       </div>
 
@@ -164,7 +182,7 @@ const Dashboard = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search your dreams..."
-              className="pl-10"
+              className="pl-10 bg-muted/60"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -232,7 +250,8 @@ const Dashboard = () => {
                 <Link
                   key={dream.id}
                   to={`/dreams/${dream.id}`}
-                  className="group block bg-card rounded-2xl p-6 border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all relative"
+                  className="group block rounded-2xl p-6 border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all relative"
+                  style={{ backgroundColor: "hsl(30, 20%, 98%)" }}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">

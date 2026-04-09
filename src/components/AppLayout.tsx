@@ -48,7 +48,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-secondary">
+    <div className="min-h-screen" style={{ backgroundColor: "hsl(220, 20%, 94%)" }}>
       {/* Top nav */}
       <header className="bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
