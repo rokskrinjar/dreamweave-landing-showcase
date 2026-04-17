@@ -4,12 +4,6 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { useMemo } from "react";
 
 export const LucidDreamingSection = () => {
-  const callouts = [
-    "The most effective lucid dreaming technique is keeping a dream journal",
-    "Dream recall improves significantly within the first 2 weeks of journaling",
-    "Awareness of dream patterns is the first step to controlling them",
-  ];
-
   const bullets = [
     "Dream journaling is the most widely recommended method for achieving lucid dreams",
     "Writing dreams down trains your brain to recognize when you're dreaming",
@@ -70,16 +64,6 @@ export const LucidDreamingSection = () => {
               <Sparkles className="w-4 h-4 text-purple-400 mt-1 shrink-0" />
               <p className="text-sm md:text-base text-white/80 leading-relaxed">
                 {bullet}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {callouts.map((text, i) => (
-            <div key={i} className="border-t border-white/20 pt-6">
-              <p className="text-sm md:text-base text-white/80 leading-relaxed">
-                {text}
               </p>
             </div>
           ))}
